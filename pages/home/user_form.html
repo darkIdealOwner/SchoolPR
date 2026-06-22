@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if is_edit %}Редактировать пользователя{% else %}Добавить пользователя{% endif %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.form-card {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: white;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+select.input-field {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+}
+
+.btn-save {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+}
+
+.btn-save:hover { background-color: #4f46e5; }
+
+.hidden { display: none; }
+
+.errorlist {
+    color: #ef4444;
+    list-style: none;
+    padding: 0;
+    font-size: 0.8125rem;
+    margin-bottom: 1rem;
+}
+{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}Редактировать{% else %}Добавить{% endif %} пользователя</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="errorlist">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">Логин (username)</label>
+            {{ form.username }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.first_name.id_for_label }}">Имя</label>
+            {{ form.first_name }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.phone_number.id_for_label }}">Номер телефона</label>
+            {{ form.phone_number }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.role.id_for_label }}">Роль</label>
+            {{ form.role }}
+        </div>
+
+        <div id="school-wrapper" class="form-group hidden">
+            <label for="{{ form.school.id_for_label }}">Школа</label>
+            {{ form.school }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.password.id_for_label }}">Пароль</label>
+            {{ form.password }}
+            {% if is_edit %}
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Оставьте пустым, если не хотите менять.</p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn-save">{% if is_edit %}Сохранить изменения{% else %}Применить{% endif %}</button>
+        <a href="{% url 'user_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">Отмена</a>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const roleSelect = document.getElementById('{{ form.role.id_for_label }}');
+    const schoolWrapper = document.getElementById('school-wrapper');
+
+    function toggleSchool() {
+        if (!roleSelect) return;
+        const role = roleSelect.value;
+        if (role === 'DIRECTOR' || role === 'EMPLOYEE') {
+            schoolWrapper.classList.remove('hidden');
+        } else {
+            schoolWrapper.classList.add('hidden');
+        }
+    }
+
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleSchool);
+    }
+    document.addEventListener('DOMContentLoaded', toggleSchool);
+</script>
+{% endblock %}

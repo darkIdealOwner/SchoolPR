@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Инвестиционный портфель - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.invest-card {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    color: white;
+}
+
+.data-card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1 style="font-size: 2.25rem;">Привет, {{ user.first_name }}! 👋</h1>
+    <p style="color: var(--text-muted);">Ваш инвестиционный обзор в SchoolPR.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="invest-card">
+        <div style="font-size: 0.875rem; opacity: 0.8; margin-bottom: 0.5rem;">Ваши инвестиции</div>
+        <div style="font-size: 2.5rem; font-weight: 700;">$0.00</div>
+    </div>
+    
+    <div class="data-card">
+        <h3 style="margin-top: 0;">Текущие отчеты</h3>
+        <p style="color: var(--text-muted);">Просматривайте финансовые показатели в реальном времени.</p>
+        <a href="#" style="color: #8b5cf6; text-decoration: none; font-weight: 600;">Открыть отчет →</a>
+    </div>
+</div>
+{% endblock %}

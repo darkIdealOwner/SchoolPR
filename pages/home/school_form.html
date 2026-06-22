@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if is_edit %}Редактировать школу{% else %}Добавить школу{% endif %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.form-card {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: white;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.btn-save {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}Изменить{% else %}Создать{% endif %} школу</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Название школы</label>
+            {{ form.name }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.address.id_for_label }}">Адрес</label>
+            {{ form.address }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.director.id_for_label }}">Директор</label>
+            {{ form.director }}
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Выберите пользователя с ролью Директор.</p>
+        </div>
+        
+        <button type="submit" class="btn-save">{% if is_edit %}Сохранить изменения{% else %}Создать школу{% endif %}</button>
+        <a href="{% url 'school_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">Отмена</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.profile-card {
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    background-color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.info-item {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item .label {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.info-item .value {
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+.profile-actions {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #4f46e5;
+}
+
+.btn-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger:hover {
+    background-color: #ef4444;
+    color: white;
+}
+{% endblock %}
+
+{% block content %}
+<div class="card profile-card">
+    <div class="profile-header">
+        <div class="profile-avatar">{{ user.first_name|first|upper }}</div>
+        <div>
+            <h1 style="margin: 0;">{{ user.first_name }}</h1>
+            <span style="color: var(--primary); font-weight: 600;">{{ user.get_role_display }}</span>
+        </div>
+    </div>
+
+    <div class="info-item">
+        <span class="label">Роль</span>
+        <span class="value">{{ user.get_role_display }}</span>
+    </div>
+
+    <div class="info-item">
+        <span class="label">Номер телефона</span>
+        <span class="value">{{ user.masked_phone }}</span>
+    </div>
+
+    <div class="profile-actions">
+        <a href="{% url 'password_change' %}" class="btn btn-primary">Сменить пароль</a>
+        
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" style="width: 100%;">Выход из системы</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

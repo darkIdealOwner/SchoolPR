@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Рабочая панель - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stats-card {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.school-info {
+    font-size: 0.875rem;
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <div class="school-info">🏫 {{ user.school.name|default:"Школа не указана" }}</div>
+    <h1>Привет, {{ user.first_name }}! 👋</h1>
+    <p style="color: var(--text-muted);">Добро пожаловать в вашу рабочую область. Просматривайте текущие задачи.</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="stats-card">
+        <h3 style="margin-top: 0; color: var(--primary);">Мои задачи</h3>
+        <p style="color: var(--text-muted);">Список задач будет доступен здесь.</p>
+    </div>
+    <div class="stats-card">
+        <h3 style="margin-top: 0; color: var(--primary);">Отчеты</h3>
+        <p style="color: var(--text-muted);">Нажмите, чтобы создать отчет.</p>
+    </div>
+</div>
+{% endblock %}
