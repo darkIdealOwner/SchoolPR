@@ -46,13 +46,24 @@ class UserListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
     model = User
     template_name = 'home/user_list.html'
     context_object_name = 'users_list'
+    paginate_by = 10
 
     def get_queryset(self):
+        from django.db.models import Q, Case, When, IntegerField
         queryset = super().get_queryset()
-        sort = self.request.GET.get('sort', 'priority')
         
-        # We can't directly sort by a property in SQL, so we'll use Case/When
-        from django.db.models import Case, When, IntegerField
+        # Search filter
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(username__icontains=query) |
+                Q(first_name__icontains=query) |
+                Q(phone_number__icontains=query) |
+                Q(school__name__icontains=query)
+            )
+
+        # Sorting
+        sort = self.request.GET.get('sort', 'priority')
         queryset = queryset.annotate(
             priority=Case(
                 When(role='OWNER', then=1),

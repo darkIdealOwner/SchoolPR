@@ -8,6 +8,30 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    background-color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
 }
 
 .user-table {
@@ -38,10 +62,6 @@
     border-bottom: none;
 }
 
-.user-table tr:hover {
-    background-color: rgba(255, 255, 255, 0.01);
-}
-
 .role-badge {
     padding: 0.25rem 0.625rem;
     border-radius: 9999px;
@@ -61,37 +81,52 @@
     text-decoration: none;
     border-radius: 0.5rem;
     font-weight: 600;
-    transition: background-color 0.2s;
+    white-space: nowrap;
 }
 
-.btn-add:hover { background-color: #4f46e5; }
-
-.action-links {
+.pagination {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 1rem;
+    margin-top: 2rem;
 }
 
-.action-link {
-    font-size: 0.875rem;
-    text-decoration: none;
-    color: var(--text-muted);
-}
-
-.action-link:hover { color: var(--text); }
-
-.sort-link {
-    text-decoration: none;
-    color: inherit;
+.page-link {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: white;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.page-link:hover {
+    border-color: var(--primary);
+    background-color: rgba(99, 102, 241, 0.1);
+}
+
+.page-info {
+    font-size: 0.875rem;
+    color: var(--text-muted);
 }
 {% endblock %}
 
 {% block content %}
 <div class="toolbar">
     <h1 style="margin: 0;">Пользователи</h1>
-    <a href="{% url 'user_add' %}" class="btn-add">Добавить пользователя</a>
+    
+    <form class="search-form" method="get">
+        <input type="text" name="q" class="search-input" placeholder="Поиск по имени, тел. или школе..." value="{{ request.GET.q }}">
+        <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">Найти</button>
+    </form>
+
+    <a href="{% url 'user_add' %}" class="btn-add">Добавить</a>
 </div>
 
 <table class="user-table">
@@ -102,12 +137,12 @@
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     Роль
                     <div style="display: flex; flex-direction: column; font-size: 10px; line-height: 1;">
-                        <a href="?sort=priority" class="sort-link" title="По возрастанию priority">▲</a>
-                        <a href="?sort=-priority" class="sort-link" title="По убыванию priority">▼</a>
+                        <a href="?sort=priority&q={{ request.GET.q }}" style="text-decoration: none; color: inherit;">▲</a>
+                        <a href="?sort=-priority&q={{ request.GET.q }}" style="text-decoration: none; color: inherit;">▼</a>
                     </div>
                 </div>
             </th>
-            <th>Номер телефона</th>
+            <th>Телефон</th>
             <th>Школа</th>
             <th>Действия</th>
         </tr>
@@ -116,7 +151,7 @@
         {% for u in users_list %}
         <tr>
             <td>
-                <div style="font-weight: 600; margin-bottom: 0.125rem;">{{ u.first_name }}</div>
+                <div style="font-weight: 600;">{{ u.first_name }}</div>
                 <div style="font-size: 0.75rem; color: var(--text-muted);">@{{ u.username }}</div>
             </td>
             <td>
@@ -125,19 +160,33 @@
             <td>{{ u.masked_phone }}</td>
             <td style="color: var(--text-muted);">{{ u.school.name|default:"—" }}</td>
             <td>
-                <div class="action-links">
-                    <a href="{% url 'user_edit' u.pk %}" class="action-link">Изменить</a>
-                    <a href="{% url 'user_delete' u.pk %}" class="action-link" style="color: #ef4444;">Удалить</a>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{% url 'user_edit' u.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.875rem;">Изменить</a>
+                    <a href="{% url 'user_delete' u.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.875rem;">Удалить</a>
                 </div>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 3rem;">Пользователи не найдены.</td>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">Пользователи не найдены.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" class="page-link">&laquo;</a>
+    {% endif %}
+
+    <span class="page-info">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" class="page-link">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
 
 <div style="margin-top: 2rem;">
     <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Вернуться на главную</a>
