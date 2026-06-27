@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, School
+from .models import User, School, Contract, Payment
 
 class PhoneAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -65,3 +65,45 @@ class SchoolForm(forms.ModelForm):
                 director.school = instance
                 director.save()
         return instance
+
+class ContractForm(forms.ModelForm):
+    class Meta:
+        model = Contract
+        fields = [
+            'number', 'date', 'month', 'student_full_name', 'student_birth_year',
+            'student_class', 'duration_months', 'parents_full_name', 'passport_data',
+            'inps', 'address', 'phone_number', 'specialization', 'tuition_fee',
+            'discount_percentage', 'discount_amount', 'food_cost', 'total_amount',
+            'is_cancelled', 'notes'
+        ]
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field.widget.__class__ != forms.CheckboxInput:
+                field.widget.attrs.update({'class': 'input-field'})
+        
+        # Hide is_cancelled if creating a new contract
+        if not self.instance.pk:
+            if 'is_cancelled' in self.fields:
+                self.fields.pop('is_cancelled')
+
+class PaymentForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['amount', 'notes', 'contract', 'for_month', 'payment_date']
+        widgets = {
+            'contract': forms.HiddenInput(),
+            'for_month': forms.HiddenInput(),
+            'payment_date': forms.HiddenInput(),
+            'notes': forms.Textarea(attrs={'rows': 2}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input-field'})

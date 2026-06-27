@@ -118,7 +118,9 @@
 <div class="actions-container">
     <a href="{% url 'user_list' %}" class="btn-action">Управление пользователями</a>
     <a href="{% url 'school_list' %}" class="btn-action" style="background-color: #10b981;">Управление школами</a>
-    <a href="#" class="btn-action" style="background-color: #334155; cursor: not-allowed;">Управление договорами (скоро)</a>
+    <a href="{% url 'contract_list' %}" class="btn-action" style="background-color: #f59e0b;">Управление договорами</a>
+    <a href="{% url 'payment_list' %}" class="btn-action" style="background-color: #3b82f6;">Управление выплатами</a>
+    <a href="#" class="btn-action" style="background-color: #334155; cursor: not-allowed;">Задолженности (скоро)</a>
 </div>
 
 {% load static %}
