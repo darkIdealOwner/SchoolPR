@@ -94,6 +94,7 @@ class Contract(models.Model):
     notes = models.TextField(blank=True, verbose_name="Примечание")
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contracts', verbose_name="Пользователь")
+    school = models.ForeignKey(School, on_delete=models.SET_NULL, null=True, blank=True, related_name='contracts', verbose_name="Школа")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

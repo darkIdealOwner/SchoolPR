@@ -5,7 +5,7 @@ from .views import (
     UserListView, UserCreateView, UserUpdateView, UserDeleteView,
     SchoolListView, SchoolCreateView, SchoolUpdateView, SchoolDeleteView,
     ContractListView, ContractCreateView, ContractUpdateView, ContractDeleteView,
-    PaymentListView, PaymentCreateView
+    PaymentListView, PaymentCreateView, DebtListView
 )
 
 urlpatterns = [
@@ -36,4 +36,7 @@ urlpatterns = [
     # Payments
     path('payments/', PaymentListView.as_view(), name='payment_list'),
     path('payments/add/', PaymentCreateView.as_view(), name='payment_create'),
+    
+    # Debts
+    path('debts/', DebtListView.as_view(), name='debt_list'),
 ]

@@ -177,8 +177,16 @@ class ContractCreateView(LoginRequiredMixin, OwnerOnlyMixin, CreateView):
     form_class = ContractForm
     success_url = reverse_lazy('contract_list')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         form.instance.user = self.request.user
+        # Automatically assign school if creator is not OWNER
+        if self.request.user.role != 'OWNER':
+            form.instance.school = self.request.user.school
         return super().form_valid(form)
 
 class ContractUpdateView(LoginRequiredMixin, OwnerOnlyMixin, UpdateView):
@@ -186,6 +194,11 @@ class ContractUpdateView(LoginRequiredMixin, OwnerOnlyMixin, UpdateView):
     template_name = 'home/contracts/contract_form.html'
     form_class = ContractForm
     success_url = reverse_lazy('contract_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -246,6 +259,104 @@ class PaymentListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
             contract.this_month_balance = contract.total_amount - contract.this_month_paid
             contract.payment_id = payment.id if payment else None
             
+        return context
+
+# Helper functions for Debt logic
+def add_month(d):
+    try:
+        return d.replace(month=d.month+1)
+    except ValueError:
+        if d.month == 12:
+            return d.replace(year=d.year+1, month=1)
+        else:
+            raise
+
+RUSSIAN_MONTHS = {
+    1: 'Январь', 2: 'Февраль', 3: 'Март', 4: 'Апрель',
+    5: 'Май', 6: 'Июнь', 7: 'Июль', 8: 'Август',
+    9: 'Сентябрь', 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'
+}
+
+def format_russian_month(d):
+    return f"{RUSSIAN_MONTHS[d.month]} {d.year}"
+
+def get_debt_details(contract, target_date):
+    from collections import defaultdict
+    start_date = contract.date
+    if not start_date:
+        return 0.0, []
+        
+    start_first = start_date.replace(day=1)
+    target_first = target_date.replace(day=1)
+    
+    if target_first < start_first:
+        return 0.0, []
+        
+    payments = contract.payments.filter(for_month__lte=target_first)
+    payment_map = defaultdict(float)
+    for p in payments:
+        payment_map[p.for_month.replace(day=1)] += float(p.amount)
+        
+    unpaid_months = []
+    running_balance = 0.0
+    monthly_fee = float(contract.total_amount)
+    
+    curr = start_first
+    while curr <= target_first:
+        running_balance += monthly_fee
+        running_balance -= payment_map[curr]
+        
+        if running_balance > 0.01:
+            unpaid_months.append(curr)
+            
+        curr = add_month(curr)
+        
+    return max(0.0, running_balance), unpaid_months
+
+class DebtListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+    model = Contract
+    template_name = 'home/debts/debt_list.html'
+    context_object_name = 'contracts'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from datetime import datetime
+        now = datetime.now()
+        
+        # Mode: 'general' (all debt till now) or 'monthly' (snapshot for month)
+        view_mode = self.request.GET.get('mode', 'general')
+        month_str = self.request.GET.get('month', now.strftime('%Y-%m'))
+        
+        try:
+            target_month = datetime.strptime(month_str, '%Y-%m').date()
+        except ValueError:
+            target_month = now.replace(day=1).date()
+            
+        context['view_mode'] = view_mode
+        context['month_str'] = month_str
+        context['target_month_label'] = format_russian_month(target_month)
+        
+        # Target month to calculate debt up to
+        if view_mode == 'general':
+            calc_limit = now.replace(day=1).date()
+        else:
+            calc_limit = target_month
+            
+        debtors = []
+        for contract in Contract.objects.all():
+            total_debt, unpaid_month_dates = get_debt_details(contract, calc_limit)
+            if total_debt > 0.01:
+                # Format months to readable Russian strings
+                unpaid_months_formatted = [format_russian_month(d) for d in unpaid_month_dates]
+                
+                contract.total_debt = total_debt
+                contract.unpaid_months = unpaid_months_formatted
+                contract.unpaid_count = len(unpaid_month_dates)
+                debtors.append(contract)
+                
+        # Sort debtors by debt amount descending
+        debtors.sort(key=lambda c: c.total_debt, reverse=True)
+        context['debtors'] = debtors
         return context
 
 class PaymentCreateView(LoginRequiredMixin, OwnerOnlyMixin, CreateView):

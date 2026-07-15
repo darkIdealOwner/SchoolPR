@@ -62,6 +62,7 @@
         <thead>
             <tr>
                 <th>№ договора</th>
+                <th>Школа</th>
                 <th>Ученик</th>
                 <th>Родитель</th>
                 <th>Направление</th>
@@ -75,6 +76,7 @@
             {% for contract in contracts %}
             <tr>
                 <td>{{ contract.number }}</td>
+                <td style="color: var(--text-muted);">{{ contract.school.name|default:"—" }}</td>
                 <td>
                     <div style="font-weight: 600;">{{ contract.student_full_name }}</div>
                     <div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>
@@ -96,7 +98,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">Договоров не найдено.</td>
+                <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-muted);">Договоров не найдено.</td>
             </tr>
             {% endfor %}
         </tbody>

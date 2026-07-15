@@ -138,6 +138,7 @@
         <thead>
             <tr>
                 <th>№</th>
+                <th>Школа</th>
                 <th>Дата</th>
                 <th>Месяц</th>
                 <th>ФИО ученика</th>
@@ -164,6 +165,7 @@
             {% for c in contracts_list %}
             <tr>
                 <td style="font-weight: 600;">{{ c.number }}</td>
+                <td>{{ c.school.name|default:"—" }}</td>
                 <td>{{ c.date|date:"d.m.Y" }}</td>
                 <td>{{ c.month }}</td>
                 <td>{{ c.student_full_name }}</td>
@@ -202,7 +204,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="21" style="text-align: center; color: var(--text-muted); padding: 3rem;">Договоры не найдены.</td>
+                <td colspan="22" style="text-align: center; color: var(--text-muted); padding: 3rem;">Договоры не найдены.</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -70,7 +70,7 @@ class ContractForm(forms.ModelForm):
     class Meta:
         model = Contract
         fields = [
-            'number', 'date', 'month', 'student_full_name', 'student_birth_year',
+            'number', 'school', 'date', 'month', 'student_full_name', 'student_birth_year',
             'student_class', 'duration_months', 'parents_full_name', 'passport_data',
             'inps', 'address', 'phone_number', 'specialization', 'tuition_fee',
             'discount_percentage', 'discount_amount', 'food_cost', 'total_amount',
@@ -82,6 +82,7 @@ class ContractForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             if field.widget.__class__ != forms.CheckboxInput:
@@ -91,6 +92,11 @@ class ContractForm(forms.ModelForm):
         if not self.instance.pk:
             if 'is_cancelled' in self.fields:
                 self.fields.pop('is_cancelled')
+
+        # Hide school field for non-OWNER users
+        if user and user.role != 'OWNER':
+            if 'school' in self.fields:
+                self.fields.pop('school')
 
 class PaymentForm(forms.ModelForm):
     class Meta:

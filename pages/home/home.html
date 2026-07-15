@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,16 +67,19 @@
         }
     </style>
 </head>
+
 <body>
     <div class="welcome-card">
         <div class="role-badge">{{ user.get_role_display }}</div>
         <h1>Привет, {{ user.first_name }}!</h1>
         <p>Добро пожаловать в систему.</p>
-        
+
         <form action="{% url 'logout' %}" method="post" style="display: inline;">
             {% csrf_token %}
-            <button type="submit" class="logout-link" style="background: none; border: none; cursor: pointer; font-family: inherit;">Выйти из системы</button>
+            <button type="submit" class="logout-link"
+                style="background: none; border: none; cursor: pointer; font-family: inherit;">Выйти из системы</button>
         </form>
     </div>
 </body>
+
 </html>
