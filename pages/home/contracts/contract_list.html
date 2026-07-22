@@ -130,7 +130,9 @@
         <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">Найти</button>
     </form>
 
+    {% if user.role != 'INVESTOR' %}
     <a href="{% url 'contract_add' %}" class="btn-add">Создать договор</a>
+    {% endif %}
 </div>
 
 <div class="table-container">
@@ -196,10 +198,14 @@
                     </div>
                 </td>
                 <td>
-                    <div style="display: flex; gap: 0.75rem;">
-                        <a href="{% url 'contract_edit' c.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.75rem;">Изменить</a>
-                        <a href="{% url 'contract_delete' c.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">Удалить</a>
-                    </div>
+                    {% if user.role == 'INVESTOR' %}
+                        <span style="color: var(--text-muted);">—</span>
+                    {% else %}
+                        <div style="display: flex; gap: 0.75rem;">
+                            <a href="{% url 'contract_edit' c.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.75rem;">Изменить</a>
+                            <a href="{% url 'contract_delete' c.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">Удалить</a>
+                        </div>
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}

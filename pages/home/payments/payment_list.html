@@ -92,7 +92,11 @@
                     {% if contract.payment_id %}
                         <span class="status-paid">Оплачено</span>
                     {% else %}
-                        <a href="{% url 'payment_create' %}?contract={{ contract.id }}&month={{ month_str }}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px;">Оплатить</a>
+                        {% if user.role == 'INVESTOR' %}
+                            <span class="status-debt">Не оплачено</span>
+                        {% else %}
+                            <a href="{% url 'payment_create' %}?contract={{ contract.id }}&month={{ month_str }}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px;">Оплатить</a>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>

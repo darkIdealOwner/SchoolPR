@@ -28,6 +28,16 @@ class HomeView(LoginRequiredMixin, TemplateView):
             context['total_schools'] = School.objects.count()
             context['total_investors'] = User.objects.filter(role='INVESTOR').count()
             context['total_contracts'] = Contract.objects.count()
+        elif self.request.user.role == 'DIRECTOR':
+            school = self.request.user.school
+            context['total_employees'] = User.objects.filter(school=school, role='EMPLOYEE').count()
+            context['total_contracts'] = Contract.objects.filter(school=school).count()
+        elif self.request.user.role == 'EMPLOYEE':
+            school = self.request.user.school
+            context['total_contracts'] = Contract.objects.filter(school=school).count()
+        elif self.request.user.role == 'INVESTOR':
+            context['total_contracts'] = Contract.objects.count()
+            context['total_payments'] = Payment.objects.count()
         return context
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -37,12 +47,24 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = 'authorization/password_change.html'
     success_url = reverse_lazy('profile')
 
-# User Management CRUD (Owner Only)
+# User Management CRUD (Owner Only or Director)
 class OwnerOnlyMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.role == 'OWNER'
 
-class UserListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+class OwnerOrDirectorMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.role in ['OWNER', 'DIRECTOR']
+
+class OwnerOrDirectorOrEmployeeMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.role in ['OWNER', 'DIRECTOR', 'EMPLOYEE']
+
+class OwnerOrDirectorOrEmployeeOrInvestorMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.role in ['OWNER', 'DIRECTOR', 'EMPLOYEE', 'INVESTOR']
+
+class UserListView(LoginRequiredMixin, OwnerOrDirectorMixin, ListView):
     model = User
     template_name = 'home/users/user_list.html'
     context_object_name = 'users_list'
@@ -51,6 +73,8 @@ class UserListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
     def get_queryset(self):
         from django.db.models import Q, Case, When, IntegerField
         queryset = super().get_queryset()
+        if self.request.user.role == 'DIRECTOR':
+            queryset = queryset.filter(school=self.request.user.school)
         
         # Search filter
         query = self.request.GET.get('q')
@@ -82,25 +106,44 @@ class UserListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
         
         return queryset
 
-class UserCreateView(LoginRequiredMixin, OwnerOnlyMixin, CreateView):
+class UserCreateView(LoginRequiredMixin, OwnerOrDirectorMixin, CreateView):
     model = User
     template_name = 'home/users/user_form.html'
     form_class = UserManagementForm
     success_url = reverse_lazy('user_list')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['current_user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         from django.contrib.auth.hashers import make_password
         user = form.save(commit=False)
+        if self.request.user.role == 'DIRECTOR':
+            user.school = self.request.user.school
+            user.role = 'EMPLOYEE'
         if form.cleaned_data['password']:
             user.password = make_password(form.cleaned_data['password'])
         user.save()
         return super().form_valid(form)
 
-class UserUpdateView(LoginRequiredMixin, OwnerOnlyMixin, UpdateView):
+class UserUpdateView(LoginRequiredMixin, OwnerOrDirectorMixin, UpdateView):
     model = User
     template_name = 'home/users/user_form.html'
     form_class = UserManagementForm
     success_url = reverse_lazy('user_list')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.role == 'DIRECTOR':
+            return qs.filter(school=self.request.user.school, role='EMPLOYEE') | qs.filter(id=self.request.user.id)
+        return qs
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['current_user'] = self.request.user
+        return kwargs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -110,15 +153,24 @@ class UserUpdateView(LoginRequiredMixin, OwnerOnlyMixin, UpdateView):
     def form_valid(self, form):
         from django.contrib.auth.hashers import make_password
         user = form.save(commit=False)
+        if self.request.user.role == 'DIRECTOR':
+            user.school = self.request.user.school
+            user.role = 'EMPLOYEE'
         if form.cleaned_data['password']:
             user.password = make_password(form.cleaned_data['password'])
         user.save()
         return super().form_valid(form)
 
-class UserDeleteView(LoginRequiredMixin, OwnerOnlyMixin, DeleteView):
+class UserDeleteView(LoginRequiredMixin, OwnerOrDirectorMixin, DeleteView):
     model = User
     template_name = 'home/users/user_confirm_delete.html'
     success_url = reverse_lazy('user_list')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.role == 'DIRECTOR':
+            return qs.filter(school=self.request.user.school, role='EMPLOYEE')
+        return qs
 
 # Schools Management CRUD (Owner Only)
 class SchoolListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
@@ -148,8 +200,8 @@ class SchoolDeleteView(LoginRequiredMixin, OwnerOnlyMixin, DeleteView):
     template_name = 'home/schools/school_confirm_delete.html' # We'll reuse logic but create a separate template or generic one
     success_url = reverse_lazy('school_list')
 
-# Contract Management CRUD (Owner Only)
-class ContractListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+# Contract Management CRUD (Owner, Director, Employee or Investor)
+class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, ListView):
     model = Contract
     template_name = 'home/contracts/contract_list.html'
     context_object_name = 'contracts_list'
@@ -158,6 +210,8 @@ class ContractListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
     def get_queryset(self):
         from django.db.models import Q
         queryset = super().get_queryset()
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            queryset = queryset.filter(school=self.request.user.school)
         
         # Search filter
         query = self.request.GET.get('q')
@@ -171,7 +225,7 @@ class ContractListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
         
         return queryset.order_by('-created_at')
 
-class ContractCreateView(LoginRequiredMixin, OwnerOnlyMixin, CreateView):
+class ContractCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, CreateView):
     model = Contract
     template_name = 'home/contracts/contract_form.html'
     form_class = ContractForm
@@ -189,11 +243,17 @@ class ContractCreateView(LoginRequiredMixin, OwnerOnlyMixin, CreateView):
             form.instance.school = self.request.user.school
         return super().form_valid(form)
 
-class ContractUpdateView(LoginRequiredMixin, OwnerOnlyMixin, UpdateView):
+class ContractUpdateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, UpdateView):
     model = Contract
     template_name = 'home/contracts/contract_form.html'
     form_class = ContractForm
     success_url = reverse_lazy('contract_list')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            return qs.filter(school=self.request.user.school)
+        return qs
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -205,13 +265,19 @@ class ContractUpdateView(LoginRequiredMixin, OwnerOnlyMixin, UpdateView):
         context['is_edit'] = True
         return context
 
-class ContractDeleteView(LoginRequiredMixin, OwnerOnlyMixin, DeleteView):
+class ContractDeleteView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, DeleteView):
     model = Contract
     template_name = 'home/contracts/contract_confirm_delete.html'
     success_url = reverse_lazy('contract_list')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            return qs.filter(school=self.request.user.school)
+        return qs
+
 # Payment Management
-class PaymentListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, ListView):
     model = Contract # We list contracts to show their payment status for a month
     template_name = 'home/payments/payment_list.html'
     context_object_name = 'contracts'
@@ -233,7 +299,10 @@ class PaymentListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
         last_day = calendar.monthrange(selected_month.year, selected_month.month)[1]
         end_of_month = selected_month.replace(day=last_day)
         
-        return super().get_queryset().filter(date__lte=end_of_month).order_by('-date')
+        qs = super().get_queryset()
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            qs = qs.filter(school=self.request.user.school)
+        return qs.filter(date__lte=end_of_month).order_by('-date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -313,7 +382,7 @@ def get_debt_details(contract, target_date):
         
     return max(0.0, running_balance), unpaid_months
 
-class DebtListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, ListView):
     model = Contract
     template_name = 'home/debts/debt_list.html'
     context_object_name = 'contracts'
@@ -342,8 +411,12 @@ class DebtListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
         else:
             calc_limit = target_month
             
+        contract_qs = Contract.objects.all()
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            contract_qs = contract_qs.filter(school=self.request.user.school)
+
         debtors = []
-        for contract in Contract.objects.all():
+        for contract in contract_qs:
             total_debt, unpaid_month_dates = get_debt_details(contract, calc_limit)
             if total_debt > 0.01:
                 # Format months to readable Russian strings
@@ -359,11 +432,18 @@ class DebtListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
         context['debtors'] = debtors
         return context
 
-class PaymentCreateView(LoginRequiredMixin, OwnerOnlyMixin, CreateView):
+class PaymentCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, CreateView):
     model = Payment
     form_class = PaymentForm
     template_name = 'home/payments/payment_form.html'
     success_url = reverse_lazy('payment_list')
+
+    def form_valid(self, form):
+        contract = form.cleaned_data.get('contract')
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE'] and contract.school != self.request.user.school:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("Этот договор не принадлежит вашей школе.")
+        return super().form_valid(form)
 
     def get_initial(self):
         initial = super().get_initial()

@@ -24,6 +24,7 @@ class UserManagementForm(forms.ModelForm):
         fields = ['username', 'first_name', 'phone_number', 'role', 'school']
 
     def __init__(self, *args, **kwargs):
+        current_user = kwargs.pop('current_user', None)
         super().__init__(*args, **kwargs)
         # Filter role choices to exclude OWNER for new users
         role_choices = [c for c in User.ROLE_CHOICES if c[0] != 'OWNER']
@@ -39,6 +40,16 @@ class UserManagementForm(forms.ModelForm):
             self.fields['role'].disabled = True
         else:
             self.fields['password'].required = True
+
+        # Customization for DIRECTORs
+        if current_user and current_user.role == 'DIRECTOR':
+            # Hide school field since they can only add to their own school
+            if 'school' in self.fields:
+                self.fields.pop('school')
+            # Directors can only manage EMPLOYEEs
+            self.fields['role'].choices = [('EMPLOYEE', 'Сотрудник')]
+            if not self.instance.pk:
+                self.fields['role'].initial = 'EMPLOYEE'
 
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'input-field'})
