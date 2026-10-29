@@ -126,7 +126,7 @@
     <h1 style="margin: 0;">Договоры</h1>
     
     <form class="search-form" method="get">
-        <input type="text" name="q" class="search-input" placeholder="Поиск по номеру, ФИО ученика..." value="{{ request.GET.q }}">
+        <input type="text" name="q" class="search-input" placeholder="{% if user.can_view_personal_data %}Поиск по номеру, ФИО, телефону...{% else %}Поиск по номеру, ФИО ученика...{% endif %}" value="{{ request.GET.q }}">
         <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">Найти</button>
     </form>
 
@@ -147,11 +147,13 @@
                 <th>Год рожд.</th>
                 <th>Класс</th>
                 <th>Срок (мес)</th>
+                {% if user.can_view_personal_data %}
                 <th>ФИО родителей</th>
                 <th>Паспорт</th>
                 <th>ИНПС</th>
                 <th>Адрес</th>
                 <th>Телефон</th>
+                {% endif %}
                 <th>Направление</th>
                 <th>Стоимость</th>
                 <th>Скидка %</th>
@@ -174,11 +176,13 @@
                 <td>{{ c.student_birth_year }}</td>
                 <td>{{ c.student_class }}</td>
                 <td>{{ c.duration_months }}</td>
+                {% if user.can_view_personal_data %}
                 <td>{{ c.parents_full_name }}</td>
                 <td>{{ c.passport_data }}</td>
                 <td>{{ c.inps }}</td>
                 <td>{{ c.address }}</td>
                 <td>{{ c.phone_number }}</td>
+                {% endif %}
                 <td>{{ c.specialization }}</td>
                 <td>{{ c.tuition_fee }}</td>
                 <td>{{ c.discount_percentage }}%</td>
@@ -188,6 +192,7 @@
                 <td style="text-align: center;">
                     {% if c.is_cancelled %}
                         <span class="cancelled-icon">✓</span>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">{{ c.cancelled_at|date:"d.m.Y" }}</div>
                     {% else %}
                         <span style="color: rgba(255,255,255,0.1);">○</span>
                     {% endif %}

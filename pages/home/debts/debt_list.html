@@ -110,8 +110,8 @@
             <tr>
                 <th>№ договора</th>
                 <th>Школа</th>
-                <th>Ученик / Тел.</th>
-                <th>Родитель</th>
+                <th>Ученик{% if user.can_view_personal_data %} / Тел.{% endif %}</th>
+                {% if user.can_view_personal_data %}<th>Родитель</th>{% endif %}
                 <th>Направление</th>
                 <th>Стоимость</th>
                 <th>Просрочено месяцев</th>
@@ -127,9 +127,9 @@
                 <td style="color: var(--text-muted);">{{ contract.school.name|default:"—" }}</td>
                 <td>
                     <div style="font-weight: 600;">{{ contract.student_full_name }}</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>
+                    {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>{% endif %}
                 </td>
-                <td>{{ contract.parents_full_name }}</td>
+                {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
                 <td>{{ contract.specialization }}</td>
                 <td>{{ contract.total_amount }}</td>
                 <td>

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Выплаты сотрудникам - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-table th, .user-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.875rem;
+}
+
+.user-table th {
+    background-color: rgba(255, 255, 255, 0.02);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.user-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.01);
+}
+
+.btn-add {
+    padding: 0.625rem 1.25rem;
+    background-color: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+}
+
+.btn-add:hover {
+    background-color: var(--primary-hover);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: white;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.page-link:hover {
+    border-color: var(--primary);
+    background-color: rgba(99, 102, 241, 0.1);
+}
+
+.page-info {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+    <h1 style="margin: 0;">Выплаты сотрудникам</h1>
+    {% if user.role != 'INVESTOR' %}
+    <a href="{% url 'payout_create' %}" class="btn-add">Зафиксировать выплату</a>
+    {% endif %}
+</div>
+
+<div class="table-container">
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Сотрудник</th>
+                <th>Школа</th>
+                <th>За месяц</th>
+                <th>Сумма</th>
+                <th>Дата выплаты</th>
+                <th>Примечание</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in payouts_list %}
+            <tr{% if p.is_reversed %} class="reversed-row"{% endif %}>
+                <td style="font-weight: 600;">{{ p.employee.first_name }}</td>
+                <td>{{ p.school.name }}</td>
+                <td>{{ p.for_month|date:"F Y" }}</td>
+                <td style="font-weight: 700; color: #10b981;">{{ p.amount }} сум</td>
+                <td>{{ p.payout_date|date:"d.m.Y" }}</td>
+                <td title="{{ p.notes }}">
+                    <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ p.notes|default:"—" }}
+                    </div>
+                </td>
+                <td class="reversal-info">
+                    {% if p.is_reversed %}
+                        <span style="color: #ef4444; font-size: 0.75rem;" title="{{ p.reversal_reason }}">Сторно {{ p.reversed_at|date:"d.m.Y" }}{% if p.reversed_by %} · {{ p.reversed_by.first_name }}{% endif %}</span>
+                        <div style="color: var(--text-muted); font-size: 0.7rem;">{{ p.reversal_reason }}</div>
+                    {% elif user.role == 'INVESTOR' %}
+                        <span style="color: var(--text-muted);">—</span>
+                    {% else %}
+                        <div style="display: flex; gap: 0.75rem;">
+                            <a href="{% url 'payout_edit' p.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.75rem;">Изменить</a>
+                            <a href="{% url 'payout_reverse' p.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">Сторно</a>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">Выплаты не зафиксированы.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
+    {% endif %}
+
+    <span class="page-info">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<div style="margin-top: 2rem;">
+    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Вернуться на главную</a>
+</div>
+{% endblock %}

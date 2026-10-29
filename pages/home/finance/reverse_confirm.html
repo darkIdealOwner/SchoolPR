@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Сторно записи - SchoolPR{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 480px; margin: 2rem auto;">
+    <h1 style="color: #ef4444; margin-top: 0;">Сторнировать запись?</h1>
+    <p>{{ object_verbose_name|capfirst }}: <strong>{{ object }}</strong>, сумма <strong>{{ object.amount }} сум</strong>.</p>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">
+        Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="{{ form.reason.id_for_label }}" style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem;">{{ form.reason.label }}</label>
+        {{ form.reason }}
+        {% if form.reason.errors %}
+        <div style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem;">{{ form.reason.errors|striptags }}</div>
+        {% endif %}
+        <button type="submit"
+            style="background-color: #ef4444; border: none; width: 100%; border-radius: 0.5rem; padding: 0.75rem; color: white; font-weight: 600; cursor: pointer; margin-top: 1.5rem;">Сторнировать</button>
+        <a href="{{ back_url }}"
+            style="display: block; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem; text-align: center;">Отмена</a>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+.input-field {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.625rem 1rem;
+    background-color: var(--bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: white;
+    font-family: inherit;
+}
+{% endblock %}

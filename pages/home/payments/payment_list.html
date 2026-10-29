@@ -64,7 +64,7 @@
                 <th>№ договора</th>
                 <th>Школа</th>
                 <th>Ученик</th>
-                <th>Родитель</th>
+                {% if user.can_view_personal_data %}<th>Родитель</th>{% endif %}
                 <th>Направление</th>
                 <th>Стоимость</th>
                 <th>Оплачено</th>
@@ -79,9 +79,9 @@
                 <td style="color: var(--text-muted);">{{ contract.school.name|default:"—" }}</td>
                 <td>
                     <div style="font-weight: 600;">{{ contract.student_full_name }}</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>
+                    {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>{% endif %}
                 </td>
-                <td>{{ contract.parents_full_name }}</td>
+                {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
                 <td>{{ contract.specialization }}</td>
                 <td>{{ contract.total_amount }}</td>
                 <td>{{ contract.this_month_paid }}</td>
@@ -89,20 +89,26 @@
                     {{ contract.this_month_balance }}
                 </td>
                 <td>
-                    {% if contract.payment_id %}
+                    {% if contract.this_month_balance <= 0 %}
                         <span class="status-paid">Оплачено</span>
+                    {% elif user.role == 'INVESTOR' %}
+                        <span class="status-debt">{% if contract.this_month_paid %}Частично{% else %}Не оплачено{% endif %}</span>
                     {% else %}
-                        {% if user.role == 'INVESTOR' %}
-                            <span class="status-debt">Не оплачено</span>
-                        {% else %}
-                            <a href="{% url 'payment_create' %}?contract={{ contract.id }}&month={{ month_str }}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px;">Оплатить</a>
-                        {% endif %}
+                        <a href="{% url 'payment_create' %}?contract={{ contract.id }}&month={{ month_str }}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px;">{% if contract.this_month_paid %}Доплатить{% else %}Оплатить{% endif %}</a>
                     {% endif %}
+                    {% for p in contract.month_payments %}
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; white-space: nowrap;">
+                        {{ p.payment_date|date:"d.m" }} · {{ p.amount }} · {{ p.get_method_display }}
+                        {% if user.role == 'OWNER' or user.role == 'DIRECTOR' %}
+                        · <a href="{% url 'payment_reverse' p.pk %}" style="color: #ef4444; text-decoration: none;">сторно</a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-muted);">Договоров не найдено.</td>
+                <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-muted);">Нет договоров с начислением за этот месяц.</td>
             </tr>
             {% endfor %}
         </tbody>

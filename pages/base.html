@@ -84,6 +84,36 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: var(--card-bg);
+        }
+
+        .message.success { border-color: rgba(16, 185, 129, 0.4); color: #10b981; }
+        .message.error { border-color: rgba(239, 68, 68, 0.4); color: #ef4444; }
+
+        .reversed-row td {
+            opacity: 0.45;
+            text-decoration: line-through;
+        }
+
+        .reversed-row td.reversal-info {
+            opacity: 1;
+            text-decoration: none;
+        }
+
         {% block extra_css %}{% endblock %}
         
         footer {
@@ -106,7 +136,11 @@
 <body>
     <header>
         <a href="{% url 'home' %}" class="logo">SchoolPR</a>
-        <div class="nav-actions">
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 1.5rem;">
+            {% if user.role != 'EMPLOYEE' %}
+                <a href="{% url 'payout_list' %}" class="profile-link" style="font-size: 0.9rem;">Выплаты сотрудникам</a>
+                <a href="{% url 'transaction_list' %}" class="profile-link" style="font-size: 0.9rem;">Транзакции</a>
+            {% endif %}
             <a href="{% url 'profile' %}" class="profile-link">
                 <span>{{ user.first_name }}</span>
                 <div class="profile-icon">{{ user.first_name|first|upper }}</div>
@@ -115,6 +149,13 @@
     </header>
 
     <main>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 

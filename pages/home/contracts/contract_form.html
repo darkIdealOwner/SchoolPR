@@ -87,6 +87,9 @@
             <div class="form-group {% if field.name == 'is_cancelled' %}checkbox-group{% endif %}" {% if field.name == 'notes' %}style="grid-column: 1 / -1;"{% endif %}>
                 <label for="{{ field.id_for_label }}" class="label">{{ field.label }}</label>
                 {{ field }}
+                {% if field.help_text %}
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{{ field.help_text }}</div>
+                {% endif %}
                 {% if field.errors %}
                 {{ field.errors }}
                 {% endif %}

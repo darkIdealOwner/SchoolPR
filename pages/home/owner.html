@@ -115,12 +115,14 @@
     </div>
 </div>
 
-<div class="actions-container">
+<div class="actions-container" style="flex-wrap: wrap;">
     <a href="{% url 'user_list' %}" class="btn-action">Управление пользователями</a>
     <a href="{% url 'school_list' %}" class="btn-action" style="background-color: #10b981;">Управление школами</a>
     <a href="{% url 'contract_list' %}" class="btn-action" style="background-color: #f59e0b;">Управление договорами</a>
     <a href="{% url 'payment_list' %}" class="btn-action" style="background-color: #3b82f6;">Управление выплатами</a>
     <a href="{% url 'debt_list' %}" class="btn-action" style="background-color: #ef4444;">Задолженности</a>
+    <a href="{% url 'payout_list' %}" class="btn-action" style="background-color: #8b5cf6;">Выплаты сотрудникам</a>
+    <a href="{% url 'transaction_list' %}" class="btn-action" style="background-color: #06b6d4;">Транзакции школ</a>
 </div>
 
 {% load static %}

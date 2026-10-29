@@ -1,6 +1,14 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, School, Contract, Payment
+from .models import User, School, Contract, Payment, EmployeePayout, Transaction
+
+
+class ISODateInput(forms.DateInput):
+    # <input type="date"> принимает только YYYY-MM-DD, независимо от языка интерфейса
+    input_type = 'date'
+
+    def __init__(self, attrs=None):
+        super().__init__(attrs=attrs, format='%Y-%m-%d')
 
 class PhoneAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -85,10 +93,11 @@ class ContractForm(forms.ModelForm):
             'student_class', 'duration_months', 'parents_full_name', 'passport_data',
             'inps', 'address', 'phone_number', 'specialization', 'tuition_fee',
             'discount_percentage', 'discount_amount', 'food_cost', 'total_amount',
-            'is_cancelled', 'notes'
+            'is_cancelled', 'cancelled_at', 'notes'
         ]
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
+            'date': ISODateInput(),
+            'cancelled_at': ISODateInput(),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
 
@@ -101,26 +110,113 @@ class ContractForm(forms.ModelForm):
         
         # Hide is_cancelled if creating a new contract
         if not self.instance.pk:
-            if 'is_cancelled' in self.fields:
-                self.fields.pop('is_cancelled')
+            self.fields.pop('is_cancelled', None)
+            self.fields.pop('cancelled_at', None)
+        else:
+            self.fields['cancelled_at'].help_text = "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
 
         # Hide school field for non-OWNER users
         if user and user.role != 'OWNER':
             if 'school' in self.fields:
                 self.fields.pop('school')
 
+    def clean_number(self):
+        number = self.cleaned_data.get('number')
+        qs = Contract.objects.filter(number=number)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Договор с таким номером уже существует.")
+        return number
+
+    def clean(self):
+        cleaned = super().clean()
+        cancelled_at = cleaned.get('cancelled_at')
+        start = cleaned.get('date')
+        if cleaned.get('is_cancelled') and cancelled_at and start and cancelled_at < start:
+            self.add_error('cancelled_at', "Дата отмены не может быть раньше даты договора.")
+        return cleaned
+
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['amount', 'notes', 'contract', 'for_month', 'payment_date']
+        fields = ['amount', 'method', 'payment_date', 'notes', 'contract', 'for_month']
         widgets = {
             'contract': forms.HiddenInput(),
             'for_month': forms.HiddenInput(),
-            'payment_date': forms.HiddenInput(),
+            'payment_date': ISODateInput(),
             'notes': forms.Textarea(attrs={'rows': 2}),
         }
 
     def __init__(self, *args, **kwargs):
+        contract_queryset = kwargs.pop('contract_queryset', None)
+        super().__init__(*args, **kwargs)
+        if contract_queryset is not None:
+            self.fields['contract'].queryset = contract_queryset
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input-field'})
+
+    def clean_for_month(self):
+        return self.cleaned_data['for_month'].replace(day=1)
+
+    def clean_amount(self):
+        amount = self.cleaned_data['amount']
+        if amount <= 0:
+            raise forms.ValidationError("Сумма оплаты должна быть больше нуля.")
+        return amount
+
+class EmployeePayoutForm(forms.ModelForm):
+    class Meta:
+        model = EmployeePayout
+        fields = ['employee', 'school', 'for_month', 'amount', 'payout_date', 'notes']
+        widgets = {
+            'for_month': ISODateInput(),
+            'payout_date': ISODateInput(),
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'input-field'})
+        
+        # Hide school field for non-OWNER users
+        if user and user.role != 'OWNER':
+            if 'school' in self.fields:
+                self.fields.pop('school')
+                
+        # Filter employee choices to those in user's school and only role EMPLOYEE
+        if user:
+            employee_qs = User.objects.filter(role='EMPLOYEE')
+            if user.role != 'OWNER':
+                employee_qs = employee_qs.filter(school=user.school)
+            self.fields['employee'].queryset = employee_qs
+
+class TransactionForm(forms.ModelForm):
+    class Meta:
+        model = Transaction
+        fields = ['school', 'type', 'category', 'amount', 'date', 'notes']
+        widgets = {
+            'date': ISODateInput(),
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input-field'})
+
+        # Hide school field for non-OWNER users
+        if user and user.role != 'OWNER':
+            if 'school' in self.fields:
+                self.fields.pop('school')
+
+
+class ReversalForm(forms.Form):
+    reason = forms.CharField(
+        label="Причина сторно",
+        max_length=255,
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'input-field', 'placeholder': 'Например: ошибка в сумме, оплата внесена дважды'}),
+    )

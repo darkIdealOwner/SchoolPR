@@ -4,31 +4,32 @@
 
 {% block extra_css %}
 .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 2rem;
+margin-top: 2rem;
 }
 
 .invest-card {
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-    padding: 2rem;
-    border-radius: 1.5rem;
-    color: white;
+background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+padding: 2rem;
+border-radius: 1.5rem;
+color: white;
 }
 
 .data-card {
-    background-color: var(--card-bg);
-    padding: 2rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+background-color: var(--card-bg);
+padding: 2rem;
+border-radius: 1rem;
+border: 1px solid rgba(255, 255, 255, 0.1);
 }
 {% endblock %}
 
 {% block content %}
 <div class="welcome-section">
     <h1 style="font-size: 2.25rem;">Привет, {{ user.first_name }}! 👋</h1>
-    <p style="color: var(--text-muted); margin-top: 0.5rem;">Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям.</p>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;">Ваш инвестиционный обзор в SchoolPR. Здесь отображаются
+        сводные показатели по всем подразделениям.</p>
 </div>
 
 <div class="stats-grid">
@@ -36,16 +37,27 @@
         <div style="font-size: 0.875rem; opacity: 0.8; margin-bottom: 0.5rem;">Активных договоров</div>
         <div style="font-size: 2.5rem; font-weight: 700;">{{ total_contracts }}</div>
     </div>
-    
+
     <div class="data-card" style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Всего выплат зафиксировано</div>
+        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Всего выплат зафиксировано
+        </div>
         <div style="font-size: 2.5rem; font-weight: 700; color: #10b981;">{{ total_payments }}</div>
     </div>
 </div>
 
 <div style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-    <a href="{% url 'contract_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #f59e0b;">Просмотр договоров</a>
-    <a href="{% url 'payment_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #3b82f6;">Просмотр выплат</a>
-    <a href="{% url 'debt_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #ef4444;">Задолженности</a>
+    <a href="{% url 'contract_list' %}" class="btn-action"
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #f59e0b;">Просмотр
+        договоров</a>
+    <a href="{% url 'payment_list' %}" class="btn-action"
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #3b82f6;">Просмотр
+        выплат</a>
+    <a href="{% url 'debt_list' %}" class="btn-action"
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #ef4444;">Задолженности</a>
+    <a href="{% url 'payout_list' %}" class="btn-action"
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #8b5cf6;">Выплаты
+        сотрудникам</a>
+    <a href="{% url 'transaction_list' %}" class="btn-action"
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #10b981;">Транзакции</a>
 </div>
 {% endblock %}
