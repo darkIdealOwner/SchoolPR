@@ -158,6 +158,12 @@
                 <span>{{ user.first_name }}</span>
                 <div class="profile-icon">{{ user.first_name|first|upper }}</div>
             </a>
+            {% if user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="profile-link" style="background: none; border: none; cursor: pointer; font: inherit; font-size: 0.9rem; color: var(--text-muted); padding: 0;">Выйти</button>
+            </form>
+            {% endif %}
         </div>
     </header>
 
