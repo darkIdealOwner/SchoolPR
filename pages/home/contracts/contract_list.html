@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load money %}
 
 {% block title %}Управление договорами - SchoolPR{% endblock %}
 
@@ -130,9 +131,12 @@
         <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">Найти</button>
     </form>
 
-    {% if user.role != 'INVESTOR' %}
-    <a href="{% url 'contract_add' %}" class="btn-add">Создать договор</a>
-    {% endif %}
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}export=csv" class="btn-excel" title="Скачать таблицу для Excel">⬇ Excel</a>
+        {% if user.role != 'INVESTOR' %}
+        <a href="{% url 'contract_add' %}" class="btn-add">Создать договор</a>
+        {% endif %}
+    </div>
 </div>
 
 <div class="table-container">
@@ -168,11 +172,11 @@
         <tbody>
             {% for c in contracts_list %}
             <tr>
-                <td style="font-weight: 600;">{{ c.number }}</td>
+                <td style="font-weight: 600;"><a href="{% url 'contract_detail' c.pk %}" style="color: var(--primary); text-decoration: none;">{{ c.number }}</a></td>
                 <td>{{ c.school.name|default:"—" }}</td>
                 <td>{{ c.date|date:"d.m.Y" }}</td>
                 <td>{{ c.month }}</td>
-                <td>{{ c.student_full_name }}</td>
+                <td><a href="{% url 'contract_detail' c.pk %}" style="color: var(--text); text-decoration: none;">{{ c.student_full_name }}</a></td>
                 <td>{{ c.student_birth_year }}</td>
                 <td>{{ c.student_class }}</td>
                 <td>{{ c.duration_months }}</td>
@@ -184,11 +188,11 @@
                 <td>{{ c.phone_number }}</td>
                 {% endif %}
                 <td>{{ c.specialization }}</td>
-                <td>{{ c.tuition_fee }}</td>
+                <td>{{ c.tuition_fee|money }}</td>
                 <td>{{ c.discount_percentage }}%</td>
-                <td>{{ c.discount_amount }}</td>
-                <td>{{ c.food_cost }}</td>
-                <td style="font-weight: 700; color: var(--accent);">{{ c.total_amount }}</td>
+                <td>{{ c.discount_amount|money }}</td>
+                <td>{{ c.food_cost|money }}</td>
+                <td style="font-weight: 700; color: var(--accent);">{{ c.total_amount|money }}</td>
                 <td style="text-align: center;">
                     {% if c.is_cancelled %}
                         <span class="cancelled-icon">✓</span>

@@ -57,6 +57,10 @@
     </div>
 </div>
 
+{% if overview %}
+{% include 'home/partials/finance_overview.html' with show_debtors=True %}
+{% endif %}
+
 <div style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
     <a href="{% url 'contract_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #f59e0b;">Управление договорами</a>
     <a href="{% url 'payment_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #3b82f6;">Управление выплатами</a>

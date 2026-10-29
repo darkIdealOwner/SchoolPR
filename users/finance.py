@@ -1,0 +1,277 @@
+"""Финансовые расчёты платформы: начисления, долги, сводки для дашбордов.
+
+Всё, что считает деньги, живёт здесь, чтобы страницы, экспорт и будущая
+синхронизация с 1С опирались на одни и те же правила.
+"""
+from collections import defaultdict
+from datetime import datetime
+from decimal import Decimal
+
+from django.db.models import Prefetch
+from django.utils import timezone
+
+from .models import Contract, Payment, EmployeePayout, Transaction, School, shift_month
+
+ZERO = Decimal(0)
+
+RUSSIAN_MONTHS = {
+    1: 'Январь', 2: 'Февраль', 3: 'Март', 4: 'Апрель',
+    5: 'Май', 6: 'Июнь', 7: 'Июль', 8: 'Август',
+    9: 'Сентябрь', 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'
+}
+
+RUSSIAN_MONTHS_SHORT = {
+    1: 'янв', 2: 'фев', 3: 'мар', 4: 'апр', 5: 'май', 6: 'июн',
+    7: 'июл', 8: 'авг', 9: 'сен', 10: 'окт', 11: 'ноя', 12: 'дек'
+}
+
+
+def format_russian_month(d):
+    return f"{RUSSIAN_MONTHS[d.month]} {d.year}"
+
+
+def format_short_month(d):
+    return f"{RUSSIAN_MONTHS_SHORT[d.month]} {d.strftime('%y')}"
+
+
+def current_month():
+    return timezone.localdate().replace(day=1)
+
+
+def parse_month(month_str):
+    """'YYYY-MM' -> дата 1-го числа месяца; при ошибке — текущий месяц."""
+    try:
+        return datetime.strptime(month_str, '%Y-%m').date()
+    except (TypeError, ValueError):
+        return current_month()
+
+
+def contracts_with_active_payments(queryset):
+    return queryset.select_related('school').prefetch_related(
+        Prefetch('payments', queryset=Payment.active.order_by('payment_date'))
+    )
+
+
+def billing_months(contract, until=None):
+    """Месяцы начислений по договору (1-е числа), не позже until."""
+    start = contract.first_billing_month
+    last = contract.last_billing_month
+    if last is None:
+        return []
+    if until is not None:
+        last = min(last, until)
+    months = []
+    curr = start
+    while curr <= last:
+        months.append(curr)
+        curr = shift_month(curr, 1)
+    return months
+
+
+def paid_by_month(contract):
+    """Сумма действующих оплат по месяцам начисления. Нужен prefetch активных оплат."""
+    result = defaultdict(Decimal)
+    for p in contract.payments.all():
+        if not p.is_reversed:
+            result[p.for_month.replace(day=1)] += p.amount
+    return result
+
+
+def get_debt_details(contract, target_date):
+    """Долг по договору на месяц target_date включительно и список неоплаченных месяцев.
+
+    Начисления идут только в пределах срока договора и до месяца отмены.
+    Сторнированные оплаты не учитываются.
+    """
+    target_first = target_date.replace(day=1)
+    payment_map = paid_by_month(contract)
+
+    unpaid_months = []
+    running_balance = ZERO
+    for month in billing_months(contract, until=target_first):
+        running_balance += contract.total_amount - payment_map[month]
+        if running_balance > Decimal('0.01'):
+            unpaid_months.append(month)
+
+    return max(ZERO, running_balance), unpaid_months
+
+
+def contract_schedule(contract, until=None):
+    """График по договору: начислено / оплачено / остаток по каждому месяцу и нарастающий долг."""
+    until = until or current_month()
+    payment_map = paid_by_month(contract)
+    payments_by_month = defaultdict(list)
+    for p in contract.payments.all():
+        payments_by_month[p.for_month.replace(day=1)].append(p)
+
+    rows = []
+    running = ZERO
+    for month in billing_months(contract):
+        paid = payment_map[month]
+        is_due = month <= until
+        if is_due:
+            running += contract.total_amount - paid
+        balance = contract.total_amount - paid
+        if balance <= 0:
+            status = 'paid'
+        elif paid > 0:
+            status = 'partial'
+        elif is_due:
+            status = 'debt'
+        else:
+            status = 'upcoming'
+        rows.append({
+            'month': month,
+            'label': format_russian_month(month),
+            'month_str': month.strftime('%Y-%m'),
+            'accrued': contract.total_amount,
+            'paid': paid,
+            'balance': max(balance, ZERO),
+            'status': status,
+            'running_debt': max(running, ZERO),
+            'payments': payments_by_month[month],
+        })
+    return rows
+
+
+def _empty_metrics():
+    return {
+        'accrued': ZERO,       # начислено за обучение и питание
+        'collected': ZERO,     # получено оплат от родителей (по дате оплаты)
+        'payouts': ZERO,       # выплаты сотрудникам
+        'expenses': ZERO,      # прочие расходы
+        'other_income': ZERO,  # прочие поступления и инвестиции
+    }
+
+
+def _finish(metrics):
+    metrics['spent'] = metrics['payouts'] + metrics['expenses']
+    # Операционный результат: оплаты родителей минус зарплаты и расходы (инвестиции не доход)
+    metrics['result'] = metrics['collected'] - metrics['spent']
+    # Денежный поток: всё, что пришло, минус всё, что ушло
+    metrics['cash_flow'] = metrics['result'] + metrics['other_income']
+    return metrics
+
+
+def build_overview(school=None, months=12, today=None):
+    """Сводка для дашбордов: помесячная динамика, текущий месяц, долги, разбивка по школам."""
+    today = today or timezone.localdate()
+    current = today.replace(day=1)
+    month_list = [shift_month(current, -i) for i in range(months - 1, -1, -1)]
+    period_start = month_list[0]
+    period_end = shift_month(current, 1)
+
+    contracts = Contract.objects.all()
+    payments = Payment.active.filter(payment_date__gte=period_start, payment_date__lt=period_end)
+    payouts = EmployeePayout.active.filter(payout_date__gte=period_start, payout_date__lt=period_end)
+    transactions = Transaction.active.filter(date__gte=period_start, date__lt=period_end)
+    if school is not None:
+        contracts = contracts.filter(school=school)
+        payments = payments.filter(contract__school=school)
+        payouts = payouts.filter(school=school)
+        transactions = transactions.filter(school=school)
+
+    # (school_id, month) -> метрики
+    cells = defaultdict(_empty_metrics)
+    per_school = defaultdict(lambda: {
+        'debt': ZERO, 'debtors': 0, 'active_contracts': 0,
+        'accrued_current': ZERO, 'paid_for_current': ZERO,
+    })
+    debtors = []
+
+    for contract in contracts_with_active_payments(contracts):
+        sid = contract.school_id
+        payment_map = paid_by_month(contract)
+        for month in billing_months(contract, until=current):
+            if month >= period_start:
+                cells[(sid, month)]['accrued'] += contract.total_amount
+        info = per_school[sid]
+        if contract.is_billable_in(current):
+            info['active_contracts'] += 1
+            info['accrued_current'] += contract.total_amount
+            info['paid_for_current'] += min(payment_map[current], contract.total_amount)
+        debt, unpaid = get_debt_details(contract, current)
+        if debt > Decimal('0.01'):
+            info['debt'] += debt
+            info['debtors'] += 1
+            contract.total_debt = debt
+            contract.unpaid_count = len(unpaid)
+            debtors.append(contract)
+
+    for p in payments.select_related('contract'):
+        cells[(p.contract.school_id, p.payment_date.replace(day=1))]['collected'] += p.amount
+    for p in payouts:
+        cells[(p.school_id, p.payout_date.replace(day=1))]['payouts'] += p.amount
+    for t in transactions:
+        key = 'other_income' if t.type == 'INCOME' else 'expenses'
+        cells[(t.school_id, t.date.replace(day=1))][key] += t.amount
+
+    series = []
+    for month in month_list:
+        m = _empty_metrics()
+        for (sid, cell_month), values in cells.items():
+            if cell_month == month:
+                for k, v in values.items():
+                    m[k] += v
+        m = _finish(m)
+        m['month'] = month
+        m['label'] = format_short_month(month)
+        series.append(m)
+
+    period_totals = _finish({k: sum((row[k] for row in series), ZERO) for k in _empty_metrics()})
+
+    school_ids = set(per_school) | {sid for sid, _ in cells}
+    schools_by_id = School.objects.in_bulk([sid for sid in school_ids if sid is not None])
+    school_rows = []
+    for sid in school_ids:
+        m = _empty_metrics()
+        for k in m:
+            m[k] = cells[(sid, current)][k] if (sid, current) in cells else ZERO
+        m = _finish(m)
+        info = per_school[sid]
+        m.update(info)
+        m['school'] = schools_by_id.get(sid)
+        m['name'] = m['school'].name if m['school'] else 'Без школы'
+        m['collection_rate'] = _rate(info['paid_for_current'], info['accrued_current'])
+        school_rows.append(m)
+    school_rows.sort(key=lambda r: r['name'])
+
+    totals = {
+        'debt': sum((r['debt'] for r in school_rows), ZERO),
+        'debtors': sum(r['debtors'] for r in school_rows),
+        'active_contracts': sum(r['active_contracts'] for r in school_rows),
+        'accrued_current': sum((r['accrued_current'] for r in school_rows), ZERO),
+        'paid_for_current': sum((r['paid_for_current'] for r in school_rows), ZERO),
+    }
+    totals['collection_rate'] = _rate(totals['paid_for_current'], totals['accrued_current'])
+
+    debtors.sort(key=lambda c: c.total_debt, reverse=True)
+
+    return {
+        'current_month': current,
+        'current_label': format_russian_month(current),
+        'current': series[-1],
+        'previous': series[-2] if len(series) > 1 else None,
+        'series': series,
+        'period_totals': period_totals,
+        'period_label': f"{format_short_month(period_start)} — {format_short_month(current)}",
+        'schools': school_rows,
+        'totals': totals,
+        'top_debtors': debtors[:10],
+    }
+
+
+def _rate(part, whole):
+    if not whole:
+        return None
+    return int(round(part * 100 / whole))
+
+
+def chart_payload(series):
+    """Данные для графика на странице (числа как float, JSON-совместимо)."""
+    return {
+        'labels': [row['label'] for row in series],
+        'accrued': [float(row['accrued']) for row in series],
+        'collected': [float(row['collected']) for row in series],
+        'spent': [float(row['spent']) for row in series],
+    }

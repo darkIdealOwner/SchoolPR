@@ -4,7 +4,7 @@ from .views import (
     CustomLoginView, HomeView, ProfileView, CustomPasswordChangeView,
     UserListView, UserCreateView, UserUpdateView, UserDeleteView,
     SchoolListView, SchoolCreateView, SchoolUpdateView, SchoolDeleteView,
-    ContractListView, ContractCreateView, ContractUpdateView, ContractDeleteView,
+    ContractListView, ContractDetailView, ContractCreateView, ContractUpdateView, ContractDeleteView,
     PaymentListView, PaymentCreateView, PaymentReverseView, DebtListView,
     EmployeePayoutListView, EmployeePayoutCreateView, EmployeePayoutUpdateView, EmployeePayoutReverseView,
     TransactionListView, TransactionCreateView, TransactionUpdateView, TransactionReverseView
@@ -29,6 +29,7 @@ urlpatterns = [
  
     path('contracts/', ContractListView.as_view(), name='contract_list'),
     path('contracts/add/', ContractCreateView.as_view(), name='contract_add'),
+    path('contracts/<int:pk>/', ContractDetailView.as_view(), name='contract_detail'),
     path('contracts/<int:pk>/edit/', ContractUpdateView.as_view(), name='contract_edit'),
     path('contracts/<int:pk>/delete/', ContractDeleteView.as_view(), name='contract_delete'),
 

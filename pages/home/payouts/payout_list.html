@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load money %}
 
 {% block title %}Выплаты сотрудникам - SchoolPR{% endblock %}
 
@@ -96,9 +97,12 @@
 {% block content %}
 <div class="toolbar">
     <h1 style="margin: 0;">Выплаты сотрудникам</h1>
-    {% if user.role != 'INVESTOR' %}
-    <a href="{% url 'payout_create' %}" class="btn-add">Зафиксировать выплату</a>
-    {% endif %}
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}export=csv" class="btn-excel" title="Скачать таблицу для Excel">⬇ Excel</a>
+        {% if user.role != 'INVESTOR' %}
+        <a href="{% url 'payout_create' %}" class="btn-add">Зафиксировать выплату</a>
+        {% endif %}
+    </div>
 </div>
 
 <div class="table-container">
@@ -120,7 +124,7 @@
                 <td style="font-weight: 600;">{{ p.employee.first_name }}</td>
                 <td>{{ p.school.name }}</td>
                 <td>{{ p.for_month|date:"F Y" }}</td>
-                <td style="font-weight: 700; color: #10b981;">{{ p.amount }} сум</td>
+                <td style="font-weight: 700; color: #10b981;">{{ p.amount|money }} сум</td>
                 <td>{{ p.payout_date|date:"d.m.Y" }}</td>
                 <td title="{{ p.notes }}">
                     <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">

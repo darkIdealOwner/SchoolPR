@@ -32,18 +32,7 @@ border: 1px solid rgba(255, 255, 255, 0.1);
         сводные показатели по всем подразделениям.</p>
 </div>
 
-<div class="stats-grid">
-    <div class="invest-card">
-        <div style="font-size: 0.875rem; opacity: 0.8; margin-bottom: 0.5rem;">Активных договоров</div>
-        <div style="font-size: 2.5rem; font-weight: 700;">{{ total_contracts }}</div>
-    </div>
-
-    <div class="data-card" style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Всего выплат зафиксировано
-        </div>
-        <div style="font-size: 2.5rem; font-weight: 700; color: #10b981;">{{ total_payments }}</div>
-    </div>
-</div>
+{% include 'home/partials/finance_overview.html' with show_spending=True show_schools=True show_period=True %}
 
 <div style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
     <a href="{% url 'contract_list' %}" class="btn-action"

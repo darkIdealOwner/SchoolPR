@@ -115,7 +115,10 @@
     </div>
 </div>
 
-<div class="actions-container" style="flex-wrap: wrap;">
+{% include 'home/partials/finance_overview.html' with show_spending=True show_schools=True show_debtors=True %}
+
+<h2 style="font-size: 1.125rem; margin: 2.5rem 0 0 0; font-weight: 600;">Разделы</h2>
+<div class="actions-container" style="flex-wrap: wrap; margin-top: 1rem;">
     <a href="{% url 'user_list' %}" class="btn-action">Управление пользователями</a>
     <a href="{% url 'school_list' %}" class="btn-action" style="background-color: #10b981;">Управление школами</a>
     <a href="{% url 'contract_list' %}" class="btn-action" style="background-color: #f59e0b;">Управление договорами</a>

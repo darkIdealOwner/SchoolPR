@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load money %}
 
 {% block title %}Сторно записи - SchoolPR{% endblock %}
 
 {% block content %}
 <div class="card" style="max-width: 480px; margin: 2rem auto;">
     <h1 style="color: #ef4444; margin-top: 0;">Сторнировать запись?</h1>
-    <p>{{ object_verbose_name|capfirst }}: <strong>{{ object }}</strong>, сумма <strong>{{ object.amount }} сум</strong>.</p>
+    <p>{{ object_verbose_name|capfirst }}: <strong>{{ object }}</strong>, сумма <strong>{{ object.amount|money }} сум</strong>.</p>
     <p style="color: var(--text-muted); font-size: 0.875rem;">
         Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах.
     </p>

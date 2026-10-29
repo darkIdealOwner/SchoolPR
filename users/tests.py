@@ -260,3 +260,107 @@ class FinanceViewsTestCase(TestCase):
         self.assertNotContains(response, "F-1")
         response = self.client_for(self.owner).get(reverse('payment_list') + '?month=2026-06')
         self.assertContains(response, "F-1")
+
+
+from users.finance import build_overview, contract_schedule, contracts_with_active_payments
+from users.templatetags.money import money
+
+
+class OverviewTestCase(TestCase):
+    def setUp(self):
+        self.school = School.objects.create(name="A")
+        self.other = School.objects.create(name="B")
+        self.user = User.objects.create_user(username="t_ov", phone_number="+998900000020", password="x", role="OWNER")
+        # 3 месяца по 1000, оплачен только первый
+        self.contract = Contract.objects.create(number="O-1", user=self.user, school=self.school,
+                                                date=date(2026, 8, 5), duration_months=12, tuition_fee=Decimal(1000))
+        Payment.objects.create(contract=self.contract, for_month=date(2026, 8, 1), amount=Decimal(1000), payment_date=date(2026, 8, 10))
+        Payment.objects.create(contract=self.contract, for_month=date(2026, 10, 1), amount=Decimal(400), payment_date=date(2026, 10, 3))
+        reversed_payment = Payment.objects.create(contract=self.contract, for_month=date(2026, 9, 1), amount=Decimal(1000), payment_date=date(2026, 9, 3))
+        reversed_payment.reverse(self.user, "ошибка")
+        EmployeePayout.objects.create(employee=User.objects.create_user(username="t_e2", phone_number="+998900000021", password="x", role="EMPLOYEE"),
+                                      school=self.school, for_month=date(2026, 10, 1), amount=Decimal(300), payout_date=date(2026, 10, 5))
+        Transaction.objects.create(school=self.school, type='EXPENSE', amount=Decimal(50), date=date(2026, 10, 7))
+        Transaction.objects.create(school=self.other, type='INCOME', amount=Decimal(5000), date=date(2026, 10, 8))
+
+    def test_network_overview(self):
+        o = build_overview(today=date(2026, 10, 20))
+        self.assertEqual(o['current']['collected'], Decimal(400))
+        self.assertEqual(o['current']['accrued'], Decimal(1000))
+        self.assertEqual(o['current']['spent'], Decimal(350))
+        self.assertEqual(o['current']['result'], Decimal(50))
+        self.assertEqual(o['current']['other_income'], Decimal(5000))
+        self.assertEqual(o['totals']['debt'], Decimal(1600))  # сентябрь 1000 + октябрь 600
+        self.assertEqual(o['totals']['collection_rate'], 40)
+        self.assertEqual(o['period_totals']['collected'], Decimal(1400))
+        self.assertEqual(len(o['series']), 12)
+        self.assertEqual({r['name'] for r in o['schools']}, {"A", "B"})
+
+    def test_school_overview_is_scoped(self):
+        o = build_overview(school=self.other, today=date(2026, 10, 20))
+        self.assertEqual(o['totals']['debt'], Decimal(0))
+        self.assertEqual(o['current']['collected'], Decimal(0))
+        self.assertEqual(o['current']['other_income'], Decimal(5000))
+
+    def test_contract_schedule_statuses(self):
+        contract = contracts_with_active_payments(Contract.objects.filter(pk=self.contract.pk)).get()
+        rows = contract_schedule(contract, until=date(2026, 10, 1))
+        self.assertEqual(len(rows), 12)
+        self.assertEqual([r['status'] for r in rows[:4]], ['paid', 'debt', 'partial', 'upcoming'])
+        self.assertEqual(rows[2]['running_debt'], Decimal(1600))
+
+    def test_money_filter(self):
+        self.assertEqual(money(Decimal('2027000.00')), '2 027 000')
+        self.assertEqual(money(Decimal('1234.5')), '1 234,50')
+        self.assertEqual(money(Decimal('-500')), '−500')
+        self.assertEqual(money(None), '—')
+
+
+class CardAndExportTestCase(TestCase):
+    def setUp(self):
+        self.school = School.objects.create(name="S")
+        self.director = User.objects.create_user(username="t_d3", phone_number="+998900000030", password="x", role="DIRECTOR", school=self.school)
+        self.investor = User.objects.create_user(username="t_i3", phone_number="+998900000031", password="x", role="INVESTOR")
+        self.foreign_director = User.objects.create_user(username="t_d4", phone_number="+998900000032", password="x",
+                                                         role="DIRECTOR", school=School.objects.create(name="Other"))
+        self.contract = Contract.objects.create(number="K-1", user=self.director, school=self.school, date=date(2026, 1, 1),
+                                                student_full_name="Ученик Карточкин", passport_data="AC1112233", tuition_fee=Decimal(100))
+
+    def get(self, user, url):
+        client = Client()
+        client.force_login(user)
+        return client.get(url)
+
+    def test_card_shows_schedule_and_hides_pii_for_investor(self):
+        url = reverse('contract_detail', args=[self.contract.pk])
+        response = self.get(self.director, url)
+        self.assertContains(response, "График оплат")
+        self.assertContains(response, "AC1112233")
+        response = self.get(self.investor, url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "AC1112233")
+        self.assertEqual(self.get(self.foreign_director, url).status_code, 404)
+
+    def test_csv_export(self):
+        response = self.get(self.director, reverse('contract_list') + '?export=csv')
+        self.assertEqual(response['Content-Type'], 'text/csv; charset=utf-8')
+        body = response.content.decode('utf-8')
+        self.assertTrue(body.startswith('﻿'))
+        self.assertIn('AC1112233', body)
+        self.assertIn('100,00', body)
+        investor_body = self.get(self.investor, reverse('contract_list') + '?export=csv').content.decode('utf-8')
+        self.assertIn('Ученик Карточкин', investor_body)
+        self.assertNotIn('AC1112233', investor_body)
+        for name in ['debt_list', 'payment_list', 'payout_list', 'transaction_list']:
+            self.assertEqual(self.get(self.director, reverse(name) + '?export=csv').status_code, 200, name)
+
+    def test_dashboards_render_for_all_roles(self):
+        employee = User.objects.create_user(username="t_e3", phone_number="+998900000033", password="x", role="EMPLOYEE", school=self.school)
+        owner = User.objects.create_user(username="t_o3", phone_number="+998900000034", password="x", role="OWNER")
+        for user in [owner, self.director, employee, self.investor]:
+            response = self.get(user, reverse('home'))
+            self.assertEqual(response.status_code, 200, user.role)
+            self.assertContains(response, "finance-chart")
+        # Инвестор не видит имён должников
+        self.assertNotContains(self.get(self.investor, reverse('home')), "Ученик Карточкин")
+        self.assertContains(self.get(self.director, reverse('home')), "Ученик Карточкин")

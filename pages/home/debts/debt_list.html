@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load money %}
 
 {% block title %}Задолженности - SchoolPR{% endblock %}
 
@@ -89,6 +90,7 @@
     </div>
     
     <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <a href="?mode={{ view_mode }}&month={{ month_str }}&export=csv" class="btn-excel" title="Скачать таблицу для Excel">⬇ Excel</a>
         <div class="mode-tabs">
             <a href="?mode=general" class="mode-tab {% if view_mode == 'general' %}active{% endif %}">Общий долг</a>
             <a href="?mode=monthly&month={{ month_str }}" class="mode-tab {% if view_mode == 'monthly' %}active{% endif %}">По месяцам</a>
@@ -126,12 +128,12 @@
                 <td>{{ contract.number }}</td>
                 <td style="color: var(--text-muted);">{{ contract.school.name|default:"—" }}</td>
                 <td>
-                    <div style="font-weight: 600;">{{ contract.student_full_name }}</div>
+                    <a href="{% url 'contract_detail' contract.pk %}" style="font-weight: 600; color: var(--text); text-decoration: none;">{{ contract.student_full_name }}</a>
                     {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>{% endif %}
                 </td>
                 {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
                 <td>{{ contract.specialization }}</td>
-                <td>{{ contract.total_amount }}</td>
+                <td>{{ contract.total_amount|money }}</td>
                 <td>
                     <span class="status-badge">{{ contract.unpaid_count }} мес.</span>
                 </td>
@@ -139,10 +141,10 @@
                     {{ contract.unpaid_months|join:", " }}
                 </td>
                 <td style="color: #ef4444; font-weight: 600;">
-                    {{ contract.total_debt }}
+                    {{ contract.total_debt|money }}
                 </td>
                 <td>
-                    <a href="{% url 'payment_list' %}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px;">К выплатам</a>
+                    <a href="{% url 'contract_detail' contract.pk %}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px; white-space: nowrap;">Карточка</a>
                 </td>
             </tr>
             {% empty %}

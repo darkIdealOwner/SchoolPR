@@ -1,0 +1,228 @@
+{% load money %}
+{% comment %}
+Финансовая сводка для главных страниц.
+Параметры include: show_spending (зарплаты/расходы/результат), show_schools (таблица по школам),
+show_debtors (список должников с именами), show_period (итоги за 12 месяцев).
+{% endcomment %}
+<style>
+.fin-section { margin-top: 2.5rem; }
+.fin-section h2 { font-size: 1.125rem; margin: 0 0 1rem 0; font-weight: 600; }
+.fin-section .fin-sub { color: var(--text-muted); font-size: 0.8125rem; font-weight: 400; margin-left: 0.5rem; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.kpi { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.kpi-label { font-size: 0.8125rem; color: var(--text-muted); }
+.kpi-value { font-size: 1.5rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.kpi-value small { font-size: 0.875rem; font-weight: 500; color: var(--text-muted); }
+.kpi-note { font-size: 0.75rem; color: var(--text-muted); }
+.kpi-note .up { color: #10b981; }
+.kpi-note .down { color: #f87171; }
+.kpi.alert .kpi-value { color: #f87171; }
+.chart-card { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; }
+.chart-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+.chart-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.chart-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+.chart-legend i.line { height: 2px; border-radius: 0; }
+.chart-box { position: relative; height: 280px; }
+.fin-table-wrap { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.fin-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.fin-table th, .fin-table td { padding: 0.75rem 1rem; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05); white-space: nowrap; }
+.fin-table th:first-child, .fin-table td:first-child { text-align: left; }
+.fin-table th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; background: rgba(255,255,255,0.02); }
+.fin-table tfoot td { font-weight: 700; }
+.fin-table a { color: var(--text); text-decoration: none; }
+.fin-table a:hover { color: var(--primary); }
+.neg { color: #f87171; }
+.pos { color: #10b981; }
+</style>
+
+<div class="fin-section">
+    <h2>Финансы за {{ overview.current_label }}</h2>
+    <div class="kpi-grid">
+        <div class="kpi">
+            <span class="kpi-label">Собрано оплат</span>
+            <span class="kpi-value">{{ overview.current.collected|money }} <small>сум</small></span>
+            {% if overview.previous %}
+            <span class="kpi-note">Прошлый месяц: {{ overview.previous.collected|money }}</span>
+            {% endif %}
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Собираемость за месяц</span>
+            <span class="kpi-value">{{ overview.totals.collection_rate|percent }}</span>
+            <span class="kpi-note">Оплачено {{ overview.totals.paid_for_current|money }} из {{ overview.totals.accrued_current|money }}</span>
+        </div>
+        <div class="kpi {% if overview.totals.debt %}alert{% endif %}">
+            <span class="kpi-label">Общий долг учеников</span>
+            <span class="kpi-value">{{ overview.totals.debt|money }} <small>сум</small></span>
+            <span class="kpi-note">Должников: {{ overview.totals.debtors }} · <a href="{% url 'debt_list' %}" style="color: inherit;">подробнее</a></span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Активных договоров</span>
+            <span class="kpi-value">{{ overview.totals.active_contracts }}</span>
+            <span class="kpi-note">С начислением в этом месяце</span>
+        </div>
+        {% if show_spending %}
+        <div class="kpi">
+            <span class="kpi-label">Зарплаты и расходы</span>
+            <span class="kpi-value">{{ overview.current.spent|money }} <small>сум</small></span>
+            <span class="kpi-note">Зарплаты {{ overview.current.payouts|money }} · прочее {{ overview.current.expenses|money }}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Результат месяца</span>
+            <span class="kpi-value {% if overview.current.result < 0 %}neg{% endif %}">{{ overview.current.result|money }} <small>сум</small></span>
+            <span class="kpi-note">Оплаты минус зарплаты и расходы</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if show_period %}
+<div class="fin-section">
+    <h2>Итоги за 12 месяцев <span class="fin-sub">{{ overview.period_label }}</span></h2>
+    <div class="kpi-grid">
+        <div class="kpi">
+            <span class="kpi-label">Собрано оплат</span>
+            <span class="kpi-value">{{ overview.period_totals.collected|money }} <small>сум</small></span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Зарплаты и расходы</span>
+            <span class="kpi-value">{{ overview.period_totals.spent|money }} <small>сум</small></span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Операционный результат</span>
+            <span class="kpi-value {% if overview.period_totals.result < 0 %}neg{% endif %}">{{ overview.period_totals.result|money }} <small>сум</small></span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Инвестиции и прочие поступления</span>
+            <span class="kpi-value">{{ overview.period_totals.other_income|money }} <small>сум</small></span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="fin-section">
+    <h2>Динамика по месяцам <span class="fin-sub">{{ overview.period_label }}</span></h2>
+    <div class="chart-card">
+        <div class="chart-legend">
+            <span><i style="background: #3987e5;"></i>Собрано оплат</span>
+            {% if show_spending %}<span><i style="background: #d95926;"></i>Зарплаты и расходы</span>{% endif %}
+            <span><i class="line" style="background: #199e70;"></i>Начислено</span>
+        </div>
+        <div class="chart-box"><canvas id="finance-chart" aria-label="График: собрано, расходы и начислено по месяцам" role="img"></canvas></div>
+    </div>
+</div>
+
+{% if show_schools %}
+<div class="fin-section">
+    <h2>По школам <span class="fin-sub">{{ overview.current_label }}</span></h2>
+    <div class="fin-table-wrap">
+        <table class="fin-table">
+            <thead>
+                <tr>
+                    <th>Школа</th>
+                    <th>Договоры</th>
+                    <th>Начислено</th>
+                    <th>Собрано</th>
+                    <th>Собираемость</th>
+                    <th>Долг</th>
+                    {% if show_spending %}<th>Зарплаты и расходы</th><th>Результат</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in overview.schools %}
+                <tr>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.active_contracts }}</td>
+                    <td>{{ row.accrued_current|money }}</td>
+                    <td>{{ row.collected|money }}</td>
+                    <td>{{ row.collection_rate|percent }}</td>
+                    <td class="{% if row.debt %}neg{% endif %}">{{ row.debt|money }}</td>
+                    {% if show_spending %}
+                    <td>{{ row.spent|money }}</td>
+                    <td class="{% if row.result < 0 %}neg{% else %}pos{% endif %}">{{ row.result|money }}</td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Данных пока нет.</td></tr>
+                {% endfor %}
+            </tbody>
+            {% if overview.schools|length > 1 %}
+            <tfoot>
+                <tr>
+                    <td>Вся сеть</td>
+                    <td>{{ overview.totals.active_contracts }}</td>
+                    <td>{{ overview.totals.accrued_current|money }}</td>
+                    <td>{{ overview.current.collected|money }}</td>
+                    <td>{{ overview.totals.collection_rate|percent }}</td>
+                    <td class="{% if overview.totals.debt %}neg{% endif %}">{{ overview.totals.debt|money }}</td>
+                    {% if show_spending %}
+                    <td>{{ overview.current.spent|money }}</td>
+                    <td class="{% if overview.current.result < 0 %}neg{% else %}pos{% endif %}">{{ overview.current.result|money }}</td>
+                    {% endif %}
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if show_debtors and overview.top_debtors %}
+<div class="fin-section">
+    <h2>Крупнейшие должники</h2>
+    <div class="fin-table-wrap">
+        <table class="fin-table">
+            <thead>
+                <tr><th>Ученик</th><th>№ договора</th><th>Месяцев</th><th>Долг</th></tr>
+            </thead>
+            <tbody>
+                {% for c in overview.top_debtors %}
+                <tr>
+                    <td><a href="{% url 'contract_detail' c.pk %}">{{ c.student_full_name }}</a></td>
+                    <td>{{ c.number }}</td>
+                    <td>{{ c.unpaid_count }}</td>
+                    <td class="neg">{{ c.total_debt|money }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{{ chart_data|json_script:"finance-chart-data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const data = JSON.parse(document.getElementById('finance-chart-data').textContent);
+    const showSpending = {{ show_spending|yesno:"true,false" }};
+    const fmt = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
+    const fmtMln = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 });
+    const datasets = [
+        { type: 'bar', label: 'Собрано оплат', data: data.collected, backgroundColor: '#3987e5', borderRadius: 4, maxBarThickness: 18, order: 2 },
+    ];
+    if (showSpending) {
+        datasets.push({ type: 'bar', label: 'Зарплаты и расходы', data: data.spent, backgroundColor: '#d95926', borderRadius: 4, maxBarThickness: 18, order: 2 });
+    }
+    datasets.push({ type: 'line', label: 'Начислено', data: data.accrued, borderColor: '#199e70', backgroundColor: '#199e70', borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0, order: 1 });
+
+    new Chart(document.getElementById('finance-chart'), {
+        data: { labels: data.labels, datasets: datasets },
+        options: {
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt.format(ctx.parsed.y)} сум` } },
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.06)' },
+                    ticks: { color: '#94a3b8', callback: (v) => v >= 1e6 ? fmtMln.format(v / 1e6) + ' млн' : fmt.format(v) },
+                },
+            },
+        },
+    });
+})();
+</script>

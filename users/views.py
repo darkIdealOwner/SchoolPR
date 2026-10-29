@@ -1,4 +1,4 @@
-from collections import defaultdict
+import csv
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -7,15 +7,21 @@ from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import models, transaction as db_transaction
 from django.db.models import Prefetch, ProtectedError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, FormView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
     EmployeePayoutForm, TransactionForm, ReversalForm,
 )
 from .models import User, School, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
+from .finance import (
+    parse_month, contracts_with_active_payments, format_russian_month, get_debt_details,
+    build_overview, chart_payload, contract_schedule,
+)
 
 class CustomLoginView(LoginView):
     template_name = 'authorization/login.html'
@@ -35,6 +41,16 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        role = self.request.user.role
+        if role in ['OWNER', 'INVESTOR']:
+            overview = build_overview()
+        elif role in ['DIRECTOR', 'EMPLOYEE'] and self.request.user.school:
+            overview = build_overview(school=self.request.user.school)
+        else:
+            overview = None
+        if overview:
+            context['overview'] = overview
+            context['chart_data'] = chart_payload(overview['series'])
         if self.request.user.role == 'OWNER':
             context['total_users'] = User.objects.count()
             context['total_schools'] = School.objects.count()
@@ -79,6 +95,48 @@ class OwnerOrDirectorOrEmployeeOrInvestorMixin(UserPassesTestMixin):
 class OwnerOrDirectorOrInvestorMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.role in ['OWNER', 'DIRECTOR', 'INVESTOR']
+
+
+def safe_next_url(request):
+    """Адрес возврата из ?next=, только внутри сайта."""
+    url = request.POST.get('next') or request.GET.get('next')
+    if url and url_has_allowed_host_and_scheme(url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+        return url
+    return None
+
+
+def _csv_value(value):
+    if value is None:
+        return ''
+    if isinstance(value, Decimal):
+        return format(value.quantize(Decimal('0.01')), 'f').replace('.', ',')
+    if isinstance(value, (date, datetime)):
+        return value.strftime('%d.%m.%Y')
+    if isinstance(value, bool):
+        return 'да' if value else 'нет'
+    return str(value)
+
+
+class CsvExportMixin:
+    """?export=csv отдаёт таблицу файлом, который открывается в Excel (UTF-8 с BOM, разделитель «;»)."""
+    export_filename = 'export'
+
+    def get_export_rows(self, context):
+        raise NotImplementedError
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.GET.get('export') != 'csv':
+            return super().render_to_response(context, **response_kwargs)
+        headers, rows = self.get_export_rows(context)
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        stamp = timezone.localdate().strftime('%Y-%m-%d')
+        response['Content-Disposition'] = f'attachment; filename="{self.export_filename}_{stamp}.csv"'
+        response.write('\ufeff')
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow(headers)
+        for row in rows:
+            writer.writerow([_csv_value(v) for v in row])
+        return response
 
 
 # Audit / protection helpers
@@ -140,6 +198,9 @@ class BaseReverseView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
         if not hasattr(self, 'object'):
             self.object = get_object_or_404(self.get_queryset(), pk=self.kwargs['pk'])
         return self.object
+
+    def get_success_url(self):
+        return safe_next_url(self.request) or super().get_success_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -297,11 +358,29 @@ class SchoolDeleteView(LoginRequiredMixin, OwnerOnlyMixin, ProtectedDeleteMixin,
     protected_message = "Нельзя удалить школу: к ней привязаны договоры, выплаты или транзакции."
 
 # Contract Management CRUD (Owner, Director, Employee or Investor)
-class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, ListView):
+class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
     model = Contract
     template_name = 'home/contracts/contract_list.html'
     context_object_name = 'contracts_list'
     paginate_by = 10
+    export_filename = 'dogovory'
+
+    def get_export_rows(self, context):
+        personal = self.request.user.can_view_personal_data
+        headers = ['№ договора', 'Школа', 'Дата', 'ФИО ученика', 'Год рождения', 'Класс', 'Срок, мес', 'Направление']
+        if personal:
+            headers += ['ФИО родителей', 'Паспорт', 'ИНПС', 'Адрес', 'Телефон']
+        headers += ['Стоимость', 'Скидка %', 'Скидка, сум', 'Питание', 'Итого в месяц', 'Отменён', 'Дата отмены', 'Примечание']
+        rows = []
+        for c in self.object_list:
+            row = [c.number, c.school.name if c.school else '', c.date, c.student_full_name, c.student_birth_year,
+                   c.student_class, c.duration_months, c.specialization]
+            if personal:
+                row += [c.parents_full_name, c.passport_data, c.inps, c.address, c.phone_number]
+            row += [c.tuition_fee, c.discount_percentage, c.discount_amount, c.food_cost, c.total_amount,
+                    c.is_cancelled, c.cancelled_at, c.notes]
+            rows.append(row)
+        return headers, rows
 
     def get_queryset(self):
         from django.db.models import Q
@@ -318,6 +397,43 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
             queryset = queryset.filter(search)
 
         return queryset.order_by('-created_at')
+
+class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, DetailView):
+    model = Contract
+    template_name = 'home/contracts/contract_detail.html'
+    context_object_name = 'contract'
+
+    def get_queryset(self):
+        qs = contracts_with_active_payments(Contract.objects.all())
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            qs = qs.filter(school=self.request.user.school)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        contract = self.object
+        schedule = contract_schedule(contract)
+        debt, unpaid = get_debt_details(contract, timezone.localdate())
+        last = contract.last_billing_month
+        if contract.is_cancelled:
+            status = ('cancelled', 'Отменён')
+        elif last is not None and last < timezone.localdate().replace(day=1):
+            status = ('finished', 'Завершён')
+        else:
+            status = ('active', 'Действует')
+        context.update({
+            'schedule': schedule,
+            'debt': debt,
+            'unpaid_count': len(unpaid),
+            'paid_total': sum((row['paid'] for row in schedule), Decimal(0)),
+            'accrued_total': sum((row['accrued'] for row in schedule), Decimal(0)),
+            'status': status,
+            'payments_history': Payment.objects.filter(contract=contract)
+                .select_related('created_by', 'reversed_by').order_by('-payment_date', '-created_at'),
+            'can_edit': self.request.user.role in ['OWNER', 'DIRECTOR', 'EMPLOYEE'],
+            'can_reverse': self.request.user.role in ['OWNER', 'DIRECTOR'],
+        })
+        return context
 
 class ContractCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, AuditMixin, CreateView):
     model = Contract
@@ -372,22 +488,18 @@ class ContractDeleteView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Pro
         return qs
 
 # Payment Management
-def parse_month(month_str):
-    """'YYYY-MM' -> дата 1-го числа месяца; при ошибке — текущий месяц."""
-    try:
-        return datetime.strptime(month_str, '%Y-%m').date()
-    except (TypeError, ValueError):
-        return timezone.localdate().replace(day=1)
-
-def contracts_with_active_payments(queryset):
-    return queryset.select_related('school').prefetch_related(
-        Prefetch('payments', queryset=Payment.active.order_by('payment_date'))
-    )
-
-class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, ListView):
+class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
     model = Contract # We list contracts to show their payment status for a month
     template_name = 'home/payments/payment_list.html'
     context_object_name = 'contracts'
+    export_filename = 'oplaty'
+
+    def get_export_rows(self, context):
+        headers = ['Месяц', '№ договора', 'Школа', 'Ученик', 'Начислено', 'Оплачено', 'Остаток']
+        month = format_russian_month(self.selected_month)
+        rows = [[month, c.number, c.school.name if c.school else '', c.student_full_name,
+                 c.total_amount, c.this_month_paid, c.this_month_balance] for c in context['contracts']]
+        return headers, rows
 
     def get_queryset(self):
         self.selected_month = parse_month(self.request.GET.get('month'))
@@ -412,55 +524,24 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
 
         return context
 
-# Helper functions for Debt logic
-RUSSIAN_MONTHS = {
-    1: 'Январь', 2: 'Февраль', 3: 'Март', 4: 'Апрель',
-    5: 'Май', 6: 'Июнь', 7: 'Июль', 8: 'Август',
-    9: 'Сентябрь', 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'
-}
-
-def format_russian_month(d):
-    return f"{RUSSIAN_MONTHS[d.month]} {d.year}"
-
-def get_debt_details(contract, target_date):
-    """Долг по договору на месяц target_date включительно и список неоплаченных месяцев.
-
-    Начисления идут только в пределах срока договора и до месяца отмены.
-    Сторнированные оплаты не учитываются.
-    """
-    start_first = contract.first_billing_month
-    last_first = contract.last_billing_month
-    target_first = target_date.replace(day=1)
-
-    if last_first is None or target_first < start_first:
-        return Decimal(0), []
-    end_first = min(target_first, last_first)
-
-    payment_map = defaultdict(Decimal)
-    for p in contract.payments.all():
-        if not p.is_reversed:
-            payment_map[p.for_month.replace(day=1)] += p.amount
-
-    unpaid_months = []
-    running_balance = Decimal(0)
-    monthly_fee = contract.total_amount
-
-    curr = start_first
-    while curr <= end_first:
-        running_balance += monthly_fee
-        running_balance -= payment_map[curr]
-
-        if running_balance > Decimal('0.01'):
-            unpaid_months.append(curr)
-
-        curr = shift_month(curr, 1)
-
-    return max(Decimal(0), running_balance), unpaid_months
-
-class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, ListView):
+class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
     model = Contract
     template_name = 'home/debts/debt_list.html'
     context_object_name = 'contracts'
+    export_filename = 'dolgi'
+
+    def get_export_rows(self, context):
+        personal = self.request.user.can_view_personal_data
+        headers = ['№ договора', 'Школа', 'Ученик'] + (['Телефон', 'Родитель'] if personal else []) + \
+                  ['Платёж в месяц', 'Просрочено месяцев', 'Неоплаченные месяцы', 'Сумма долга']
+        rows = []
+        for c in context['debtors']:
+            row = [c.number, c.school.name if c.school else '', c.student_full_name]
+            if personal:
+                row += [c.phone_number, c.parents_full_name]
+            row += [c.total_amount, c.unpaid_count, ', '.join(c.unpaid_months), c.total_debt]
+            rows.append(row)
+        return headers, rows
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -506,7 +587,7 @@ class PaymentCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Audi
     template_name = 'home/payments/payment_form.html'
 
     def get_success_url(self):
-        return f"{reverse_lazy('payment_list')}?month={self.object.for_month.strftime('%Y-%m')}"
+        return safe_next_url(self.request) or f"{reverse_lazy('payment_list')}?month={self.object.for_month.strftime('%Y-%m')}"
 
     def get_allowed_contracts(self):
         qs = Contract.objects.all()
@@ -554,14 +635,21 @@ class PaymentReverseView(BaseReverseView):
         return qs
 
     def get_success_url(self):
-        return f"{reverse_lazy('payment_list')}?month={self.get_object().for_month.strftime('%Y-%m')}"
+        return safe_next_url(self.request) or f"{reverse_lazy('payment_list')}?month={self.get_object().for_month.strftime('%Y-%m')}"
 
 # Employee Payouts CRUD Views
-class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, ListView):
+class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, CsvExportMixin, ListView):
     model = EmployeePayout
     template_name = 'home/payouts/payout_list.html'
     context_object_name = 'payouts_list'
     paginate_by = 10
+    export_filename = 'vyplaty_sotrudnikam'
+
+    def get_export_rows(self, context):
+        headers = ['Дата выплаты', 'За месяц', 'Сотрудник', 'Школа', 'Сумма', 'Примечание', 'Сторно', 'Причина сторно']
+        rows = [[p.payout_date, format_russian_month(p.for_month), p.employee.first_name, p.school.name, p.amount,
+                 p.notes, p.is_reversed, p.reversal_reason] for p in self.object_list]
+        return headers, rows
 
     def get_queryset(self):
         queryset = super().get_queryset().select_related('employee', 'school', 'reversed_by')
@@ -619,11 +707,18 @@ class EmployeePayoutReverseView(BaseReverseView):
 
 
 # General Transactions CRUD Views
-class TransactionListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, ListView):
+class TransactionListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, CsvExportMixin, ListView):
     model = Transaction
     template_name = 'home/transactions/transaction_list.html'
     context_object_name = 'transactions_list'
     paginate_by = 10
+    export_filename = 'tranzakcii'
+
+    def get_export_rows(self, context):
+        headers = ['Дата', 'Школа', 'Тип', 'Категория', 'Сумма', 'Примечание', 'Сторно', 'Причина сторно']
+        rows = [[t.date, t.school.name, t.get_type_display(), t.category, t.amount, t.notes,
+                 t.is_reversed, t.reversal_reason] for t in self.object_list]
+        return headers, rows
 
     def get_queryset(self):
         queryset = super().get_queryset().select_related('school', 'reversed_by')

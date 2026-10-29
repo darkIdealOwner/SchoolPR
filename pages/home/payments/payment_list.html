@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load money %}
 
 {% block title %}Управление выплатами - SchoolPR{% endblock %}
 
@@ -54,6 +55,7 @@
     <form method="get" style="display: flex; gap: 0.5rem;">
         <input type="month" name="month" value="{{ month_str }}" class="input-field" style="margin: 0; width: auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; padding: 0.5rem;">
         <button type="submit" class="btn-action">Показать</button>
+        <a href="?month={{ month_str }}&export=csv" class="btn-excel" title="Скачать таблицу для Excel">⬇ Excel</a>
     </form>
 </div>
 
@@ -78,15 +80,15 @@
                 <td>{{ contract.number }}</td>
                 <td style="color: var(--text-muted);">{{ contract.school.name|default:"—" }}</td>
                 <td>
-                    <div style="font-weight: 600;">{{ contract.student_full_name }}</div>
+                    <a href="{% url 'contract_detail' contract.pk %}" style="font-weight: 600; color: var(--text); text-decoration: none;">{{ contract.student_full_name }}</a>
                     {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>{% endif %}
                 </td>
                 {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
                 <td>{{ contract.specialization }}</td>
-                <td>{{ contract.total_amount }}</td>
-                <td>{{ contract.this_month_paid }}</td>
+                <td>{{ contract.total_amount|money }}</td>
+                <td>{{ contract.this_month_paid|money }}</td>
                 <td class="{% if contract.this_month_balance > 0 %}status-debt{% else %}status-paid{% endif %}">
-                    {{ contract.this_month_balance }}
+                    {{ contract.this_month_balance|money }}
                 </td>
                 <td>
                     {% if contract.this_month_balance <= 0 %}
@@ -98,7 +100,7 @@
                     {% endif %}
                     {% for p in contract.month_payments %}
                     <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; white-space: nowrap;">
-                        {{ p.payment_date|date:"d.m" }} · {{ p.amount }} · {{ p.get_method_display }}
+                        {{ p.payment_date|date:"d.m" }} · {{ p.amount|money }} · {{ p.get_method_display }}
                         {% if user.role == 'OWNER' or user.role == 'DIRECTOR' %}
                         · <a href="{% url 'payment_reverse' p.pk %}" style="color: #ef4444; text-decoration: none;">сторно</a>
                         {% endif %}
