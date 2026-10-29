@@ -192,7 +192,8 @@ class BaseReverseView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
     success_url = None
 
     def get_queryset(self):
-        return self.model.active.all()
+        # Документы из 1С сторнируются в самой 1С
+        return self.model.active.exclude(source=self.model.SOURCE_1C)
 
     def get_object(self):
         if not hasattr(self, 'object'):
@@ -680,7 +681,7 @@ class EmployeePayoutUpdateView(LoginRequiredMixin, OwnerOrDirectorMixin, AuditMi
     success_url = reverse_lazy('payout_list')
 
     def get_queryset(self):
-        qs = EmployeePayout.active.all()
+        qs = EmployeePayout.active.exclude(source=EmployeePayout.SOURCE_1C)
         if self.request.user.role == 'DIRECTOR':
             return qs.filter(school=self.request.user.school)
         return qs
@@ -749,7 +750,7 @@ class TransactionUpdateView(LoginRequiredMixin, OwnerOrDirectorMixin, AuditMixin
     success_url = reverse_lazy('transaction_list')
 
     def get_queryset(self):
-        qs = Transaction.active.all()
+        qs = Transaction.active.exclude(source=Transaction.SOURCE_1C)
         if self.request.user.role == 'DIRECTOR':
             return qs.filter(school=self.request.user.school)
         return qs

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Интеграция с 1С - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.panel { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; }
+.panel h3 { margin: 0 0 0.75rem 0; font-size: 0.9375rem; }
+.section { margin-top: 2.25rem; }
+.section h2 { font-size: 1.125rem; margin: 0 0 1rem 0; font-weight: 600; }
+.ok { color: #10b981; font-weight: 600; }
+.off { color: #f59e0b; font-weight: 600; }
+.muted { color: var(--text-muted); font-size: 0.8125rem; }
+.bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; margin-top: 0.4rem; overflow: hidden; }
+.bar span { display: block; height: 100%; background: #3987e5; border-radius: 3px; }
+.stat-row { margin-bottom: 0.9rem; font-size: 0.875rem; }
+.stat-row:last-child { margin-bottom: 0; }
+.form-row { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; font-size: 0.875rem; }
+.form-row select, .form-row input[type=file] { padding: 0.55rem; background: var(--bg); color: var(--text); border: 1px solid rgba(255,255,255,0.15); border-radius: 0.5rem; }
+.btn { padding: 0.65rem 1.25rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+.table-wrap { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.tbl th, .tbl td { padding: 0.65rem 0.9rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+.tbl th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+.tbl td.num { text-align: right; }
+.st-SUCCESS { color: #10b981; } .st-PARTIAL { color: #f59e0b; } .st-FAILED { color: #f87171; } .st-RUNNING { color: var(--text-muted); }
+details summary { cursor: pointer; color: #f87171; }
+details ul { margin: 0.4rem 0 0 0; padding-left: 1rem; color: var(--text-muted); white-space: normal; max-width: 520px; }
+code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radius: 0.25rem; font-size: 0.8rem; }
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← На главную</a>
+<h1 style="margin: 0.75rem 0 0.25rem 0;">Интеграция с 1С</h1>
+<p class="muted" style="font-size: 0.9rem; margin-top: 0;">
+    Деньги ведёт 1С, договоры и ученики — платформа. Документы из 1С здесь только читаются: исправлять их нужно в 1С,
+    изменения придут при следующем обмене.
+</p>
+
+<div class="grid section">
+    <div class="panel">
+        <h3>Подключение</h3>
+        <div class="stat-row">Загрузка из 1С по OData:
+            {% if odata_configured %}<span class="ok">настроена</span>{% else %}<span class="off">не настроена</span>{% endif %}
+            <div class="muted">ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD в .env</div>
+        </div>
+        <div class="stat-row">API для 1С:
+            {% if api_configured %}<span class="ok">включено</span>{% else %}<span class="off">выключено</span>{% endif %}
+            <div class="muted">ONEC_API_TOKEN в .env, адреса — <code>/api/1c/…</code></div>
+        </div>
+        <div class="stat-row">Загрузка файлом: <span class="ok">доступна всегда</span></div>
+    </div>
+
+    <div class="panel">
+        <h3>Связь записей с 1С</h3>
+        {% for label, s in link_stats %}
+        <div class="stat-row">
+            {{ label }}: <strong>{{ s.linked }}</strong> из {{ s.total }}
+            <div class="bar"><span style="width: {% if s.total %}{% widthratio s.linked s.total 100 %}{% else %}0{% endif %}%;"></span></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="panel">
+        <h3>Оплаты</h3>
+        <div class="stat-row">Загружено из 1С: <strong>{{ payments_from_1c }}</strong></div>
+        <div class="stat-row">Приняты на платформе и ещё не проведены в 1С: <strong>{{ payments_not_in_1c }}</strong>
+            <div class="muted">1С забирает их через <code>GET /api/1c/payments/?unlinked=1</code></div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Загрузить файл из 1С</h2>
+    <form method="post" enctype="multipart/form-data" class="panel" style="max-width: 560px;">
+        {% csrf_token %}
+        <div class="form-row">
+            <label for="{{ form.entity.id_for_label }}">{{ form.entity.label }}</label>
+            {{ form.entity }}
+        </div>
+        <div class="form-row">
+            <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+            {{ form.file }}
+            {% if form.file.errors %}<div style="color: #f87171;">{{ form.file.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="form-row" style="flex-direction: row; align-items: center; gap: 0.5rem;">
+            {{ form.dry_run }} <label for="{{ form.dry_run.id_for_label }}">{{ form.dry_run.label }}</label>
+        </div>
+        <button type="submit" class="btn">Загрузить</button>
+        <p class="muted" style="margin-bottom: 0;">Формат файла и примеры — в docs/1c-integration.md. Повторная загрузка того же файла не создаёт дублей.</p>
+    </form>
+</div>
+
+<div class="section">
+    <h2>Журнал обменов</h2>
+    <div class="table-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Когда</th><th>Данные</th><th>Канал</th><th>Статус</th>
+                    <th class="num">Всего</th><th class="num">Создано</th><th class="num">Обновлено</th>
+                    <th class="num">Сторно</th><th class="num">Ошибок</th><th>Детали</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in runs %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ run.started_at|date:"d.m.Y H:i" }}</td>
+                    <td>{{ run.get_entity_display }}</td>
+                    <td>{{ run.get_channel_display }}{% if run.triggered_by %} · {{ run.triggered_by.first_name }}{% endif %}</td>
+                    <td class="st-{{ run.status }}">{{ run.get_status_display }}{% if run.dry_run %} <span class="muted">(пробный)</span>{% endif %}</td>
+                    <td class="num">{{ run.total }}</td>
+                    <td class="num">{{ run.created }}</td>
+                    <td class="num">{{ run.updated }}</td>
+                    <td class="num">{{ run.reversed }}</td>
+                    <td class="num">{{ run.failed }}</td>
+                    <td>
+                        {% if run.errors %}
+                        <details>
+                            <summary>{{ run.errors|length }} ошибок</summary>
+                            <ul>
+                                {% for e in run.errors|slice:":50" %}<li>Строка {{ e.row }}{% if e.external_id %} ({{ e.external_id }}){% endif %}: {{ e.error }}</li>{% endfor %}
+                            </ul>
+                        </details>
+                        {% else %}—{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 2rem;">Обменов ещё не было.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

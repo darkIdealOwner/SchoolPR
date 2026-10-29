@@ -9,7 +9,32 @@ def shift_month(month_first, delta):
     return month_first.replace(year=total // 12, month=total % 12 + 1, day=1)
 
 
-class User(AbstractUser):
+class ExternalSyncMixin(models.Model):
+    """Связь записи с объектом 1С.
+
+    external_id — GUID объекта в 1С (Ref_Key). source показывает, где запись создана:
+    записи из 1С на платформе только читаются, исправляются они в 1С и приходят при следующей синхронизации.
+    """
+    SOURCE_MANUAL = 'MANUAL'
+    SOURCE_1C = '1C'
+    SOURCE_CHOICES = [
+        (SOURCE_MANUAL, 'Платформа'),
+        (SOURCE_1C, '1С'),
+    ]
+
+    external_id = models.CharField(max_length=64, null=True, blank=True, unique=True, verbose_name="ID в 1С")
+    source = models.CharField(max_length=10, choices=SOURCE_CHOICES, default=SOURCE_MANUAL, verbose_name="Источник")
+    synced_at = models.DateTimeField(null=True, blank=True, verbose_name="Синхронизировано")
+
+    class Meta:
+        abstract = True
+
+    @property
+    def is_from_1c(self):
+        return self.source == self.SOURCE_1C
+
+
+class User(AbstractUser, ExternalSyncMixin):
     ROLE_CHOICES = [
         ('OWNER', 'Владелец'),
         ('DIRECTOR', 'Директор'),
@@ -51,7 +76,7 @@ class User(AbstractUser):
         }
         return priorities.get(self.role, 5)
 
-class School(models.Model):
+class School(ExternalSyncMixin, models.Model):
     name = models.CharField(max_length=255, verbose_name="Название школы")
     address = models.CharField(max_length=255, verbose_name="Адрес", blank=True)
     director = models.OneToOneField(
@@ -63,6 +88,7 @@ class School(models.Model):
         verbose_name="Директор"
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def employee_count(self):
@@ -71,7 +97,7 @@ class School(models.Model):
     def __str__(self):
         return self.name
 
-class Contract(models.Model):
+class Contract(ExternalSyncMixin, models.Model):
     MONTH_CHOICES = [
         ('Январь', 'Январь'), ('Февраль', 'Февраль'), ('Март', 'Март'),
         ('Апрель', 'Апрель'), ('Май', 'Май'), ('Июнь', 'Июнь'),
@@ -109,6 +135,7 @@ class Contract(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contracts', verbose_name="Создал")
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True, related_name='contracts', verbose_name="Школа")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         from decimal import Decimal
@@ -159,7 +186,7 @@ class ActiveManager(models.Manager):
         return super().get_queryset().filter(is_reversed=False)
 
 
-class FinancialRecord(models.Model):
+class FinancialRecord(ExternalSyncMixin, models.Model):
     """Общие поля денежных записей: кто внёс и сторно вместо удаления."""
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name="Кто внёс")
     is_reversed = models.BooleanField(default=False, verbose_name="Сторнировано")

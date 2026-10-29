@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'users',
+    'integrations',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -182,3 +183,11 @@ LOGIN_URL = 'login'
 if not DEBUG:
     SESSION_COOKIE_SECURE = env_bool('DJANGO_SECURE_COOKIES', True)
     CSRF_COOKIE_SECURE = env_bool('DJANGO_SECURE_COOKIES', True)
+
+# Интеграция с 1С (docs/1c-integration.md)
+ONEC_ODATA_URL = os.environ.get('ONEC_ODATA_URL', '')
+ONEC_USER = os.environ.get('ONEC_USER', '')
+ONEC_PASSWORD = os.environ.get('ONEC_PASSWORD', '')
+ONEC_TIMEOUT = int(os.environ.get('ONEC_TIMEOUT', '30'))
+# Токен, с которым 1С обращается к API платформы (заголовок Authorization: Token <токен>)
+ONEC_API_TOKEN = os.environ.get('ONEC_API_TOKEN', '')

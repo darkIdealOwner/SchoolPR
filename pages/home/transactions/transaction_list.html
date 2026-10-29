@@ -161,6 +161,8 @@
                     {% if t.is_reversed %}
                         <span style="color: #ef4444; font-size: 0.75rem;" title="{{ t.reversal_reason }}">Сторно {{ t.reversed_at|date:"d.m.Y" }}{% if t.reversed_by %} · {{ t.reversed_by.first_name }}{% endif %}</span>
                         <div style="color: var(--text-muted); font-size: 0.7rem;">{{ t.reversal_reason }}</div>
+                    {% elif t.is_from_1c %}
+                        <span title="Документ из 1С: исправляется в 1С" style="font-size: 0.7rem; font-weight: 700; color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); border-radius: 0.25rem; padding: 0.05rem 0.3rem;">1С</span>
                     {% elif user.role == 'INVESTOR' %}
                         <span style="color: var(--text-muted);">—</span>
                     {% else %}
