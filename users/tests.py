@@ -364,3 +364,50 @@ class CardAndExportTestCase(TestCase):
         # Инвестор не видит имён должников
         self.assertNotContains(self.get(self.investor, reverse('home')), "Ученик Карточкин")
         self.assertContains(self.get(self.director, reverse('home')), "Ученик Карточкин")
+
+
+from users.phone import normalize_phone, format_phone
+from users.forms import UserManagementForm
+
+
+class PhoneFormatTestCase(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username="t_ph_owner", phone_number="+998500022131", password="pw-12345", role="OWNER")
+
+    def test_normalize_and_format(self):
+        for raw in ['+998 (50)-002-21-31', '998500022131', '500022131', ' +998500022131 ']:
+            self.assertEqual(normalize_phone(raw), '+998500022131', raw)
+        self.assertEqual(format_phone('+998500022131'), '+998 (50)-002-21-31')
+        self.assertEqual(format_phone('+70000000001'), '+70000000001')
+
+    def test_login_with_formatted_number(self):
+        for raw in ['+998 (50)-002-21-31', '+998500022131']:
+            client = Client()
+            response = client.post(reverse('login'), {'username': raw, 'password': 'pw-12345'})
+            self.assertRedirects(response, reverse('home'), fetch_redirect_response=False)
+        response = Client().post(reverse('login'), {'username': '+998 (50)-002-21-31', 'password': 'wrong'})
+        self.assertContains(response, 'Неверный номер телефона или пароль')
+
+    def test_login_page_uses_uzbek_mask(self):
+        response = Client().get(reverse('login'))
+        self.assertContains(response, '+998 (__)-___-__-__')
+        self.assertContains(response, 'phone-mask.js')
+        self.assertNotContains(response, '+7...')
+
+    def test_user_form_stores_canonical_phone(self):
+        form = UserManagementForm(data={'username': 'new_emp', 'first_name': 'Тест', 'phone_number': '+998 (90)-123-45-67',
+                                        'role': 'INVESTOR', 'password': 'secret-123'}, current_user=self.owner)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data['phone_number'], '+998901234567')
+
+        form = UserManagementForm(data={'username': 'dup', 'first_name': 'Тест', 'phone_number': '+998 (50)-002-21-31',
+                                        'role': 'INVESTOR', 'password': 'secret-123'}, current_user=self.owner)
+        self.assertFalse(form.is_valid())
+        self.assertIn('phone_number', form.errors)
+
+        form = UserManagementForm(data={'username': 'short', 'first_name': 'Тест', 'phone_number': '+998 (90)-12',
+                                        'role': 'INVESTOR', 'password': 'secret-123'}, current_user=self.owner)
+        self.assertFalse(form.is_valid())
+
+        edit = UserManagementForm(instance=self.owner, current_user=self.owner)
+        self.assertEqual(edit.initial['phone_number'], '+998 (50)-002-21-31')

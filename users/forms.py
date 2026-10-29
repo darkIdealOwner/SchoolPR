@@ -1,6 +1,15 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import User, School, Contract, Payment, EmployeePayout, Transaction
+from .phone import normalize_phone, is_valid_uz_phone, format_phone
+
+PHONE_ATTRS = {
+    'class': 'input-field phone-input',
+    'placeholder': '+998 (__)-___-__-__',
+    'inputmode': 'tel',
+    'autocomplete': 'tel',
+    'maxlength': '19',
+}
 
 
 class ISODateInput(forms.DateInput):
@@ -13,12 +22,16 @@ class ISODateInput(forms.DateInput):
 class PhoneAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         label="Номер телефона",
-        widget=forms.TextInput(attrs={'class': 'input-field', 'placeholder': '+7...'})
+        widget=forms.TextInput(attrs={**PHONE_ATTRS, 'type': 'tel', 'autofocus': True})
     )
     password = forms.CharField(
         label="Пароль",
         widget=forms.PasswordInput(attrs={'class': 'input-field', 'placeholder': '••••••••'})
     )
+
+    def clean_username(self):
+        # Номер с маской «+998 (50)-002-21-31» приводим к виду из базы «+998500022131»
+        return normalize_phone(self.cleaned_data.get('username'))
 
 class UserManagementForm(forms.ModelForm):
     password = forms.CharField(
@@ -61,6 +74,15 @@ class UserManagementForm(forms.ModelForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'input-field'})
+        self.fields['phone_number'].widget.attrs.update({**PHONE_ATTRS, 'type': 'tel'})
+        if self.instance.pk and not self.is_bound:
+            self.initial['phone_number'] = format_phone(self.instance.phone_number)
+
+    def clean_phone_number(self):
+        phone = normalize_phone(self.cleaned_data.get('phone_number'))
+        if not is_valid_uz_phone(phone):
+            raise forms.ValidationError("Введите номер в формате +998 (XX)-XXX-XX-XX.")
+        return phone
 
 class SchoolForm(forms.ModelForm):
     class Meta:
