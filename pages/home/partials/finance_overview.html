@@ -194,15 +194,14 @@ show_debtors (список должников с именами), show_period (�
 <script>
 (function () {
     const data = JSON.parse(document.getElementById('finance-chart-data').textContent);
-    const showSpending = {{ show_spending|yesno:"true,false" }};
     const fmt = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
     const fmtMln = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 });
     const datasets = [
         { type: 'bar', label: 'Собрано оплат', data: data.collected, backgroundColor: '#3987e5', borderRadius: 4, maxBarThickness: 18, order: 2 },
     ];
-    if (showSpending) {
-        datasets.push({ type: 'bar', label: 'Зарплаты и расходы', data: data.spent, backgroundColor: '#d95926', borderRadius: 4, maxBarThickness: 18, order: 2 });
-    }
+    {% if show_spending %}
+    datasets.push({ type: 'bar', label: 'Зарплаты и расходы', data: data.spent, backgroundColor: '#d95926', borderRadius: 4, maxBarThickness: 18, order: 2 });
+    {% endif %}
     datasets.push({ type: 'line', label: 'Начислено', data: data.accrued, borderColor: '#199e70', backgroundColor: '#199e70', borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0, order: 1 });
 
     new Chart(document.getElementById('finance-chart'), {

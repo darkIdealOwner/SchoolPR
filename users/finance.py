@@ -267,11 +267,17 @@ def _rate(part, whole):
     return int(round(part * 100 / whole))
 
 
-def chart_payload(series):
-    """Данные для графика на странице (числа как float, JSON-совместимо)."""
-    return {
+def chart_payload(series, include_spending=True):
+    """Данные для графика на странице (числа как float, JSON-совместимо).
+
+    Без include_spending суммы зарплат и расходов в страницу не попадают совсем,
+    а не просто скрываются на экране.
+    """
+    payload = {
         'labels': [row['label'] for row in series],
         'accrued': [float(row['accrued']) for row in series],
         'collected': [float(row['collected']) for row in series],
-        'spent': [float(row['spent']) for row in series],
     }
+    if include_spending:
+        payload['spent'] = [float(row['spent']) for row in series]
+    return payload
