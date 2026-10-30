@@ -36,13 +36,14 @@
             box-sizing: border-box;
         }
 
-        header {
-            background-color: rgba(15, 23, 42, 0.8);
+        .site-header {
+            background-color: rgba(15, 23, 42, 0.92);
             backdrop-filter: blur(12px);
-            padding: 1rem 2rem;
+            padding: 0.75rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky;
             top: 0;
@@ -55,27 +56,97 @@
             color: var(--primary);
             text-decoration: none;
             letter-spacing: -0.025em;
+            flex-shrink: 0;
         }
 
-        .profile-nav {
+        .site-nav {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
-        .profile-link {
+        .nav-link {
+            color: var(--text-muted);
             text-decoration: none;
-            color: var(--text);
+            font-size: 0.875rem;
             font-weight: 500;
+            padding: 0.45rem 0.7rem;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+            transition: color 0.15s, background-color 0.15s;
+        }
+
+        .nav-link:hover { color: var(--text); background-color: rgba(255, 255, 255, 0.05); }
+        .nav-link.active { color: var(--text); background-color: rgba(99, 102, 241, 0.18); }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-left: 0.75rem;
+            padding-left: 0.75rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-user form { margin: 0; }
+
+        .nav-profile {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: color 0.2s;
+            color: var(--text);
         }
 
-        .profile-link:hover {
-            color: var(--primary);
+        .avatar {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
         }
+
+        .nav-logout {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            width: 2.75rem;
+            height: 2.75rem;
+            padding: 0;
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 1.25rem;
+            height: 2px;
+            background-color: var(--text);
+            border-radius: 1px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .site-header.nav-open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .site-header.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+        .site-header.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
         .card {
             background-color: var(--card-bg);
@@ -126,9 +197,23 @@
             white-space: nowrap;
         }
         .btn-excel:hover { background: rgba(16, 185, 129, 0.1); }
+
+        a.btn-action { text-decoration: none; color: white; }
+        button.btn-action {
+            padding: 0.55rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button.btn-action:hover { background-color: var(--primary-hover); }
         
         {% block extra_css %}{% endblock %}
-        
+
         footer {
             padding: 2rem;
             text-align: center;
@@ -136,35 +221,202 @@
             background-color: rgba(15, 23, 42, 0.3);
             margin-top: 4rem;
         }
-        
+
         footer p {
             margin: 0;
             font-size: 0.875rem;
             color: #64748b;
             font-weight: 500;
         }
+
+        /* ---------- Планшеты и узкие окна: разделы прячутся в меню ---------- */
+        @media (max-width: 1100px) {
+            .nav-toggle { display: flex; }
+
+            .site-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.125rem;
+                padding: 0.5rem 1rem 1rem;
+                background-color: #0b1222;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+                max-height: calc(100vh - 4.5rem);
+                overflow-y: auto;
+            }
+
+            .site-header.nav-open .site-nav { display: flex; }
+
+            .nav-link { font-size: 1rem; padding: 0.8rem 0.75rem; }
+
+            .nav-user {
+                margin: 0.5rem 0 0;
+                padding: 0.5rem 0 0;
+                border-left: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                justify-content: space-between;
+            }
+
+            .nav-logout { color: #f87171; }
+        }
+
+        /* ---------- Телефоны ---------- */
+        @media (max-width: 640px) {
+            .site-header { padding: 0.6rem 1rem; }
+            .logo { font-size: 1.3rem; }
+            main { padding: 1.25rem 1rem; }
+            h1 { font-size: 1.5rem; line-height: 1.25; }
+            .card { padding: 1.25rem; }
+            footer { margin-top: 2rem; padding: 1.25rem; }
+
+            .welcome-section h1 { font-size: 1.6rem !important; line-height: 1.2; margin-top: 0; }
+            .welcome-section p { font-size: 0.95rem !important; }
+            .school-info { margin-bottom: 0.75rem !important; }
+
+            /* Поля ввода 16px — иначе iPhone приближает страницу при вводе */
+            input:not([type=checkbox]):not([type=radio]), select, textarea { font-size: 16px !important; }
+
+            /* Панели над таблицами: всё в столбик, кнопки на всю ширину */
+            .toolbar { flex-direction: column; align-items: stretch !important; margin-bottom: 1.25rem !important; }
+            .toolbar > *, .search-form { width: 100%; max-width: none !important; box-sizing: border-box; }
+            .toolbar > div, .toolbar form { flex-wrap: wrap; }
+            .toolbar .btn-add, .toolbar .btn-excel, .toolbar .btn-action { flex: 1; text-align: center; box-sizing: border-box; }
+            .toolbar input[type=month] { flex: 1; }
+            .mode-tabs { width: 100%; }
+            .mode-tab { flex: 1; text-align: center; }
+
+            .form-grid { grid-template-columns: 1fr !important; }
+            .form-container { max-width: none !important; }
+
+            /* Плитки на главной: по две в ряд */
+            .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 0.75rem !important; margin-top: 1.25rem !important; }
+            .stat-card, .stats-card { padding: 1rem !important; }
+            .stat-value { font-size: 1.6rem !important; }
+            .stats-card .value { font-size: 1.3rem !important; }
+            .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 0.75rem !important; }
+            .kpi { padding: 0.9rem !important; }
+            .kpi-value { font-size: 1.1rem !important; white-space: normal !important; overflow-wrap: anywhere; }
+            .kpi-label { font-size: 0.75rem !important; }
+            .kpi-note { font-size: 0.7rem !important; }
+            .fin-section, .section { margin-top: 1.75rem !important; }
+            .chart-box { height: 220px !important; }
+            .chart-card { padding: 0.9rem !important; }
+            .large-photo-section { display: none; }
+
+            /* Кнопки разделов на главной: сетка 2×N */
+            .actions-container, .quick-links {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.6rem !important;
+                margin-top: 1.25rem !important;
+            }
+            .actions-container .btn-action, .quick-links .btn-action {
+                padding: 0.85rem 0.5rem !important;
+                font-size: 0.875rem !important;
+                min-height: 3.25rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .card-head h1 { font-size: 1.5rem; }
+            .head-actions, .head-actions .btn { width: 100%; text-align: center; box-sizing: border-box; }
+            .info-grid { grid-template-columns: 1fr 1fr !important; padding: 1rem !important; }
+
+            /* Таблицы превращаются в карточки: подпись поля слева, значение справа */
+            .table-container, .table-wrap, .fin-table-wrap {
+                background: transparent !important;
+                border: none !important;
+                overflow: visible !important;
+            }
+            table.m-cards { min-width: 0 !important; width: 100%; border: none !important; background: transparent !important; }
+            table.m-cards thead { display: none; }
+            table.m-cards tbody, table.m-cards tfoot, table.m-cards tr, table.m-cards td { display: block; width: 100%; box-sizing: border-box; }
+            table.m-cards tr {
+                background-color: var(--card-bg);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 0.75rem;
+                margin-bottom: 0.75rem;
+                padding: 0.35rem 0.9rem;
+            }
+            table.m-cards td {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                gap: 1rem;
+                padding: 0.45rem 0 !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+                text-align: right !important;
+                white-space: normal !important;
+                font-size: 0.875rem !important;
+                min-width: 0;
+            }
+            table.m-cards td:last-child { border-bottom: none !important; }
+            table.m-cards td::before {
+                content: attr(data-label);
+                color: var(--text-muted);
+                font-size: 0.75rem;
+                font-weight: 500;
+                text-align: left;
+                flex-shrink: 0;
+                max-width: 45%;
+            }
+            table.m-cards td:first-child { font-size: 1rem !important; font-weight: 600; }
+            table.m-cards td[data-label=""]::before, table.m-cards td[colspan]::before { display: none; }
+            table.m-cards td[data-label=""] { justify-content: flex-end; }
+            table.m-cards td[colspan] { justify-content: center; text-align: center !important; padding: 1.5rem 0 !important; }
+            table.m-cards td > div { max-width: none !important; }
+            table.m-cards td.m-empty { display: none !important; }
+            table.m-cards .m-val { min-width: 0; overflow-wrap: anywhere; }
+            table.m-cards .m-val .btn-action, table.m-cards .m-val .pay-link { display: inline-block; padding: 0.4rem 0.9rem !important; }
+            table.m-cards tr.reversed-row td::before { text-decoration: none; }
+            .pagination { gap: 0.5rem !important; }
+        }
     </style>
 </head>
 
 <body>
-    <header>
+    <header class="site-header">
         <a href="{% url 'home' %}" class="logo">SchoolPR</a>
-        <div class="nav-actions" style="display: flex; align-items: center; gap: 1.5rem;">
+        {% if user.is_authenticated %}
+        {% with page=request.resolver_match.url_name|default:'' %}
+        <button type="button" class="nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Меню">
+            <span></span><span></span><span></span>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Разделы">
+            <a href="{% url 'home' %}" class="nav-link {% if page == 'home' %}active{% endif %}">Главная</a>
+            <a href="{% url 'contract_list' %}" class="nav-link {% if 'contract' in page %}active{% endif %}">Договоры</a>
+            <a href="{% url 'payment_list' %}" class="nav-link {% if 'payment' in page %}active{% endif %}">Оплаты</a>
+            <a href="{% url 'debt_list' %}" class="nav-link {% if 'debt' in page %}active{% endif %}">Долги</a>
             {% if user.role != 'EMPLOYEE' %}
-                <a href="{% url 'payout_list' %}" class="profile-link" style="font-size: 0.9rem;">Выплаты сотрудникам</a>
-                <a href="{% url 'transaction_list' %}" class="profile-link" style="font-size: 0.9rem;">Транзакции</a>
+            <a href="{% url 'payout_list' %}" class="nav-link {% if 'payout' in page %}active{% endif %}">Выплаты</a>
+            <a href="{% url 'transaction_list' %}" class="nav-link {% if 'transaction' in page %}active{% endif %}">Транзакции</a>
             {% endif %}
-            <a href="{% url 'profile' %}" class="profile-link">
-                <span>{{ user.first_name }}</span>
-                <div class="profile-icon">{{ user.first_name|first|upper }}</div>
-            </a>
-            {% if user.is_authenticated %}
-            <form action="{% url 'logout' %}" method="post" style="margin: 0;">
-                {% csrf_token %}
-                <button type="submit" class="profile-link" style="background: none; border: none; cursor: pointer; font: inherit; font-size: 0.9rem; color: var(--text-muted); padding: 0;">Выйти</button>
-            </form>
+            {% if user.role == 'OWNER' or user.role == 'DIRECTOR' %}
+            <a href="{% url 'user_list' %}" class="nav-link {% if 'user_' in page %}active{% endif %}">{% if user.role == 'DIRECTOR' %}Сотрудники{% else %}Пользователи{% endif %}</a>
             {% endif %}
-        </div>
+            {% if user.role == 'OWNER' %}
+            <a href="{% url 'school_list' %}" class="nav-link {% if 'school' in page %}active{% endif %}">Школы</a>
+            <a href="{% url 'integration' %}" class="nav-link {% if page == 'integration' %}active{% endif %}">1С</a>
+            {% endif %}
+            <div class="nav-user">
+                <a href="{% url 'profile' %}" class="nav-link nav-profile {% if page == 'profile' or page == 'password_change' %}active{% endif %}">
+                    <span class="avatar">{{ user.first_name|first|upper }}</span>
+                    <span>{{ user.first_name }}</span>
+                </a>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link nav-logout">Выйти</button>
+                </form>
+            </div>
+        </nav>
+        {% endwith %}
+        {% endif %}
     </header>
 
     <main>
@@ -183,6 +435,48 @@
         <p><a href="mailto:blackskyofdarken@gmail.com" style="color: inherit; text-decoration: none;">blackskyofdarken@gmail.com</a></p>
     </footer>
 
+    <script>
+    (function () {
+        // Меню разделов на телефоне
+        const header = document.querySelector('.site-header');
+        const toggle = header && header.querySelector('.nav-toggle');
+        if (toggle) {
+            const setOpen = (open) => {
+                header.classList.toggle('nav-open', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            };
+            toggle.addEventListener('click', () => setOpen(!header.classList.contains('nav-open')));
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+            document.addEventListener('click', (e) => { if (!header.contains(e.target)) setOpen(false); });
+        }
+
+        // Таблицы: подписи колонок для карточного вида на телефоне
+        document.querySelectorAll('main table').forEach((table) => {
+            const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+            if (!heads.length) return;
+            table.classList.add('m-cards');
+            table.querySelectorAll('tbody tr, tfoot tr').forEach((row) => {
+                let col = 0;
+                [...row.children].forEach((cell) => {
+                    // Всё содержимое ячейки — одним блоком справа (иначе имя и телефон встают в строку)
+                    if (row.children.length > 1 && cell.childNodes.length) {
+                        const wrap = document.createElement('div');
+                        wrap.className = 'm-val';
+                        while (cell.firstChild) wrap.appendChild(cell.firstChild);
+                        cell.appendChild(wrap);
+                    }
+                    if (row.children.length > 1 && !cell.textContent.trim() && !cell.querySelector('a, button, input')) {
+                        cell.classList.add('m-empty');
+                    }
+                    if (!cell.hasAttribute('colspan') || row.children.length > 1) {
+                        cell.setAttribute('data-label', heads[col] || '');
+                    }
+                    col += parseInt(cell.getAttribute('colspan') || '1', 10);
+                });
+            });
+        });
+    })();
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 

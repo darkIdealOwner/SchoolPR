@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load money %}
 
-{% block title %}Управление выплатами - SchoolPR{% endblock %}
+{% block title %}Оплаты - SchoolPR{% endblock %}
 
 {% block extra_css %}
 .toolbar {
@@ -50,7 +50,7 @@
 
 {% block content %}
 <div class="toolbar">
-    <h1 style="margin: 0;">Управление выплатами</h1>
+    <h1 style="margin: 0;">Оплаты за месяц</h1>
     
     <form method="get" style="display: flex; gap: 0.5rem;">
         <input type="month" name="month" value="{{ month_str }}" class="input-field" style="margin: 0; width: auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; padding: 0.5rem;">
