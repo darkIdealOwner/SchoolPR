@@ -1,0 +1,18 @@
+[
+  {
+    "external_id": "DEMO-PO-001",
+    "employee_external_id": "DEMO-EMP-001",
+    "payout_date": "2026-10-05",
+    "for_month": "2026-09",
+    "amount": "3500000",
+    "notes": "Зарплата за сентябрь"
+  },
+  {
+    "external_id": "DEMO-PO-002",
+    "employee_phone": "+998500000001",
+    "payout_date": "2026-10-25",
+    "for_month": "2026-10",
+    "amount": "1500000",
+    "notes": "Аванс за октябрь"
+  }
+]

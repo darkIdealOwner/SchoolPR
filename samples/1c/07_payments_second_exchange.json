@@ -1,0 +1,30 @@
+[
+  {
+    "external_id": "DEMO-PAY-001",
+    "contract_external_id": "DEMO-CTR-030",
+    "payment_date": "2025-08-05",
+    "for_month": "2025-08",
+    "amount": "2027000.00",
+    "method": "BANK",
+    "notes": "Поступление на р/с №101"
+  },
+  {
+    "external_id": "DEMO-PAY-002",
+    "contract_number": "30",
+    "payment_date": "2025-09-07",
+    "for_month": "2025-09",
+    "amount": 2027000,
+    "method": "CLICK",
+    "notes": "Click, сентябрь",
+    "deleted": true
+  },
+  {
+    "external_id": "DEMO-PAY-003",
+    "contract_external_id": "DEMO-CTR-030",
+    "payment_date": "15.10.2026",
+    "for_month": "2025-10",
+    "amount": "2027000",
+    "method": "PAYME",
+    "notes": "Бухгалтер исправил сумму в 1С"
+  }
+]

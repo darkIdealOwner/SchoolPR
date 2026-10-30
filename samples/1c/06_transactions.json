@@ -1,0 +1,38 @@
+[
+  {
+    "external_id": "DEMO-TR-001",
+    "school_external_id": "DEMO-SCH-001",
+    "type": "EXPENSE",
+    "category": "Коммунальные услуги",
+    "date": "2026-10-12",
+    "amount": "850000",
+    "notes": "Электроэнергия, октябрь"
+  },
+  {
+    "external_id": "DEMO-TR-002",
+    "school_name": "Школа №1",
+    "type": "EXPENSE",
+    "category": "Канцтовары",
+    "date": "2026-10-20",
+    "amount": "320000,50",
+    "notes": "Бумага и маркеры"
+  },
+  {
+    "external_id": "DEMO-TR-003",
+    "school_external_id": "DEMO-SCH-001",
+    "type": "INCOME",
+    "category": "Инвестиции",
+    "date": "2026-10-01",
+    "amount": "50000000",
+    "notes": "Взнос инвестора"
+  },
+  {
+    "external_id": "DEMO-TR-004",
+    "school_external_id": "DEMO-SCH-001",
+    "type": "OTHER",
+    "category": "?",
+    "date": "2026-10-02",
+    "amount": "1000",
+    "notes": "Ошибка нарочно: неизвестный тип"
+  }
+]

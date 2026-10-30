@@ -264,3 +264,51 @@ class ReadOnlyAndPageTestCase(BaseData):
             self.assertEqual(Payment.objects.count(), 1)
         finally:
             os.unlink(fh.name)
+
+
+class SampleFilesTestCase(TestCase):
+    """Пробные файлы из samples/1c загружаются с ожидаемым результатом, а cleanup_1c_demo всё убирает."""
+    ENTITIES = {'01': 'schools', '02': 'employees', '03': 'contracts', '04': 'payments',
+                '05': 'payouts', '06': 'transactions', '07': 'payments'}
+
+    def setUp(self):
+        self.school = School.objects.create(name="школа №1")
+        owner = User.objects.create_user(username="s_owner", phone_number="+998500022131", password="x", role="OWNER")
+        User.objects.create_user(username="s_emp", phone_number="+998500000001", password="x", role="EMPLOYEE", school=self.school)
+        self.contract = Contract.objects.create(number="30", user=owner, school=self.school, date=date(2025, 8, 4),
+                                                duration_months=10, tuition_fee=Decimal(1450200), food_cost=Decimal(576800))
+        Contract.objects.create(number="1", user=owner, school=self.school, date=date(2026, 6, 27))
+
+    def load(self, name):
+        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'samples', '1c', name)
+        with open(path, encoding='utf-8') as fh:
+            return run_import(self.ENTITIES[name[:2]], json.load(fh))
+
+    def test_samples_in_order_and_cleanup(self):
+        expected = {
+            '01_schools.json': (0, 1, 0, 0), '02_employees.json': (0, 1, 0, 0), '03_contracts.json': (0, 2, 0, 0),
+            '04_payments.json': (3, 0, 0, 2), '05_payouts.json': (2, 0, 0, 0), '06_transactions.json': (3, 0, 0, 1),
+            '07_payments_second_exchange.json': (0, 1, 1, 0),
+        }
+        for name, counts in expected.items():
+            run = self.load(name)
+            self.assertEqual((run.created, run.updated, run.reversed, run.failed), counts, name)
+
+        payment = Payment.objects.get(external_id='DEMO-PAY-003')
+        self.assertEqual(payment.amount, Decimal(2027000))
+        self.assertTrue(Payment.objects.get(external_id='DEMO-PAY-002').is_reversed)
+
+        out = StringIO()
+        call_command('cleanup_1c_demo', stdout=out)
+        self.assertIn('Ничего не изменено', out.getvalue())
+        self.assertEqual(Payment.objects.count(), 3)
+
+        call_command('cleanup_1c_demo', '--yes', stdout=StringIO())
+        self.assertFalse(Payment.objects.exists())
+        self.assertFalse(EmployeePayout.objects.exists())
+        self.assertFalse(Transaction.objects.exists())
+        self.school.refresh_from_db()
+        self.contract.refresh_from_db()
+        self.assertIsNone(self.school.external_id)
+        self.assertIsNone(self.contract.external_id)
+        self.assertEqual(SyncRun.objects.count(), 7)  # журнал обменов остаётся как история

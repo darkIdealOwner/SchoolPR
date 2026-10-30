@@ -1,0 +1,45 @@
+[
+  {
+    "external_id": "DEMO-PAY-001",
+    "contract_external_id": "DEMO-CTR-030",
+    "payment_date": "2025-08-05",
+    "for_month": "2025-08",
+    "amount": "2027000.00",
+    "method": "BANK",
+    "notes": "Поступление на р/с №101"
+  },
+  {
+    "external_id": "DEMO-PAY-002",
+    "contract_number": "30",
+    "payment_date": "2025-09-07",
+    "for_month": "2025-09",
+    "amount": 2027000,
+    "method": "CLICK",
+    "notes": "Click, сентябрь"
+  },
+  {
+    "external_id": "DEMO-PAY-003",
+    "contract_external_id": "DEMO-CTR-030",
+    "payment_date": "15.10.2026",
+    "for_month": "2025-10",
+    "amount": "1 000 000",
+    "method": "PAYME",
+    "notes": "Частичное погашение долга за октябрь 2025"
+  },
+  {
+    "external_id": "DEMO-PAY-004",
+    "contract_external_id": "DEMO-CTR-НЕТ-ТАКОГО",
+    "payment_date": "2026-10-16",
+    "amount": "500000",
+    "method": "CASH",
+    "notes": "Ошибка нарочно: договор не связан"
+  },
+  {
+    "external_id": "DEMO-PAY-005",
+    "contract_number": "30",
+    "payment_date": "2026-10-16",
+    "amount": "0",
+    "method": "CASH",
+    "notes": "Ошибка нарочно: нулевая сумма"
+  }
+]
