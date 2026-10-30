@@ -3,6 +3,7 @@
 set -euo pipefail
 
 APP_DIR=/srv/schoolpr/app
+cd /
 as_app() { sudo -u schoolpr -H bash -c "cd $APP_DIR && $1"; }
 
 echo "1/6 Резервная копия базы перед обновлением"

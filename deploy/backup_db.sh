@@ -16,6 +16,8 @@ DB_HOST="$(env_value DB_HOST)"
 DB_PORT="$(env_value DB_PORT)"
 
 mkdir -p "$BACKUP_DIR"
+# Работаем из папки копий: скрипт могут вызвать из чужой домашней папки, куда у schoolpr нет доступа
+cd "$BACKUP_DIR"
 file="$BACKUP_DIR/schoolpr-$(date +%Y-%m-%d_%H%M).dump"
 pg_dump --format=custom --no-owner -h "${DB_HOST:-localhost}" -p "${DB_PORT:-5432}" -U "$DB_USER" -f "$file.tmp" "$DB_NAME"
 mv "$file.tmp" "$file"
