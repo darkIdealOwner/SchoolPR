@@ -78,7 +78,7 @@ ufw --force enable
 
 ```bash
 adduser --system --group --home /srv/schoolpr --shell /bin/bash schoolpr
-sudo -u schoolpr git clone https://github.com/darkIdealOwner/SchoolPR /srv/schoolpr/app
+sudo -u schoolpr git clone -b master https://github.com/darkIdealOwner/SchoolPR /srv/schoolpr/app
 sudo -u schoolpr python3 -m venv /srv/schoolpr/venv
 sudo -u schoolpr /srv/schoolpr/venv/bin/pip install -r /srv/schoolpr/app/requirements.txt
 chmod +x /srv/schoolpr/app/deploy/*.sh
