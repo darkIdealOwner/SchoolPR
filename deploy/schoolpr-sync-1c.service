@@ -1,0 +1,13 @@
+# Один запуск обмена с 1С по OData (оплаты и расходы). Запускается таймером schoolpr-sync-1c.timer.
+# Включать только после настройки ONEC_ODATA_URL в .env.
+
+[Unit]
+Description=SchoolPR: загрузка документов из 1С
+After=network-online.target postgresql.service
+
+[Service]
+Type=oneshot
+User=schoolpr
+WorkingDirectory=/srv/schoolpr/app
+ExecStart=/srv/schoolpr/venv/bin/python manage.py sync_1c payments --odata
+ExecStart=/srv/schoolpr/venv/bin/python manage.py sync_1c transactions --odata

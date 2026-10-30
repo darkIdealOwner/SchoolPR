@@ -1,0 +1,10 @@
+# Каждую ночь в 3:00 по Ташкенту.
+[Unit]
+Description=SchoolPR: ночная резервная копия базы
+
+[Timer]
+OnCalendar=*-*-* 03:00:00 Asia/Tashkent
+Persistent=true
+
+[Install]
+WantedBy=timers.target

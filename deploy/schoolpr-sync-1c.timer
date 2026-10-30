@@ -1,0 +1,10 @@
+# Каждый час, с 7:00 до 22:00 по Ташкенту.
+[Unit]
+Description=SchoolPR: обмен с 1С каждый час
+
+[Timer]
+OnCalendar=*-*-* 07..22:05:00 Asia/Tashkent
+Persistent=true
+
+[Install]
+WantedBy=timers.target

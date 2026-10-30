@@ -19,8 +19,22 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.db import connection
+from django.http import JsonResponse
+
+
+def healthz(request):
+    """Проверка для мониторинга: сайт отвечает и база доступна."""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT 1')
+    except Exception:
+        return JsonResponse({'status': 'error', 'database': 'unavailable'}, status=503)
+    return JsonResponse({'status': 'ok'})
+
 
 urlpatterns = [
+    path('healthz', healthz, name='healthz'),
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
     path('', include('integrations.urls')),

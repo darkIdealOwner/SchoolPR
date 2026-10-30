@@ -82,6 +82,8 @@ AUTHENTICATION_BACKENDS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Отдаёт CSS/JS/картинки без отдельной настройки веб-сервера (в том числе при DEBUG=False)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -173,6 +175,15 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    # В продакшене файлы собираются командой collectstatic, сжимаются и получают хэш в имени (долгий кэш в браузере)
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage' if DEBUG
+        else 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -183,6 +194,25 @@ LOGIN_URL = 'login'
 if not DEBUG:
     SESSION_COOKIE_SECURE = env_bool('DJANGO_SECURE_COOKIES', True)
     CSRF_COOKIE_SECURE = env_bool('DJANGO_SECURE_COOKIES', True)
+    # Сайт стоит за nginx, который принимает HTTPS и передаёт запрос дальше по HTTP
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = env_bool('DJANGO_SSL_REDIRECT', True)
+    SECURE_REDIRECT_EXEMPT = [r'^healthz$']
+    SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_HSTS_SECONDS', '0'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
+    SESSION_COOKIE_HTTPONLY = True
+
+# Логи в консоль: на сервере их видно через journalctl -u schoolpr
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'simple': {'format': '{asctime} {levelname} {name}: {message}', 'style': '{'}},
+    'handlers': {'console': {'class': 'logging.StreamHandler', 'formatter': 'simple'}},
+    'root': {'handlers': ['console'], 'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO')},
+    'loggers': {'django.db.backends': {'level': 'WARNING'}},
+}
 
 # Интеграция с 1С (docs/1c-integration.md)
 ONEC_ODATA_URL = os.environ.get('ONEC_ODATA_URL', '')

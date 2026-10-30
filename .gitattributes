@@ -1,0 +1,3 @@
+# Скрипты и конфиги для Linux-сервера всегда с LF, иначе bash и systemd их не поймут
+*.sh text eol=lf
+deploy/* text eol=lf

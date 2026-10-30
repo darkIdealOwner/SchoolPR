@@ -1,0 +1,24 @@
+# systemd: держит сайт запущенным и поднимает его после перезагрузки сервера.
+# Устанавливается в /etc/systemd/system/schoolpr.service
+
+[Unit]
+Description=SchoolPR (Django + gunicorn)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=schoolpr
+Group=www-data
+WorkingDirectory=/srv/schoolpr/app
+RuntimeDirectory=schoolpr
+ExecStart=/srv/schoolpr/venv/bin/gunicorn config.wsgi:application -c deploy/gunicorn.conf.py
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+# Безопасность: сервису доступно на запись только своё
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
