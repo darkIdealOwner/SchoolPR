@@ -133,7 +133,7 @@
                     {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>{% endif %}
                 </td>
                 {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
-                <td>{{ contract.specialization }}</td>
+                <td>{{ contract.get_specialization_display }}</td>
                 <td>{{ contract.total_amount|money }}</td>
                 <td>
                     <span class="status-badge">{{ contract.unpaid_count }} {% translate "мес." %}</span>

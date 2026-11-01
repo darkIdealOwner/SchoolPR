@@ -1162,9 +1162,13 @@ msgstr "Excel용 표 다운로드"
 msgid "Скидка"
 msgstr "할인"
 
-#: pages/home/contracts/contract_list.html users/views.py
+#: users/views.py
 msgid "Скидка %"
 msgstr "할인 %"
+
+#: pages/home/contracts/contract_list.html
+msgid "Скидка %%"
+msgstr "할인 %%"
 
 #: pages/home/contracts/contract_list.html
 msgid "Скидка сум"

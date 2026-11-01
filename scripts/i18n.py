@@ -7,6 +7,10 @@
 Исходный язык — русский: фразы в коде пишутся по-русски и служат ключами (msgid).
 Уже сделанные переводы при повторном extract сохраняются; фразы, которых больше нет в коде, удаляются.
 Стандартный `manage.py makemessages` тоже подойдёт, если установлен GNU gettext.
+
+locale/<язык>/LC_MESSAGES/overrides.po — ручные дополнения к встроенным переводам Django
+(например, в узбекском каталоге Django нет подписей формы смены пароля). extract этот файл не трогает,
+compile добавляет его в .mo.
 """
 import ast
 import re
@@ -36,10 +40,11 @@ def extract_templates(messages):
     for path in sorted(p for d in TEMPLATE_DIRS for p in d.rglob('*.html')):
         text = path.read_text(encoding='utf-8')
         ref = path.relative_to(ROOT).as_posix()
+        # В шаблонах Django ищет перевод с удвоенным «%» (как makemessages) — храним так же
         for m in TRANSLATE_RE.finditer(text):
-            messages.setdefault(m.group(2), set()).add(ref)
+            messages.setdefault(m.group(2).replace('%', '%%'), set()).add(ref)
         for m in DEFAULT_RE.finditer(text):
-            messages.setdefault(m.group(2), set()).add(ref)
+            messages.setdefault(m.group(2).replace('%', '%%'), set()).add(ref)
         for m in BLOCK_RE.finditer(text):
             body = m.group(2)
             if 'trimmed' in m.group(1):
@@ -146,6 +151,40 @@ def po_path(lang):
     return LOCALE_DIR / lang / 'LC_MESSAGES' / 'django.po'
 
 
+def overrides_path(lang):
+    return LOCALE_DIR / lang / 'LC_MESSAGES' / 'overrides.po'
+
+
+def read_overrides(path):
+    """Ручные дополнения к стандартным переводам Django (overrides.po), в том числе формы множественного числа.
+
+    Ключ для множественного числа — "msgid\\0msgid_plural", значение — "msgstr[0]\\0msgstr[1]...", как в .mo.
+    """
+    result = {}
+    if not path.exists():
+        return result
+    for block in path.read_text(encoding='utf-8').split('\n\n'):
+        def joined(tag):
+            m = re.search(rf'^{tag} ((?:".*"\n?)+)', block, re.M)
+            return po_unescape(''.join(re.findall(r'"(.*)"', m.group(1)))) if m else None
+        msgid = joined('msgid')
+        if not msgid:
+            continue
+        plural = joined('msgid_plural')
+        if plural is None:
+            result[msgid] = joined('msgstr') or ''
+        else:
+            forms = []
+            for i in range(10):
+                form = joined(rf'msgstr\[{i}\]')
+                if form is None:
+                    break
+                forms.append(form)
+            if all(forms):
+                result[f'{msgid}\0{plural}'] = '\0'.join(forms)
+    return result
+
+
 def check_placeholders(msgid, msgstr):
     want = sorted(re.findall(r'%\(\w+\)s', msgid))
     return not msgstr or sorted(re.findall(r'%\(\w+\)s', msgstr)) == want
@@ -165,8 +204,10 @@ def main(cmd):
             bad = [k for k, v in translations.items() if not check_placeholders(k, v)]
             if bad:
                 sys.exit(f'{lang}: не совпадают подстановки %(...)s в {len(bad)} фразах, например: {bad[0]!r}')
-            write_mo(po_path(lang).with_suffix('.mo'), translations)
-            print(f'{lang}: {sum(1 for v in translations.values() if v)} переводов')
+            overrides = read_overrides(overrides_path(lang))
+            write_mo(po_path(lang).with_suffix('.mo'), {**translations, **overrides})
+            extra = f' + {len(overrides)} дополнений к Django' if overrides else ''
+            print(f'{lang}: {sum(1 for v in translations.values() if v)} переводов{extra}')
     elif cmd == 'status':
         for lang in LANGUAGES:
             translations = read_po(po_path(lang))

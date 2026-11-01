@@ -1,11 +1,11 @@
-{% load i18n %}{% get_current_language as current_language %}{% get_available_languages as available_languages %}
+{% load i18n %}{% get_current_language as current_language %}{# Названия языков — из settings.LANGUAGES без перевода: каждый язык подписан на самом себе #}
 <form action="{% url 'set_language' %}" method="post" class="lang-form">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
     <label class="lang-label">
         <span class="lang-icon" aria-hidden="true">🌐</span>
         <select name="language" class="lang-select" aria-label="{% translate 'Язык интерфейса' %}" onchange="this.form.submit()">
-            {% for code, name in available_languages %}
+            {% for code, name in LANGUAGES %}
             <option value="{{ code }}"{% if code == current_language %} selected{% endif %}>{{ name }}</option>
             {% endfor %}
         </select>

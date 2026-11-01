@@ -1,0 +1,81 @@
+# Дополнения к встроенным переводам Django для узбекского языка.
+# В узбекском каталоге Django нет этих строк, и без дополнений вместо них показывался бы русский текст
+# (Django берёт перевод языка по умолчанию). Файл правится вручную; compile добавляет его в django.mo.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: uz\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Old password"
+msgstr "Eski parol"
+
+msgid "New password"
+msgstr "Yangi parol"
+
+msgid "New password confirmation"
+msgstr "Yangi parolni tasdiqlash"
+
+msgid "Your old password was entered incorrectly. Please enter it again."
+msgstr "Eski parol notoʻgʻri kiritildi. Qaytadan kiriting."
+
+msgid "The two password fields didn’t match."
+msgstr "Ikkala parol bir xil emas."
+
+msgid "Password change"
+msgstr "Parolni almashtirish"
+
+msgid "Password change successful"
+msgstr "Parol muvaffaqiyatli almashtirildi"
+
+msgid "A user with that username already exists."
+msgstr "Bunday foydalanuvchi nomi allaqachon mavjud."
+
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr "Majburiy. 150 belgidan oshmasin. Faqat harflar, raqamlar va @/./+/-/_."
+
+msgid "Enter a valid username. This value may contain only unaccented lowercase a-z and uppercase A-Z letters, numbers, and @/./+/-/_ characters."
+msgstr "Toʻgʻri foydalanuvchi nomini kiriting. Faqat lotin harflari (a-z, A-Z), raqamlar va @/./+/-/_ belgilari mumkin."
+
+msgid "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters."
+msgstr "Toʻgʻri foydalanuvchi nomini kiriting. Faqat harflar, raqamlar va @/./+/-/_ belgilari mumkin."
+
+msgid "username"
+msgstr "foydalanuvchi nomi"
+
+msgid "first name"
+msgstr "ism"
+
+msgid "last name"
+msgstr "familiya"
+
+msgid "email address"
+msgstr "elektron pochta manzili"
+
+msgid "This password is too short. It must contain at least %d character."
+msgid_plural "This password is too short. It must contain at least %d characters."
+msgstr[0] "Parol juda qisqa. Unda kamida %d ta belgi boʻlishi kerak."
+msgstr[1] "Parol juda qisqa. Unda kamida %d ta belgi boʻlishi kerak."
+
+msgid "Your password must contain at least %(min_length)d character."
+msgid_plural "Your password must contain at least %(min_length)d characters."
+msgstr[0] "Parolingizda kamida %(min_length)d ta belgi boʻlishi kerak."
+msgstr[1] "Parolingizda kamida %(min_length)d ta belgi boʻlishi kerak."
+
+msgid "The password is too similar to the %(verbose_name)s."
+msgstr "Parol «%(verbose_name)s» maydoniga juda oʻxshash."
+
+msgid "Your password can’t be too similar to your other personal information."
+msgstr "Parolingiz boshqa shaxsiy maʼlumotlaringizga juda oʻxshash boʻlmasligi kerak."
+
+msgid "This password is too common."
+msgstr "Bu parol juda keng tarqalgan."
+
+msgid "Your password can’t be a commonly used password."
+msgstr "Parolingiz keng tarqalgan parol boʻlmasligi kerak."
+
+msgid "This password is entirely numeric."
+msgstr "Parol faqat raqamlardan iborat."
+
+msgid "Your password can’t be entirely numeric."
+msgstr "Parolingiz faqat raqamlardan iborat boʻlmasligi kerak."

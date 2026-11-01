@@ -1162,9 +1162,13 @@ msgstr "Excel uchun jadvalni yuklab olish"
 msgid "Скидка"
 msgstr "Chegirma"
 
-#: pages/home/contracts/contract_list.html users/views.py
+#: users/views.py
 msgid "Скидка %"
 msgstr "Chegirma %"
+
+#: pages/home/contracts/contract_list.html
+msgid "Скидка %%"
+msgstr "Chegirma %%"
 
 #: pages/home/contracts/contract_list.html
 msgid "Скидка сум"

@@ -85,7 +85,7 @@
                     {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>{% endif %}
                 </td>
                 {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
-                <td>{{ contract.specialization }}</td>
+                <td>{{ contract.get_specialization_display }}</td>
                 <td>{{ contract.total_amount|money }}</td>
                 <td>{{ contract.this_month_paid|money }}</td>
                 <td class="{% if contract.this_month_balance > 0 %}status-debt{% else %}status-paid{% endif %}">

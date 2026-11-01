@@ -1162,9 +1162,13 @@ msgstr "Download the table for Excel"
 msgid "Скидка"
 msgstr "Discount"
 
-#: pages/home/contracts/contract_list.html users/views.py
+#: users/views.py
 msgid "Скидка %"
 msgstr "Discount %"
+
+#: pages/home/contracts/contract_list.html
+msgid "Скидка %%"
+msgstr "Discount %%"
 
 #: pages/home/contracts/contract_list.html
 msgid "Скидка сум"

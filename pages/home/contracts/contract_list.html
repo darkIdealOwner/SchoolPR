@@ -176,7 +176,7 @@
                 <td style="font-weight: 600;"><a href="{% url 'contract_detail' c.pk %}" style="color: var(--primary); text-decoration: none;">{{ c.number }}</a></td>
                 <td>{{ c.school.name|default:"—" }}</td>
                 <td>{{ c.date|date:"d.m.Y" }}</td>
-                <td>{{ c.month }}</td>
+                <td>{{ c.get_month_display }}</td>
                 <td><a href="{% url 'contract_detail' c.pk %}" style="color: var(--text); text-decoration: none;">{{ c.student_full_name }}</a></td>
                 <td>{{ c.student_birth_year }}</td>
                 <td>{{ c.student_class }}</td>
@@ -188,7 +188,7 @@
                 <td>{{ c.address }}</td>
                 <td>{{ c.phone_number }}</td>
                 {% endif %}
-                <td>{{ c.specialization }}</td>
+                <td>{{ c.get_specialization_display }}</td>
                 <td>{{ c.tuition_fee|money }}</td>
                 <td>{{ c.discount_percentage }}%</td>
                 <td>{{ c.discount_amount|money }}</td>
