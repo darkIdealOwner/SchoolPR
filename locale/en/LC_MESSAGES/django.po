@@ -6,6 +6,16 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: users/excel_import.py
+#, python-format
+msgid "%(amount)s сум"
+msgstr "%(amount)s UZS"
+
+#: users/excel_import.py
+#, python-format
+msgid "%(amount)s сум в месяц"
+msgstr "%(amount)s UZS per month"
+
 #: users/models.py
 #, python-format
 msgid "%(employee)s - %(amount)s за %(month)s"
@@ -33,6 +43,10 @@ msgstr "(dry run)"
 #: pages/home/debts/debt_list.html
 msgid "(только должники)"
 msgstr "(debtors only)"
+
+#: pages/home/import/excel_import.html
+msgid "* — обязательные колонки."
+msgstr "* — required columns."
 
 #: pages/home/debts/debt_list.html
 msgid "/ Тел."
@@ -83,6 +97,15 @@ msgstr "ONEC_API_TOKEN in .env, endpoints —"
 msgid "ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD в .env"
 msgstr "ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD in .env"
 
+#: users/excel_import.py
+#, python-format
+msgid "«%(value)s» — нет такого варианта"
+msgstr "“%(value)s” is not one of the options"
+
+#: users/excel_import.py
+msgid "«да», если договор уже отменён. Тогда нужна и дата отмены."
+msgstr "“yes” if the contract is already cancelled. The cancellation date is then required too."
+
 #: pages/home/partials/finance_overview.html
 msgid "· прочее"
 msgstr "· other"
@@ -91,7 +114,7 @@ msgstr "· other"
 msgid "Август"
 msgstr "August"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/schools/school_form.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/schools/school_form.html users/excel_import.py users/models.py users/views.py
 msgid "Адрес"
 msgstr "Address"
 
@@ -122,6 +145,19 @@ msgstr "No school"
 #: integrations/views.py
 msgid "В файле должен быть список записей или {\"records\": [...]}"
 msgstr "The file must contain a list of records or {\"records\": [...]}"
+
+#: users/excel_import.py
+#, python-format
+msgid "В файле нет обязательных колонок: %(columns)s."
+msgstr "The file is missing required columns: %(columns)s."
+
+#: users/excel_import.py
+msgid "В файле нет строк с данными."
+msgstr "The file has no data rows."
+
+#: pages/home/import/excel_import.html
+msgid "В шаблоне нужные колонки, подсказки и списки значений. Можно загрузить и свою таблицу или выгрузку «⬇ Excel» — главное, чтобы названия колонок совпадали."
+msgstr "The template has the right columns, tips and lists of values. You can also upload your own table or a “⬇ Excel” export — as long as the column names match."
 
 #: pages/home/investor.html
 msgid "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям."
@@ -194,7 +230,7 @@ msgstr "Payouts"
 msgid "Выплаты не зафиксированы."
 msgstr "No payouts recorded."
 
-#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/models.py
+#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py
 msgid "Выплаты сотрудникам"
 msgstr "Staff payouts"
 
@@ -222,7 +258,7 @@ msgstr "Home page"
 msgid "Год рожд."
 msgstr "Birth year"
 
-#: pages/home/contracts/contract_detail.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html users/excel_import.py users/models.py users/views.py
 msgid "Год рождения"
 msgstr "Year of birth"
 
@@ -238,7 +274,7 @@ msgstr "Chart: collected, expenses and billed by month"
 msgid "Да, удалить"
 msgstr "Yes, delete"
 
-#: integrations/models.py pages/home/integrations/integration.html
+#: integrations/models.py pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Данные"
 msgstr "Data"
 
@@ -250,19 +286,23 @@ msgstr "Contract details"
 msgid "Данных пока нет."
 msgstr "No data yet."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Дата"
 msgstr "Date"
 
-#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Дата выплаты"
 msgstr "Payout date"
 
-#: users/models.py
+#: users/excel_import.py
+msgid "Дата договора — с её месяца начисляется оплата. Например: 01.09.2026"
+msgstr "Contract date — fees are charged from this month. For example: 01.09.2026"
+
+#: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "Payment date"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Дата отмены"
 msgstr "Cancellation date"
 
@@ -346,6 +386,10 @@ msgstr "Welcome to the system."
 msgid "Договор"
 msgstr "Contract"
 
+#: users/excel_import.py
+msgid "Договор с таким номером уже есть — строка пропущена."
+msgstr "A contract with this number already exists — row skipped."
+
 #: users/forms.py
 msgid "Договор с таким номером уже существует."
 msgstr "A contract with this number already exists."
@@ -359,7 +403,7 @@ msgstr "Contract No. %(number)s of %(date)s"
 msgid "Договоров"
 msgstr "Contracts"
 
-#: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html
+#: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html users/excel_import.py
 msgid "Договоры"
 msgstr "Contracts"
 
@@ -403,6 +447,10 @@ msgstr "Debtors:"
 msgid "Доплатить"
 msgstr "Pay the rest"
 
+#: users/excel_import.py
+msgid "Есть в выгрузке с платформы. Строки с отметкой «да» не загружаются."
+msgstr "Present in exports from the platform. Rows marked “yes” are not imported."
+
 #: users/models.py
 msgid "Журнал действий"
 msgstr "Audit log"
@@ -411,7 +459,11 @@ msgstr "Audit log"
 msgid "Журнал обменов"
 msgstr "Exchange log"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/views.py
+#: users/excel_import.py
+msgid "За какой месяц оплата, например 09.2026. Пусто — месяц даты оплаты."
+msgstr "Which month the payment is for, e.g. 09.2026. Empty — the month of the payment date."
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/excel_import.py users/views.py
 msgid "За месяц"
 msgstr "For month"
 
@@ -423,6 +475,10 @@ msgstr "For month (1st day)"
 msgid "За месяц (любое число месяца)"
 msgstr "For month (any day of the month)"
 
+#: users/excel_import.py
+msgid "За этот месяц по договору нет начисления — проверьте месяц."
+msgstr "Nothing is charged under this contract for that month — check the month."
+
 #: users/views.py
 msgid "Завершён"
 msgstr "Finished"
@@ -431,9 +487,21 @@ msgstr "Finished"
 msgid "Загружено из 1С:"
 msgstr "Loaded from 1C:"
 
+#: pages/home/import/excel_import.html
+msgid "Загрузите заполненный файл"
+msgstr "Upload the filled-in file"
+
+#: pages/home/import/excel_import.html
+msgid "Загрузится"
+msgstr "Will be imported"
+
 #: pages/home/integrations/integration.html
 msgid "Загрузить"
 msgstr "Upload"
+
+#: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Загрузить из таблицы Excel"
+msgstr "Import from an Excel table"
 
 #: pages/home/integrations/integration.html
 msgid "Загрузить файл из 1С"
@@ -442,6 +510,16 @@ msgstr "Upload a file from 1C"
 #: pages/home/integrations/integration.html
 msgid "Загрузка из 1С по OData:"
 msgstr "Loading from 1C via OData:"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Загрузка из Excel: %(title)s"
+msgstr "Import from Excel: %(title)s"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Загрузка из Excel: %(title)s - SchoolPR"
+msgstr "Import from Excel: %(title)s - SchoolPR"
 
 #: pages/home/integrations/integration.html
 msgid "Загрузка файлом:"
@@ -459,6 +537,10 @@ msgstr "Debts"
 msgid "Задолженности - SchoolPR"
 msgstr "Debts - SchoolPR"
 
+#: pages/home/import/excel_import.html
+msgid "Замечания"
+msgstr "Notes"
+
 #: integrations/models.py
 msgid "Записей"
 msgstr "Records"
@@ -474,6 +556,11 @@ msgstr "The record has been reversed."
 #: users/views.py
 msgid "Запись удалена."
 msgstr "The record has been deleted."
+
+#: users/excel_import.py
+#, python-format
+msgid "Заполняйте лист «%(sheet)s», начиная со второй строки. Обязательные колонки отмечены звёздочкой."
+msgstr "Fill in the “%(sheet)s” sheet starting from the second row. Required columns are marked with an asterisk."
 
 #: integrations/models.py
 msgid "Запустил"
@@ -500,9 +587,18 @@ msgstr "Record payment"
 msgid "Здравствуйте, %(name)s!"
 msgstr "Hello, %(name)s!"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ИНПС"
 msgstr "PINFL"
+
+#: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Из Excel"
+msgstr "From Excel"
+
+#: users/views.py
+#, python-format
+msgid "Из файла «%(file)s» загружено строк: %(saved)s."
+msgstr "Rows imported from “%(file)s”: %(saved)s."
 
 #: users/models.py
 msgid "Изменение"
@@ -580,6 +676,10 @@ msgstr "July"
 msgid "Июнь"
 msgstr "June"
 
+#: users/excel_import.py
+msgid "Как заполнять"
+msgstr "How to fill in"
+
 #: integrations/models.py pages/home/integrations/integration.html
 msgid "Канал"
 msgstr "Channel"
@@ -588,7 +688,7 @@ msgstr "Channel"
 msgid "Карточка"
 msgstr "Details"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Категория"
 msgstr "Category"
 
@@ -600,13 +700,17 @@ msgstr "Category / Purpose"
 msgid "Категория/Назначение"
 msgstr "Category/Purpose"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "Класс"
 msgstr "Grade"
 
 #: pages/home/integrations/integration.html users/models.py
 msgid "Когда"
 msgstr "When"
+
+#: users/excel_import.py
+msgid "Колонка"
+msgstr "Column"
 
 #: pages/home/partials/finance_overview.html
 msgid "Крупнейшие должники"
@@ -656,6 +760,10 @@ msgstr "Name"
 msgid "Название школы"
 msgstr "School name"
 
+#: users/excel_import.py
+msgid "Название школы, как на платформе. Заполняет только владелец — директору и сотруднику подставляется их школа."
+msgstr "School name as on the platform. Only the owner fills it in — directors and employees get their own school."
+
 #: pages/home/contracts/contract_list.html pages/home/users/user_list.html
 msgid "Найти"
 msgstr "Search"
@@ -664,7 +772,11 @@ msgstr "Search"
 msgid "Наличные"
 msgstr "Cash"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/models.py users/views.py
+#: users/excel_import.py
+msgid "Наличные, карта, Click, Payme, Uzum или перечисление. Пусто — наличные."
+msgstr "Cash, card, Click, Payme, Uzum or bank transfer. Empty — cash."
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
 msgid "Направление"
 msgstr "Program"
 
@@ -672,9 +784,29 @@ msgstr "Program"
 msgid "Например: \"Инвестиция от Олега\" или \"Замена сломанного замка в кабинете\""
 msgstr "For example: \"Investment from Oleg\" or \"Replacing a broken lock\""
 
+#: users/excel_import.py
+msgid "Например: +998 90 123 45 67"
+msgstr "For example: +998 90 123 45 67"
+
+#: users/excel_import.py
+msgid "Например: 01.09.2026"
+msgstr "For example: 01.09.2026"
+
+#: users/excel_import.py
+msgid "Например: 09.2026 или Сентябрь 2026"
+msgstr "For example: 09.2026 or September 2026"
+
+#: users/excel_import.py
+msgid "Например: 2015"
+msgstr "For example: 2015"
+
 #: pages/home/transactions/transaction_form.html
 msgid "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды"
 msgstr "For example: Investments, Unexpected expenses, Supplies"
+
+#: users/excel_import.py
+msgid "Например: аренда, ремонт, инвестиция"
+msgstr "For example: rent, repairs, investment"
 
 #: users/forms.py
 msgid "Например: ошибка в сумме, оплата внесена дважды"
@@ -692,9 +824,21 @@ msgstr "Billed"
 msgid "Не назначен"
 msgstr "Not assigned"
 
+#: users/excel_import.py
+msgid "Не нашли строку с названиями колонок. Скачайте шаблон и заполните его."
+msgstr "Could not find the row with column names. Download the template and fill it in."
+
 #: pages/home/payments/payment_list.html
 msgid "Не оплачено"
 msgstr "Unpaid"
+
+#: users/excel_import.py
+msgid "Не удалось открыть файл как таблицу Excel (.xlsx)."
+msgstr "Could not open the file as an Excel table (.xlsx)."
+
+#: users/views.py
+msgid "Не удалось сохранить: данные изменились во время загрузки. Загрузите файл ещё раз."
+msgstr "Could not save: the data changed during the import. Upload the file again."
 
 #: pages/authorization/login.html
 msgid "Неверный номер телефона или пароль"
@@ -716,6 +860,10 @@ msgstr "The school cannot be deleted because contracts, payouts or transactions 
 msgid "Нельзя удалить: есть связанные финансовые записи."
 msgstr "Cannot delete: there are linked financial records."
 
+#: users/excel_import.py
+msgid "Необязательно."
+msgstr "Optional."
+
 #: pages/home/debts/debt_list.html users/views.py
 msgid "Неоплаченные месяцы"
 msgstr "Unpaid months"
@@ -732,6 +880,10 @@ msgstr "No contracts billed for this month."
 msgid "Новый договор"
 msgstr "New contract"
 
+#: users/excel_import.py
+msgid "Номер договора, который уже есть на платформе."
+msgstr "The number of a contract that already exists on the platform."
+
 #: pages/authorization/login.html pages/authorization/profile.html pages/home/users/user_form.html users/forms.py users/models.py
 msgid "Номер телефона"
 msgstr "Phone number"
@@ -739,6 +891,10 @@ msgstr "Phone number"
 #: users/models.py
 msgid "Ноябрь"
 msgstr "November"
+
+#: users/excel_import.py
+msgid "Нужен файл Excel (.xlsx) или CSV."
+msgstr "An Excel (.xlsx) or CSV file is required."
 
 #: integrations/models.py
 msgid "Обмен с 1С"
@@ -771,6 +927,10 @@ msgstr "Total student debt"
 #: users/models.py
 msgid "Объект"
 msgstr "Object"
+
+#: users/excel_import.py
+msgid "Обязательная"
+msgstr "Required"
 
 #: integrations/models.py
 msgid "Окончание"
@@ -809,7 +969,7 @@ msgstr "Payment for:"
 msgid "Оплатить"
 msgstr "Pay"
 
-#: pages/base.html pages/home/integrations/integration.html users/models.py
+#: pages/base.html pages/home/integrations/integration.html users/excel_import.py users/models.py
 msgid "Оплаты"
 msgstr "Payments"
 
@@ -849,11 +1009,15 @@ msgstr "Leave blank to keep unchanged"
 msgid "Остаток"
 msgstr "Balance"
 
-#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
+#: users/excel_import.py
+msgid "От 0 до 100. Пусто — без скидки."
+msgstr "From 0 to 100. Empty — no discount."
+
+#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
 msgid "Отмена"
 msgstr "Cancel"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Отменён"
 msgstr "Cancelled"
 
@@ -861,7 +1025,11 @@ msgstr "Cancelled"
 msgid "Отметка об отмены договора"
 msgstr "Contract cancelled"
 
-#: integrations/models.py
+#: users/excel_import.py
+msgid "Отмечена как сторно — не загружается."
+msgstr "Marked as reversed — not imported."
+
+#: integrations/models.py pages/home/import/excel_import.html
 msgid "Ошибка"
 msgstr "Failed"
 
@@ -889,7 +1057,7 @@ msgstr "School operations dashboard. Here is a short summary:"
 msgid "Пароль"
 msgstr "Password"
 
-#: pages/home/contracts/contract_list.html users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/views.py
 msgid "Паспорт"
 msgstr "Passport"
 
@@ -897,11 +1065,19 @@ msgstr "Passport"
 msgid "Паспорт / ИНПС"
 msgstr "Passport / PINFL"
 
+#: users/excel_import.py
+msgid "Перед сохранением сайт покажет, что будет загружено и где ошибки."
+msgstr "Before saving, the site shows what will be imported and where the errors are."
+
+#: pages/home/import/excel_import.html
+msgid "Перенесите данные из своей таблицы, а не вводите их по одному. Перед сохранением сайт покажет, что будет загружено и в каких строках ошибки."
+msgstr "Move data over from your own table instead of entering it one by one. Before saving, the site shows what will be imported and which rows have errors."
+
 #: users/models.py
 msgid "Перечисление на счёт"
 msgstr "Bank transfer"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/excel_import.py users/views.py
 msgid "Питание"
 msgstr "Meals"
 
@@ -982,7 +1158,7 @@ msgstr "Hi, %(name)s!"
 msgid "Применить"
 msgstr "Apply"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Примечание"
 msgstr "Note"
 
@@ -1006,6 +1182,10 @@ msgstr "Received on the platform, not yet posted in 1C:"
 msgid "Приход / Инвестиция"
 msgstr "Income / Investment"
 
+#: users/excel_import.py
+msgid "Приход или Расход"
+msgstr "Income or Expense"
+
 #: users/forms.py users/models.py users/views.py
 msgid "Причина сторно"
 msgstr "Reversal reason"
@@ -1021,6 +1201,19 @@ msgstr "Dry run (check only, save nothing)"
 #: integrations/views.py
 msgid "Пробный запуск, ничего не сохранено."
 msgstr "Dry run, nothing was saved."
+
+#: pages/home/import/excel_import.html
+msgid "Проверить файл"
+msgstr "Check the file"
+
+#: pages/home/import/excel_import.html
+msgid "Пропуск"
+msgstr "Skipped"
+
+#: users/views.py
+#, python-format
+msgid "Пропущено: %(skipped)s (ошибки или уже были на платформе)."
+msgstr "Skipped: %(skipped)s (errors or already on the platform)."
 
 #: pages/home/investor.html
 msgid "Просмотр выплат"
@@ -1114,6 +1307,10 @@ msgstr "Role"
 msgid "Русский язык"
 msgstr "Russian"
 
+#: users/excel_import.py
+msgid "Русский язык или Узбекский язык (можно коротко: рус, узб)"
+msgstr "Russian or Uzbek (short forms work too: rus, uzb)"
+
 #: users/forms.py
 msgid "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
 msgstr "Nothing is billed from the cancellation month onward. If left blank, today’s date is used."
@@ -1150,9 +1347,17 @@ msgstr "September"
 msgid "Серия и номер паспорта"
 msgstr "Passport series and number"
 
+#: users/excel_import.py
+msgid "Серия и номер паспорта родителя, например AA1234567"
+msgstr "Parent’s passport series and number, e.g. AA1234567"
+
 #: users/models.py
 msgid "Синхронизировано"
 msgstr "Synced"
+
+#: pages/home/import/excel_import.html
+msgid "Скачайте шаблон"
+msgstr "Download the template"
 
 #: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "Скачать таблицу для Excel"
@@ -1162,7 +1367,7 @@ msgstr "Download the table for Excel"
 msgid "Скидка"
 msgstr "Discount"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Скидка %"
 msgstr "Discount %"
 
@@ -1182,6 +1387,15 @@ msgstr "Discount, %"
 msgid "Скидка, сум"
 msgstr "Discount, UZS"
 
+#: users/excel_import.py
+msgid "Сколько месяцев начисляется оплата, например 9 или 12"
+msgstr "How many months fees are charged, e.g. 9 or 12"
+
+#: users/excel_import.py
+#, python-format
+msgid "Слишком много строк: за один раз можно загрузить не больше %(max)s."
+msgstr "Too many rows: you can import at most %(max)s at a time."
+
 #: pages/authorization/password_change.html
 msgid "Смена пароля"
 msgstr "Change password"
@@ -1193,6 +1407,11 @@ msgstr "Change password - SchoolPR"
 #: pages/authorization/profile.html
 msgid "Сменить пароль"
 msgstr "Change password"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Сначала только проверка — ничего не сохраняется. До %(max_rows)s строк за раз."
+msgstr "This only checks the file first — nothing is saved. Up to %(max_rows)s rows at a time."
 
 #: pages/home/partials/finance_overview.html
 msgid "Собираемость"
@@ -1230,7 +1449,7 @@ msgstr "Create contract"
 msgid "Создать школу"
 msgstr "Create school"
 
-#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сотрудник"
 msgstr "Employee"
 
@@ -1250,11 +1469,20 @@ msgstr "Staff in school"
 msgid "Сохранить изменения"
 msgstr "Save changes"
 
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Сохранить строк: %(count)s"
+msgstr "Save rows: %(count)s"
+
+#: users/excel_import.py
+msgid "Списки"
+msgstr "Lists"
+
 #: pages/home/contracts/contract_detail.html
 msgid "Способ"
 msgstr "Method"
 
-#: users/models.py
+#: users/excel_import.py users/models.py
 msgid "Способ оплаты"
 msgstr "Payment method"
 
@@ -1266,15 +1494,19 @@ msgstr "Term"
 msgid "Срок (мес)"
 msgstr "Term (months)"
 
-#: users/models.py users/views.py
+#: users/excel_import.py users/models.py users/views.py
 msgid "Срок, мес"
 msgstr "Term, months"
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/integrations/integration.html
+#: users/excel_import.py
+msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
+msgstr "The old .xls format is not supported. Open the file in Excel and save it as “Excel Workbook (.xlsx)”."
+
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Статус"
 msgstr "Status"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/excel_import.py users/views.py
 msgid "Стоимость"
 msgstr "Price"
 
@@ -1286,9 +1518,17 @@ msgstr "Tuition fee"
 msgid "Стоимость питания"
 msgstr "Meal cost"
 
+#: users/excel_import.py
+msgid "Стоимость питания в месяц. Пусто — без питания."
+msgstr "Monthly meal cost. Empty — no meals."
+
 #: users/models.py
 msgid "Стоимость учебы"
 msgstr "Tuition fee"
+
+#: users/excel_import.py
+msgid "Стоимость учёбы в месяц, в сумах"
+msgstr "Monthly tuition, in UZS"
 
 #: integrations/models.py users/models.py
 msgid "Сторнировано"
@@ -1302,7 +1542,7 @@ msgstr "Reverse"
 msgid "Сторнировать запись?"
 msgstr "Reverse this record?"
 
-#: pages/home/contracts/contract_detail.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сторно"
 msgstr "Reverse"
 
@@ -1315,11 +1555,15 @@ msgstr "Reverse record - SchoolPR"
 msgid "Страница %(page)s из %(pages)s"
 msgstr "Page %(page)s of %(pages)s"
 
-#: pages/home/integrations/integration.html
+#: pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Строка"
 msgstr "Row"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+#: pages/home/import/excel_import.html
+msgid "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся."
+msgstr "Rows with errors will not be saved. You can fix them in the file and upload it again — rows already imported will not be added twice."
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сумма"
 msgstr "Amount"
 
@@ -1343,15 +1587,31 @@ msgstr "Payment amount"
 msgid "Сумма оплаты должна быть больше нуля."
 msgstr "The payment amount must be greater than zero."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/views.py
+#: users/excel_import.py
+msgid "Такая выплата уже есть — строка пропущена, чтобы не задвоить."
+msgstr "This payout already exists — row skipped to avoid a duplicate."
+
+#: users/excel_import.py
+msgid "Такая оплата уже есть — строка пропущена, чтобы не задвоить."
+msgstr "This payment already exists — row skipped to avoid a duplicate."
+
+#: users/excel_import.py
+msgid "Такая транзакция уже есть — строка пропущена, чтобы не задвоить."
+msgstr "This transaction already exists — row skipped to avoid a duplicate."
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/excel_import.py users/views.py
 msgid "Телефон"
 msgstr "Phone"
+
+#: users/excel_import.py
+msgid "Телефон сотрудника (надёжнее) или имя, как на платформе."
+msgstr "Employee’s phone (more reliable) or name as on the platform."
 
 #: users/models.py
 msgid "Терминал / карта"
 msgstr "Card terminal"
 
-#: pages/home/transactions/transaction_list.html users/views.py
+#: pages/home/transactions/transaction_list.html users/excel_import.py users/views.py
 msgid "Тип"
 msgstr "Type"
 
@@ -1359,7 +1619,11 @@ msgstr "Type"
 msgid "Тип операции"
 msgstr "Operation type"
 
-#: pages/base.html pages/home/investor.html users/models.py
+#: users/excel_import.py
+msgid "Только для владельца. Пусто — школа сотрудника."
+msgstr "Owner only. Empty — the employee’s school."
+
+#: pages/base.html pages/home/investor.html users/excel_import.py users/models.py
 msgid "Транзакции"
 msgstr "Transactions"
 
@@ -1407,9 +1671,17 @@ msgstr "Delete user?"
 msgid "Удалить школу?"
 msgstr "Delete school?"
 
+#: pages/home/import/excel_import.html
+msgid "Уже есть"
+msgstr "Already exists"
+
 #: users/models.py
 msgid "Узбекский язык"
 msgstr "Uzbek"
+
+#: users/excel_import.py
+msgid "Уникальный номер. Если договор с таким номером уже есть, строка пропускается."
+msgstr "A unique number. If a contract with this number already exists, the row is skipped."
 
 #: pages/home/director.html pages/home/employee.html pages/home/owner.html
 msgid "Управление договорами"
@@ -1447,11 +1719,11 @@ msgstr "Succeeded"
 msgid "Ученик"
 msgstr "Student"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО родителей"
 msgstr "Parents’ full name"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО ученика"
 msgstr "Student’s full name"
 
@@ -1459,9 +1731,22 @@ msgstr "Student’s full name"
 msgid "Файл"
 msgstr "File"
 
+#: users/forms.py
+msgid "Файл Excel (.xlsx) или CSV"
+msgstr "Excel (.xlsx) or CSV file"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Файл «%(file)s» проверен. Пока ничего не сохранено."
+msgstr "“%(file)s” has been checked. Nothing is saved yet."
+
 #: integrations/views.py
 msgid "Файл больше 20 МБ — разбейте выгрузку на части."
 msgstr "The file is larger than 20 MB — split the export into parts."
+
+#: users/excel_import.py
+msgid "Файл больше 5 МБ. Разбейте таблицу на несколько файлов."
+msgstr "The file is larger than 5 MB. Split the table into several files."
 
 #: users/models.py
 msgid "Февраль"
@@ -1480,15 +1765,23 @@ msgstr "File format and examples are in docs/1c-integration.md. Uploading the sa
 msgid "Частично"
 msgstr "Partly paid"
 
+#: users/excel_import.py
+msgid "Число в сумах, например 1500000"
+msgstr "Amount in UZS, e.g. 1500000"
+
 #: integrations/views.py
 msgid "Что загружаем"
 msgstr "What to upload"
+
+#: pages/home/import/excel_import.html
+msgid "Шаблон .xlsx"
+msgstr ".xlsx template"
 
 #: pages/home/owner.html
 msgid "Школ"
 msgstr "Schools"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Школа"
 msgstr "School"
 
@@ -1507,6 +1800,14 @@ msgstr "No schools found."
 #: integrations/views.py
 msgid "Школы ↔ подразделения 1С"
 msgstr "Schools ↔ 1C departments"
+
+#: users/views.py
+msgid "Эта загрузка уже сохранена или устарела. Загрузите файл ещё раз."
+msgstr "This import has already been saved or has expired. Upload the file again."
+
+#: pages/home/import/excel_import.html
+msgid "Эти колонки не используются и не загружаются:"
+msgstr "These columns are not used and not imported:"
 
 #: pages/home/contracts/contract_confirm_delete.html pages/home/users/user_confirm_delete.html
 msgid "Это действие необратимо."
@@ -1529,6 +1830,10 @@ msgstr "Interface language"
 msgid "Январь"
 msgstr "January"
 
+#: pages/home/import/excel_import.html
+msgid "будут загружены"
+msgstr "will be imported"
+
 #: pages/home/integrations/integration.html
 msgid "включено"
 msgstr "enabled"
@@ -1537,9 +1842,22 @@ msgstr "enabled"
 msgid "выключено"
 msgstr "disabled"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "да"
 msgstr "yes"
+
+#: users/excel_import.py
+msgid "дата отмены раньше даты договора"
+msgstr "the cancellation date is before the contract date"
+
+#: users/excel_import.py
+#, python-format
+msgid "договор «%(number)s» не найден"
+msgstr "contract “%(number)s” not found"
+
+#: users/excel_import.py
+msgid "договор отменён — укажите дату отмены"
+msgstr "the contract is cancelled — enter the cancellation date"
 
 #: pages/home/integrations/integration.html
 msgid "доступна всегда"
@@ -1561,13 +1879,52 @@ msgstr "M"
 msgid "настроена"
 msgstr "configured"
 
+#: users/excel_import.py
+msgid "не заполнено"
+msgstr "empty"
+
 #: pages/home/integrations/integration.html
 msgid "не настроена"
 msgstr "not configured"
 
+#: users/excel_import.py
+#, python-format
+msgid "не понятен месяц «%(value)s». Пишите как 09.2026"
+msgstr "cannot read the month “%(value)s”. Write it like 09.2026"
+
+#: users/excel_import.py
+#, python-format
+msgid "не понятна дата «%(value)s». Пишите как 01.09.2026"
+msgstr "cannot read the date “%(value)s”. Write it like 01.09.2026"
+
+#: users/excel_import.py
+#, python-format
+msgid "не понятна сумма «%(value)s»"
+msgstr "cannot read the amount “%(value)s”"
+
+#: users/excel_import.py
+#, python-format
+msgid "не понятно значение «%(value)s»"
+msgstr "cannot read the value “%(value)s”"
+
+#: users/excel_import.py
+#, python-format
+msgid "несколько сотрудников с именем «%(name)s» — укажите телефон"
+msgstr "several employees are named “%(name)s” — use the phone number"
+
 #: users/views.py
 msgid "нет"
 msgstr "no"
+
+#: users/excel_import.py
+#, python-format
+msgid "номер повторяется — уже был в строке %(row)s"
+msgstr "duplicate number — already in row %(row)s"
+
+#: users/excel_import.py
+#, python-format
+msgid "нужно целое число, а не «%(value)s»"
+msgstr "a whole number is needed, not “%(value)s”"
 
 #: pages/home/integrations/integration.html
 msgid "ошибок"
@@ -1577,23 +1934,61 @@ msgstr "errors"
 msgid "подробнее"
 msgstr "details"
 
+#: pages/home/import/excel_import.html
+msgid "с ошибками"
+msgstr "with errors"
+
+#: users/excel_import.py
+msgid "скидка должна быть от 0 до 100"
+msgstr "the discount must be from 0 to 100"
+
+#: users/excel_import.py
+#, python-format
+msgid "сотрудник «%(name)s» не найден"
+msgstr "employee “%(name)s” not found"
+
 #: pages/home/schools/school_list.html
 msgid "сотрудников"
 msgstr "staff"
+
+#: users/excel_import.py
+msgid "срок должен быть больше нуля"
+msgstr "the term must be greater than zero"
 
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "сторно"
 msgstr "reverse"
 
+#: pages/home/import/excel_import.html
+msgid "сторно, пропущены"
+msgstr "reversed, skipped"
+
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "сум"
 msgstr "UZS"
+
+#: users/excel_import.py
+msgid "сумма должна быть больше нуля"
+msgstr "the amount must be greater than zero"
+
+#: users/excel_import.py
+msgid "у сотрудника не указана школа — заполните колонку"
+msgstr "the employee has no school — fill in the column"
+
+#: pages/home/import/excel_import.html
+msgid "уже есть на платформе"
+msgstr "already on the platform"
+
+#: users/excel_import.py
+#, python-format
+msgid "школа «%(name)s» не найдена на платформе"
+msgstr "school “%(name)s” not found on the platform"
 
 #: pages/home/contracts/contract_detail.html
 msgid "— договор"
 msgstr "— contract"
 
-#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/models.py users/views.py
+#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
 msgid "№ договора"
 msgstr "Contract No."
 

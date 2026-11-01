@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% block title %}{% blocktranslate trimmed with title=kind_title %}Загрузка из Excel: {{ title }} - SchoolPR{% endblocktranslate %}{% endblock %}
+
+{% block extra_css %}
+.panel { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; min-width: 0; }
+.panel h2 { margin: 0 0 0.75rem 0; font-size: 1.0625rem; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.step-num { display: inline-flex; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: rgba(99,102,241,0.2); color: #a5b4fc; align-items: center; justify-content: center; font-size: 0.8125rem; font-weight: 700; margin-right: 0.4rem; }
+.cols { margin: 0.75rem 0 0 0; padding: 0; list-style: none; font-size: 0.8125rem; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.cols li { padding: 0.2rem 0.55rem; border-radius: 0.4rem; background: rgba(255,255,255,0.05); }
+.cols li.req { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.upload input[type=file] { width: 100%; margin: 0.25rem 0 0.9rem 0; }
+.btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+.btn-plain { padding: 0.625rem 1.25rem; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text); border-radius: 0.5rem; font-weight: 600; cursor: pointer; font-size: 0.875rem; text-decoration: none; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; border: none; border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem; cursor: pointer; white-space: nowrap; }
+button.btn-add:disabled { opacity: 0.4; cursor: not-allowed; }
+.field-error { color: #f87171; font-size: 0.875rem; margin: -0.4rem 0 0.9rem 0; }
+.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1.25rem 0; }
+.count { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.9rem 1rem; }
+.count strong { display: block; font-size: 1.5rem; }
+.count span { color: var(--text-muted); font-size: 0.8125rem; }
+.c-ok strong { color: #10b981; } .c-exists strong { color: var(--text-muted); } .c-error strong { color: #f87171; } .c-skipped strong { color: #f59e0b; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.preview { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.preview th, .preview td { padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+.preview th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+.preview td.row-num { white-space: nowrap; color: var(--text-muted); }
+.st { font-weight: 600; white-space: nowrap; }
+.st-ok { color: #10b981; } .st-exists { color: var(--text-muted); } .st-skipped { color: #f59e0b; } .st-error { color: #f87171; }
+.problems { margin: 0; padding-left: 1rem; color: #fca5a5; }
+.notes { margin: 0; padding-left: 1rem; color: #fbbf24; }
+.notes.quiet { color: var(--text-muted); }
+@media (max-width: 640px) { .problems, .notes { list-style: none; padding-left: 0; } .problems li + li, .notes li + li { margin-top: 0.35rem; } }
+.sticky-actions { position: sticky; bottom: 0; background: var(--bg); padding: 1rem 0; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); }
+{% endblock %}
+
+{% block content %}
+<a href="{% url list_url %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← {{ kind_title }}</a>
+<h1 style="margin: 0.75rem 0 0.25rem 0;">{% blocktranslate trimmed with title=kind_title %}Загрузка из Excel: {{ title }}{% endblocktranslate %}</h1>
+
+{% if not preview %}
+<p class="muted" style="margin-top: 0;">{% translate "Перенесите данные из своей таблицы, а не вводите их по одному. Перед сохранением сайт покажет, что будет загружено и в каких строках ошибки." %}</p>
+
+<div class="steps">
+    <div class="panel">
+        <h2><span class="step-num">1</span>{% translate "Скачайте шаблон" %}</h2>
+        <p class="muted" style="margin-top: 0;">{% translate "В шаблоне нужные колонки, подсказки и списки значений. Можно загрузить и свою таблицу или выгрузку «⬇ Excel» — главное, чтобы названия колонок совпадали." %}</p>
+        <a href="{% url 'excel_template' kind %}" class="btn-excel" style="display: inline-block;">⬇ {% translate "Шаблон .xlsx" %}</a>
+        <ul class="cols">
+            {% for column, required in columns %}<li class="{% if required %}req{% endif %}" title="{{ column.hint }}">{{ column.label }}{% if required %} *{% endif %}</li>{% endfor %}
+        </ul>
+        <p class="muted" style="margin-bottom: 0;">{% translate "* — обязательные колонки." %}</p>
+    </div>
+
+    <div class="panel upload">
+        <h2><span class="step-num">2</span>{% translate "Загрузите заполненный файл" %}</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="{{ form.file.id_for_label }}" class="muted">{{ form.file.label }}</label>
+            {{ form.file }}
+            {% if form.file.errors %}<div class="field-error">{{ form.file.errors|join:" " }}</div>{% endif %}
+            <button type="submit" class="btn-add">{% translate "Проверить файл" %}</button>
+        </form>
+        <p class="muted" style="margin-bottom: 0;">{% blocktranslate trimmed %}Сначала только проверка — ничего не сохраняется. До {{ max_rows }} строк за раз.{% endblocktranslate %}</p>
+    </div>
+</div>
+
+{% else %}
+<p class="muted" style="margin-top: 0;">{% blocktranslate trimmed with file=filename %}Файл «{{ file }}» проверен. Пока ничего не сохранено.{% endblocktranslate %}</p>
+
+<div class="counts">
+    <div class="count c-ok"><strong>{{ counts.ok }}</strong><span>{% translate "будут загружены" %}</span></div>
+    <div class="count c-error"><strong>{{ counts.error }}</strong><span>{% translate "с ошибками" %}</span></div>
+    <div class="count c-exists"><strong>{{ counts.exists }}</strong><span>{% translate "уже есть на платформе" %}</span></div>
+    {% if counts.skipped %}<div class="count c-skipped"><strong>{{ counts.skipped }}</strong><span>{% translate "сторно, пропущены" %}</span></div>{% endif %}
+</div>
+
+{% if ignored %}
+<p class="muted">{% translate "Эти колонки не используются и не загружаются:" %} {{ ignored|join:", " }}</p>
+{% endif %}
+{% if counts.error %}
+<p class="muted">{% translate "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся." %}</p>
+{% endif %}
+
+<div class="table-container">
+    <table class="preview">
+        <thead>
+            <tr>
+                <th>{% translate "Строка" %}</th>
+                <th>{% translate "Статус" %}</th>
+                <th>{% translate "Данные" %}</th>
+                <th>{% translate "Замечания" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td class="row-num">{{ r.number }}</td>
+                <td class="st st-{{ r.status }}">
+                    {% if r.status == 'ok' %}{% translate "Загрузится" %}{% elif r.status == 'exists' %}{% translate "Уже есть" %}{% elif r.status == 'skipped' %}{% translate "Пропуск" %}{% else %}{% translate "Ошибка" %}{% endif %}
+                </td>
+                <td>{{ r.summary|join:" · "|default:"—" }}</td>
+                <td>
+                    {% if r.errors %}<ul class="problems">{% for e in r.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    {% if r.notes %}<ul class="notes{% if r.status != 'ok' %} quiet{% endif %}">{% for n in r.notes %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<form method="post" class="sticky-actions btn-row">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ token }}">
+    <button type="submit" name="action" value="confirm" class="btn-add" {% if not counts.ok %}disabled{% endif %}>
+        {% blocktranslate trimmed with count=counts.ok %}Сохранить строк: {{ count }}{% endblocktranslate %}
+    </button>
+    <button type="submit" name="action" value="cancel" class="btn-plain">{% translate "Отмена" %}</button>
+</form>
+{% endif %}
+{% endblock %}

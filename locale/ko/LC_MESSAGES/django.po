@@ -6,6 +6,16 @@ msgstr ""
 "Language: ko\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: users/excel_import.py
+#, python-format
+msgid "%(amount)s сум"
+msgstr "%(amount)s 숨"
+
+#: users/excel_import.py
+#, python-format
+msgid "%(amount)s сум в месяц"
+msgstr "월 %(amount)s 숨"
+
 #: users/models.py
 #, python-format
 msgid "%(employee)s - %(amount)s за %(month)s"
@@ -33,6 +43,10 @@ msgstr "(테스트)"
 #: pages/home/debts/debt_list.html
 msgid "(только должники)"
 msgstr "(미납자만)"
+
+#: pages/home/import/excel_import.html
+msgid "* — обязательные колонки."
+msgstr "* — 필수 열입니다."
 
 #: pages/home/debts/debt_list.html
 msgid "/ Тел."
@@ -83,6 +97,15 @@ msgstr ".env의 ONEC_API_TOKEN, 주소 —"
 msgid "ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD в .env"
 msgstr ".env의 ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD"
 
+#: users/excel_import.py
+#, python-format
+msgid "«%(value)s» — нет такого варианта"
+msgstr "“%(value)s” — 해당 선택지가 없습니다"
+
+#: users/excel_import.py
+msgid "«да», если договор уже отменён. Тогда нужна и дата отмены."
+msgstr "계약이 이미 해지된 경우 “예”. 이 경우 해지일도 필요합니다."
+
 #: pages/home/partials/finance_overview.html
 msgid "· прочее"
 msgstr "· 기타"
@@ -91,7 +114,7 @@ msgstr "· 기타"
 msgid "Август"
 msgstr "8월"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/schools/school_form.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/schools/school_form.html users/excel_import.py users/models.py users/views.py
 msgid "Адрес"
 msgstr "주소"
 
@@ -122,6 +145,19 @@ msgstr "학교 없음"
 #: integrations/views.py
 msgid "В файле должен быть список записей или {\"records\": [...]}"
 msgstr "파일에는 레코드 목록 또는 {\"records\": [...]}가 있어야 합니다"
+
+#: users/excel_import.py
+#, python-format
+msgid "В файле нет обязательных колонок: %(columns)s."
+msgstr "파일에 필수 열이 없습니다: %(columns)s."
+
+#: users/excel_import.py
+msgid "В файле нет строк с данными."
+msgstr "파일에 데이터 행이 없습니다."
+
+#: pages/home/import/excel_import.html
+msgid "В шаблоне нужные колонки, подсказки и списки значений. Можно загрузить и свою таблицу или выгрузку «⬇ Excel» — главное, чтобы названия колонок совпадали."
+msgstr "템플릿에는 필요한 열, 안내, 값 목록이 들어 있습니다. 직접 만든 표나 “⬇ Excel” 내보내기 파일도 올릴 수 있습니다. 열 이름만 일치하면 됩니다."
 
 #: pages/home/investor.html
 msgid "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям."
@@ -194,7 +230,7 @@ msgstr "급여"
 msgid "Выплаты не зафиксированы."
 msgstr "기록된 급여가 없습니다."
 
-#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/models.py
+#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py
 msgid "Выплаты сотрудникам"
 msgstr "직원 급여"
 
@@ -222,7 +258,7 @@ msgstr "홈 페이지"
 msgid "Год рожд."
 msgstr "출생 연도"
 
-#: pages/home/contracts/contract_detail.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html users/excel_import.py users/models.py users/views.py
 msgid "Год рождения"
 msgstr "출생 연도"
 
@@ -238,7 +274,7 @@ msgstr "차트: 월별 수납, 지출, 청구액"
 msgid "Да, удалить"
 msgstr "예, 삭제"
 
-#: integrations/models.py pages/home/integrations/integration.html
+#: integrations/models.py pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Данные"
 msgstr "데이터"
 
@@ -250,19 +286,23 @@ msgstr "계약 정보"
 msgid "Данных пока нет."
 msgstr "아직 데이터가 없습니다."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Дата"
 msgstr "날짜"
 
-#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Дата выплаты"
 msgstr "지급일"
 
-#: users/models.py
+#: users/excel_import.py
+msgid "Дата договора — с её месяца начисляется оплата. Например: 01.09.2026"
+msgstr "계약일 — 이 달부터 요금이 부과됩니다. 예: 01.09.2026"
+
+#: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "납부일"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Дата отмены"
 msgstr "해지일"
 
@@ -346,6 +386,10 @@ msgstr "시스템에 오신 것을 환영합니다."
 msgid "Договор"
 msgstr "계약"
 
+#: users/excel_import.py
+msgid "Договор с таким номером уже есть — строка пропущена."
+msgstr "같은 번호의 계약이 이미 있어 이 행은 건너뜁니다."
+
 #: users/forms.py
 msgid "Договор с таким номером уже существует."
 msgstr "같은 번호의 계약이 이미 있습니다."
@@ -359,7 +403,7 @@ msgstr "계약 번호 %(number)s (%(date)s)"
 msgid "Договоров"
 msgstr "계약"
 
-#: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html
+#: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html users/excel_import.py
 msgid "Договоры"
 msgstr "계약"
 
@@ -403,6 +447,10 @@ msgstr "미납자:"
 msgid "Доплатить"
 msgstr "추가 납부"
 
+#: users/excel_import.py
+msgid "Есть в выгрузке с платформы. Строки с отметкой «да» не загружаются."
+msgstr "플랫폼 내보내기 파일에 있는 열입니다. “예”로 표시된 행은 가져오지 않습니다."
+
 #: users/models.py
 msgid "Журнал действий"
 msgstr "작업 기록"
@@ -411,7 +459,11 @@ msgstr "작업 기록"
 msgid "Журнал обменов"
 msgstr "동기화 기록"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/views.py
+#: users/excel_import.py
+msgid "За какой месяц оплата, например 09.2026. Пусто — месяц даты оплаты."
+msgstr "어느 달의 납부인지, 예: 09.2026. 비워 두면 납부일의 달로 처리됩니다."
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/excel_import.py users/views.py
 msgid "За месяц"
 msgstr "대상 월"
 
@@ -423,6 +475,10 @@ msgstr "대상 월 (1일)"
 msgid "За месяц (любое число месяца)"
 msgstr "대상 월 (해당 월의 아무 날짜)"
 
+#: users/excel_import.py
+msgid "За этот месяц по договору нет начисления — проверьте месяц."
+msgstr "이 달에는 계약상 부과 금액이 없습니다. 달을 확인하세요."
+
 #: users/views.py
 msgid "Завершён"
 msgstr "종료"
@@ -431,9 +487,21 @@ msgstr "종료"
 msgid "Загружено из 1С:"
 msgstr "1C에서 가져옴:"
 
+#: pages/home/import/excel_import.html
+msgid "Загрузите заполненный файл"
+msgstr "작성한 파일 업로드"
+
+#: pages/home/import/excel_import.html
+msgid "Загрузится"
+msgstr "가져옴"
+
 #: pages/home/integrations/integration.html
 msgid "Загрузить"
 msgstr "업로드"
+
+#: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Загрузить из таблицы Excel"
+msgstr "Excel 표에서 가져오기"
 
 #: pages/home/integrations/integration.html
 msgid "Загрузить файл из 1С"
@@ -442,6 +510,16 @@ msgstr "1C 파일 업로드"
 #: pages/home/integrations/integration.html
 msgid "Загрузка из 1С по OData:"
 msgstr "OData로 1C에서 가져오기:"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Загрузка из Excel: %(title)s"
+msgstr "Excel에서 가져오기: %(title)s"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Загрузка из Excel: %(title)s - SchoolPR"
+msgstr "Excel에서 가져오기: %(title)s - SchoolPR"
 
 #: pages/home/integrations/integration.html
 msgid "Загрузка файлом:"
@@ -459,6 +537,10 @@ msgstr "미납"
 msgid "Задолженности - SchoolPR"
 msgstr "미납 - SchoolPR"
 
+#: pages/home/import/excel_import.html
+msgid "Замечания"
+msgstr "비고"
+
 #: integrations/models.py
 msgid "Записей"
 msgstr "레코드"
@@ -474,6 +556,11 @@ msgstr "기록이 취소되었습니다."
 #: users/views.py
 msgid "Запись удалена."
 msgstr "기록이 삭제되었습니다."
+
+#: users/excel_import.py
+#, python-format
+msgid "Заполняйте лист «%(sheet)s», начиная со второй строки. Обязательные колонки отмечены звёздочкой."
+msgstr "“%(sheet)s” 시트를 두 번째 행부터 작성하세요. 필수 열은 별표로 표시되어 있습니다."
 
 #: integrations/models.py
 msgid "Запустил"
@@ -500,9 +587,18 @@ msgstr "납부 기록"
 msgid "Здравствуйте, %(name)s!"
 msgstr "안녕하세요, %(name)s님!"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ИНПС"
 msgstr "개인식별번호"
+
+#: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Из Excel"
+msgstr "Excel에서"
+
+#: users/views.py
+#, python-format
+msgid "Из файла «%(file)s» загружено строк: %(saved)s."
+msgstr "“%(file)s” 파일에서 가져온 행: %(saved)s."
 
 #: users/models.py
 msgid "Изменение"
@@ -580,6 +676,10 @@ msgstr "7월"
 msgid "Июнь"
 msgstr "6월"
 
+#: users/excel_import.py
+msgid "Как заполнять"
+msgstr "작성 방법"
+
 #: integrations/models.py pages/home/integrations/integration.html
 msgid "Канал"
 msgstr "채널"
@@ -588,7 +688,7 @@ msgstr "채널"
 msgid "Карточка"
 msgstr "상세"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Категория"
 msgstr "분류"
 
@@ -600,13 +700,17 @@ msgstr "분류 / 용도"
 msgid "Категория/Назначение"
 msgstr "분류/용도"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "Класс"
 msgstr "학년"
 
 #: pages/home/integrations/integration.html users/models.py
 msgid "Когда"
 msgstr "시간"
+
+#: users/excel_import.py
+msgid "Колонка"
+msgstr "열"
 
 #: pages/home/partials/finance_overview.html
 msgid "Крупнейшие должники"
@@ -656,6 +760,10 @@ msgstr "이름"
 msgid "Название школы"
 msgstr "학교 이름"
 
+#: users/excel_import.py
+msgid "Название школы, как на платформе. Заполняет только владелец — директору и сотруднику подставляется их школа."
+msgstr "플랫폼에 있는 학교 이름. 소유자만 작성합니다. 원장과 직원에게는 소속 학교가 자동으로 지정됩니다."
+
 #: pages/home/contracts/contract_list.html pages/home/users/user_list.html
 msgid "Найти"
 msgstr "검색"
@@ -664,7 +772,11 @@ msgstr "검색"
 msgid "Наличные"
 msgstr "현금"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/models.py users/views.py
+#: users/excel_import.py
+msgid "Наличные, карта, Click, Payme, Uzum или перечисление. Пусто — наличные."
+msgstr "현금, 카드, Click, Payme, Uzum 또는 계좌 이체. 비워 두면 현금입니다."
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
 msgid "Направление"
 msgstr "과정"
 
@@ -672,9 +784,29 @@ msgstr "과정"
 msgid "Например: \"Инвестиция от Олега\" или \"Замена сломанного замка в кабинете\""
 msgstr "예: \"올레그의 투자\" 또는 \"교실 고장 난 자물쇠 교체\""
 
+#: users/excel_import.py
+msgid "Например: +998 90 123 45 67"
+msgstr "예: +998 90 123 45 67"
+
+#: users/excel_import.py
+msgid "Например: 01.09.2026"
+msgstr "예: 01.09.2026"
+
+#: users/excel_import.py
+msgid "Например: 09.2026 или Сентябрь 2026"
+msgstr "예: 09.2026 또는 2026년 9월"
+
+#: users/excel_import.py
+msgid "Например: 2015"
+msgstr "예: 2015"
+
 #: pages/home/transactions/transaction_form.html
 msgid "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды"
 msgstr "예: 투자, 예상치 못한 지출, 비품"
+
+#: users/excel_import.py
+msgid "Например: аренда, ремонт, инвестиция"
+msgstr "예: 임대료, 수리, 투자"
 
 #: users/forms.py
 msgid "Например: ошибка в сумме, оплата внесена дважды"
@@ -692,9 +824,21 @@ msgstr "청구액"
 msgid "Не назначен"
 msgstr "미지정"
 
+#: users/excel_import.py
+msgid "Не нашли строку с названиями колонок. Скачайте шаблон и заполните его."
+msgstr "열 이름이 있는 행을 찾지 못했습니다. 템플릿을 내려받아 작성하세요."
+
 #: pages/home/payments/payment_list.html
 msgid "Не оплачено"
 msgstr "미납"
+
+#: users/excel_import.py
+msgid "Не удалось открыть файл как таблицу Excel (.xlsx)."
+msgstr "파일을 Excel 표(.xlsx)로 열 수 없습니다."
+
+#: users/views.py
+msgid "Не удалось сохранить: данные изменились во время загрузки. Загрузите файл ещё раз."
+msgstr "저장하지 못했습니다. 가져오는 동안 데이터가 바뀌었습니다. 파일을 다시 올려 주세요."
 
 #: pages/authorization/login.html
 msgid "Неверный номер телефона или пароль"
@@ -716,6 +860,10 @@ msgstr "계약, 급여 또는 거래가 연결되어 있어 학교를 삭제할 
 msgid "Нельзя удалить: есть связанные финансовые записи."
 msgstr "삭제할 수 없습니다: 연결된 재무 기록이 있습니다."
 
+#: users/excel_import.py
+msgid "Необязательно."
+msgstr "선택 사항입니다."
+
 #: pages/home/debts/debt_list.html users/views.py
 msgid "Неоплаченные месяцы"
 msgstr "미납 월"
@@ -732,6 +880,10 @@ msgstr "이번 달 청구된 계약이 없습니다."
 msgid "Новый договор"
 msgstr "새 계약"
 
+#: users/excel_import.py
+msgid "Номер договора, который уже есть на платформе."
+msgstr "플랫폼에 이미 있는 계약 번호."
+
 #: pages/authorization/login.html pages/authorization/profile.html pages/home/users/user_form.html users/forms.py users/models.py
 msgid "Номер телефона"
 msgstr "전화번호"
@@ -739,6 +891,10 @@ msgstr "전화번호"
 #: users/models.py
 msgid "Ноябрь"
 msgstr "11월"
+
+#: users/excel_import.py
+msgid "Нужен файл Excel (.xlsx) или CSV."
+msgstr "Excel(.xlsx) 또는 CSV 파일이 필요합니다."
 
 #: integrations/models.py
 msgid "Обмен с 1С"
@@ -771,6 +927,10 @@ msgstr "학생 총 미납액"
 #: users/models.py
 msgid "Объект"
 msgstr "객체"
+
+#: users/excel_import.py
+msgid "Обязательная"
+msgstr "필수"
 
 #: integrations/models.py
 msgid "Окончание"
@@ -809,7 +969,7 @@ msgstr "납부 대상:"
 msgid "Оплатить"
 msgstr "납부"
 
-#: pages/base.html pages/home/integrations/integration.html users/models.py
+#: pages/base.html pages/home/integrations/integration.html users/excel_import.py users/models.py
 msgid "Оплаты"
 msgstr "납부"
 
@@ -849,11 +1009,15 @@ msgstr "변경하지 않으려면 비워 두세요"
 msgid "Остаток"
 msgstr "잔액"
 
-#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
+#: users/excel_import.py
+msgid "От 0 до 100. Пусто — без скидки."
+msgstr "0~100. 비워 두면 할인 없음."
+
+#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
 msgid "Отмена"
 msgstr "취소"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Отменён"
 msgstr "해지"
 
@@ -861,7 +1025,11 @@ msgstr "해지"
 msgid "Отметка об отмены договора"
 msgstr "계약 해지 여부"
 
-#: integrations/models.py
+#: users/excel_import.py
+msgid "Отмечена как сторно — не загружается."
+msgstr "취소로 표시되어 가져오지 않습니다."
+
+#: integrations/models.py pages/home/import/excel_import.html
 msgid "Ошибка"
 msgstr "오류"
 
@@ -889,7 +1057,7 @@ msgstr "학교 운영 대시보드입니다. 요약:"
 msgid "Пароль"
 msgstr "비밀번호"
 
-#: pages/home/contracts/contract_list.html users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/views.py
 msgid "Паспорт"
 msgstr "여권"
 
@@ -897,11 +1065,19 @@ msgstr "여권"
 msgid "Паспорт / ИНПС"
 msgstr "여권 / 개인식별번호"
 
+#: users/excel_import.py
+msgid "Перед сохранением сайт покажет, что будет загружено и где ошибки."
+msgstr "저장하기 전에 무엇을 가져올지, 어디에 오류가 있는지 보여 줍니다."
+
+#: pages/home/import/excel_import.html
+msgid "Перенесите данные из своей таблицы, а не вводите их по одному. Перед сохранением сайт покажет, что будет загружено и в каких строках ошибки."
+msgstr "하나씩 입력하는 대신 가지고 있는 표에서 데이터를 옮기세요. 저장하기 전에 무엇을 가져올지, 어느 행에 오류가 있는지 보여 줍니다."
+
 #: users/models.py
 msgid "Перечисление на счёт"
 msgstr "계좌 이체"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/excel_import.py users/views.py
 msgid "Питание"
 msgstr "급식"
 
@@ -982,7 +1158,7 @@ msgstr "안녕하세요, %(name)s님!"
 msgid "Применить"
 msgstr "적용"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Примечание"
 msgstr "비고"
 
@@ -1006,6 +1182,10 @@ msgstr "플랫폼에서 접수되었으나 아직 1C에 반영되지 않음:"
 msgid "Приход / Инвестиция"
 msgstr "수입 / 투자"
 
+#: users/excel_import.py
+msgid "Приход или Расход"
+msgstr "수입 또는 지출"
+
 #: users/forms.py users/models.py users/views.py
 msgid "Причина сторно"
 msgstr "취소 사유"
@@ -1021,6 +1201,19 @@ msgstr "테스트 실행 (확인만, 저장 안 함)"
 #: integrations/views.py
 msgid "Пробный запуск, ничего не сохранено."
 msgstr "테스트 실행: 아무것도 저장되지 않았습니다."
+
+#: pages/home/import/excel_import.html
+msgid "Проверить файл"
+msgstr "파일 확인"
+
+#: pages/home/import/excel_import.html
+msgid "Пропуск"
+msgstr "건너뜀"
+
+#: users/views.py
+#, python-format
+msgid "Пропущено: %(skipped)s (ошибки или уже были на платформе)."
+msgstr "건너뜀: %(skipped)s (오류 또는 이미 플랫폼에 있음)."
 
 #: pages/home/investor.html
 msgid "Просмотр выплат"
@@ -1114,6 +1307,10 @@ msgstr "역할"
 msgid "Русский язык"
 msgstr "러시아어"
 
+#: users/excel_import.py
+msgid "Русский язык или Узбекский язык (можно коротко: рус, узб)"
+msgstr "러시아어 또는 우즈베크어"
+
 #: users/forms.py
 msgid "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
 msgstr "해지된 달부터는 청구되지 않습니다. 비워 두면 오늘 날짜가 사용됩니다."
@@ -1150,9 +1347,17 @@ msgstr "9월"
 msgid "Серия и номер паспорта"
 msgstr "여권 번호"
 
+#: users/excel_import.py
+msgid "Серия и номер паспорта родителя, например AA1234567"
+msgstr "보호자 여권 번호, 예: AA1234567"
+
 #: users/models.py
 msgid "Синхронизировано"
 msgstr "동기화됨"
+
+#: pages/home/import/excel_import.html
+msgid "Скачайте шаблон"
+msgstr "템플릿 내려받기"
 
 #: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "Скачать таблицу для Excel"
@@ -1162,7 +1367,7 @@ msgstr "Excel용 표 다운로드"
 msgid "Скидка"
 msgstr "할인"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "Скидка %"
 msgstr "할인 %"
 
@@ -1182,6 +1387,15 @@ msgstr "할인, %"
 msgid "Скидка, сум"
 msgstr "할인, 숨"
 
+#: users/excel_import.py
+msgid "Сколько месяцев начисляется оплата, например 9 или 12"
+msgstr "요금이 부과되는 개월 수, 예: 9 또는 12"
+
+#: users/excel_import.py
+#, python-format
+msgid "Слишком много строк: за один раз можно загрузить не больше %(max)s."
+msgstr "행이 너무 많습니다. 한 번에 최대 %(max)s행까지 가져올 수 있습니다."
+
 #: pages/authorization/password_change.html
 msgid "Смена пароля"
 msgstr "비밀번호 변경"
@@ -1193,6 +1407,11 @@ msgstr "비밀번호 변경 - SchoolPR"
 #: pages/authorization/profile.html
 msgid "Сменить пароль"
 msgstr "비밀번호 변경"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Сначала только проверка — ничего не сохраняется. До %(max_rows)s строк за раз."
+msgstr "먼저 확인만 하며 아무것도 저장하지 않습니다. 한 번에 최대 %(max_rows)s행."
 
 #: pages/home/partials/finance_overview.html
 msgid "Собираемость"
@@ -1230,7 +1449,7 @@ msgstr "계약 생성"
 msgid "Создать школу"
 msgstr "학교 생성"
 
-#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сотрудник"
 msgstr "직원"
 
@@ -1250,11 +1469,20 @@ msgstr "학교 직원 수"
 msgid "Сохранить изменения"
 msgstr "변경 사항 저장"
 
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Сохранить строк: %(count)s"
+msgstr "행 저장: %(count)s"
+
+#: users/excel_import.py
+msgid "Списки"
+msgstr "목록"
+
 #: pages/home/contracts/contract_detail.html
 msgid "Способ"
 msgstr "방법"
 
-#: users/models.py
+#: users/excel_import.py users/models.py
 msgid "Способ оплаты"
 msgstr "납부 방법"
 
@@ -1266,15 +1494,19 @@ msgstr "기간"
 msgid "Срок (мес)"
 msgstr "기간 (개월)"
 
-#: users/models.py users/views.py
+#: users/excel_import.py users/models.py users/views.py
 msgid "Срок, мес"
 msgstr "기간, 개월"
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/integrations/integration.html
+#: users/excel_import.py
+msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
+msgstr "이전 .xls 형식은 지원하지 않습니다. Excel에서 파일을 열고 “Excel 통합 문서(.xlsx)”로 저장하세요."
+
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Статус"
 msgstr "상태"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/excel_import.py users/views.py
 msgid "Стоимость"
 msgstr "금액"
 
@@ -1286,9 +1518,17 @@ msgstr "수업료"
 msgid "Стоимость питания"
 msgstr "급식비"
 
+#: users/excel_import.py
+msgid "Стоимость питания в месяц. Пусто — без питания."
+msgstr "월 급식비. 비워 두면 급식 없음."
+
 #: users/models.py
 msgid "Стоимость учебы"
 msgstr "수업료"
+
+#: users/excel_import.py
+msgid "Стоимость учёбы в месяц, в сумах"
+msgstr "월 수업료(숨)"
 
 #: integrations/models.py users/models.py
 msgid "Сторнировано"
@@ -1302,7 +1542,7 @@ msgstr "취소"
 msgid "Сторнировать запись?"
 msgstr "이 기록을 취소하시겠습니까?"
 
-#: pages/home/contracts/contract_detail.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сторно"
 msgstr "취소"
 
@@ -1315,11 +1555,15 @@ msgstr "기록 취소 - SchoolPR"
 msgid "Страница %(page)s из %(pages)s"
 msgstr "%(pages)s페이지 중 %(page)s페이지"
 
-#: pages/home/integrations/integration.html
+#: pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Строка"
 msgstr "행"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+#: pages/home/import/excel_import.html
+msgid "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся."
+msgstr "오류가 있는 행은 저장되지 않습니다. 파일에서 고친 뒤 다시 올리면 됩니다. 이미 가져온 행은 중복으로 추가되지 않습니다."
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сумма"
 msgstr "금액"
 
@@ -1343,15 +1587,31 @@ msgstr "납부액"
 msgid "Сумма оплаты должна быть больше нуля."
 msgstr "납부액은 0보다 커야 합니다."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/views.py
+#: users/excel_import.py
+msgid "Такая выплата уже есть — строка пропущена, чтобы не задвоить."
+msgstr "같은 지급 내역이 이미 있어 중복을 피하려고 건너뜁니다."
+
+#: users/excel_import.py
+msgid "Такая оплата уже есть — строка пропущена, чтобы не задвоить."
+msgstr "같은 납부 내역이 이미 있어 중복을 피하려고 건너뜁니다."
+
+#: users/excel_import.py
+msgid "Такая транзакция уже есть — строка пропущена, чтобы не задвоить."
+msgstr "같은 거래가 이미 있어 중복을 피하려고 건너뜁니다."
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/excel_import.py users/views.py
 msgid "Телефон"
 msgstr "전화번호"
+
+#: users/excel_import.py
+msgid "Телефон сотрудника (надёжнее) или имя, как на платформе."
+msgstr "직원 전화번호(더 정확함) 또는 플랫폼에 있는 이름."
 
 #: users/models.py
 msgid "Терминал / карта"
 msgstr "카드 단말기"
 
-#: pages/home/transactions/transaction_list.html users/views.py
+#: pages/home/transactions/transaction_list.html users/excel_import.py users/views.py
 msgid "Тип"
 msgstr "유형"
 
@@ -1359,7 +1619,11 @@ msgstr "유형"
 msgid "Тип операции"
 msgstr "거래 유형"
 
-#: pages/base.html pages/home/investor.html users/models.py
+#: users/excel_import.py
+msgid "Только для владельца. Пусто — школа сотрудника."
+msgstr "소유자 전용. 비워 두면 직원의 소속 학교."
+
+#: pages/base.html pages/home/investor.html users/excel_import.py users/models.py
 msgid "Транзакции"
 msgstr "거래"
 
@@ -1407,9 +1671,17 @@ msgstr "사용자를 삭제하시겠습니까?"
 msgid "Удалить школу?"
 msgstr "학교를 삭제하시겠습니까?"
 
+#: pages/home/import/excel_import.html
+msgid "Уже есть"
+msgstr "이미 있음"
+
 #: users/models.py
 msgid "Узбекский язык"
 msgstr "우즈베크어"
+
+#: users/excel_import.py
+msgid "Уникальный номер. Если договор с таким номером уже есть, строка пропускается."
+msgstr "고유 번호. 같은 번호의 계약이 이미 있으면 이 행은 건너뜁니다."
 
 #: pages/home/director.html pages/home/employee.html pages/home/owner.html
 msgid "Управление договорами"
@@ -1447,11 +1719,11 @@ msgstr "성공"
 msgid "Ученик"
 msgstr "학생"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО родителей"
 msgstr "학부모 성명"
 
-#: pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО ученика"
 msgstr "학생 성명"
 
@@ -1459,9 +1731,22 @@ msgstr "학생 성명"
 msgid "Файл"
 msgstr "파일"
 
+#: users/forms.py
+msgid "Файл Excel (.xlsx) или CSV"
+msgstr "Excel(.xlsx) 또는 CSV 파일"
+
+#: pages/home/import/excel_import.html
+#, python-format
+msgid "Файл «%(file)s» проверен. Пока ничего не сохранено."
+msgstr "“%(file)s” 파일을 확인했습니다. 아직 아무것도 저장하지 않았습니다."
+
 #: integrations/views.py
 msgid "Файл больше 20 МБ — разбейте выгрузку на части."
 msgstr "파일이 20MB를 초과합니다. 나누어 업로드하세요."
+
+#: users/excel_import.py
+msgid "Файл больше 5 МБ. Разбейте таблицу на несколько файлов."
+msgstr "파일이 5MB보다 큽니다. 표를 여러 파일로 나누세요."
 
 #: users/models.py
 msgid "Февраль"
@@ -1480,15 +1765,23 @@ msgstr "파일 형식과 예시는 docs/1c-integration.md에 있습니다. 같�
 msgid "Частично"
 msgstr "일부 납부"
 
+#: users/excel_import.py
+msgid "Число в сумах, например 1500000"
+msgstr "숨 단위 숫자, 예: 1500000"
+
 #: integrations/views.py
 msgid "Что загружаем"
 msgstr "업로드 항목"
+
+#: pages/home/import/excel_import.html
+msgid "Шаблон .xlsx"
+msgstr ".xlsx 템플릿"
 
 #: pages/home/owner.html
 msgid "Школ"
 msgstr "학교"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Школа"
 msgstr "학교"
 
@@ -1507,6 +1800,14 @@ msgstr "학교가 없습니다."
 #: integrations/views.py
 msgid "Школы ↔ подразделения 1С"
 msgstr "학교 ↔ 1C 부서"
+
+#: users/views.py
+msgid "Эта загрузка уже сохранена или устарела. Загрузите файл ещё раз."
+msgstr "이 가져오기는 이미 저장되었거나 만료되었습니다. 파일을 다시 올려 주세요."
+
+#: pages/home/import/excel_import.html
+msgid "Эти колонки не используются и не загружаются:"
+msgstr "다음 열은 사용하지 않으며 가져오지 않습니다:"
 
 #: pages/home/contracts/contract_confirm_delete.html pages/home/users/user_confirm_delete.html
 msgid "Это действие необратимо."
@@ -1529,6 +1830,10 @@ msgstr "인터페이스 언어"
 msgid "Январь"
 msgstr "1월"
 
+#: pages/home/import/excel_import.html
+msgid "будут загружены"
+msgstr "가져올 행"
+
 #: pages/home/integrations/integration.html
 msgid "включено"
 msgstr "사용"
@@ -1537,9 +1842,22 @@ msgstr "사용"
 msgid "выключено"
 msgstr "사용 안 함"
 
-#: users/views.py
+#: users/excel_import.py users/views.py
 msgid "да"
 msgstr "예"
+
+#: users/excel_import.py
+msgid "дата отмены раньше даты договора"
+msgstr "해지일이 계약일보다 이릅니다"
+
+#: users/excel_import.py
+#, python-format
+msgid "договор «%(number)s» не найден"
+msgstr "계약 “%(number)s”을(를) 찾을 수 없습니다"
+
+#: users/excel_import.py
+msgid "договор отменён — укажите дату отмены"
+msgstr "해지된 계약입니다. 해지일을 입력하세요"
 
 #: pages/home/integrations/integration.html
 msgid "доступна всегда"
@@ -1561,13 +1879,52 @@ msgstr "백만"
 msgid "настроена"
 msgstr "설정됨"
 
+#: users/excel_import.py
+msgid "не заполнено"
+msgstr "비어 있음"
+
 #: pages/home/integrations/integration.html
 msgid "не настроена"
 msgstr "설정 안 됨"
 
+#: users/excel_import.py
+#, python-format
+msgid "не понятен месяц «%(value)s». Пишите как 09.2026"
+msgstr "“%(value)s” 달을 읽을 수 없습니다. 09.2026 형식으로 쓰세요"
+
+#: users/excel_import.py
+#, python-format
+msgid "не понятна дата «%(value)s». Пишите как 01.09.2026"
+msgstr "“%(value)s” 날짜를 읽을 수 없습니다. 01.09.2026 형식으로 쓰세요"
+
+#: users/excel_import.py
+#, python-format
+msgid "не понятна сумма «%(value)s»"
+msgstr "“%(value)s” 금액을 읽을 수 없습니다"
+
+#: users/excel_import.py
+#, python-format
+msgid "не понятно значение «%(value)s»"
+msgstr "“%(value)s” 값을 읽을 수 없습니다"
+
+#: users/excel_import.py
+#, python-format
+msgid "несколько сотрудников с именем «%(name)s» — укажите телефон"
+msgstr "“%(name)s” 이름의 직원이 여러 명입니다. 전화번호를 입력하세요"
+
 #: users/views.py
 msgid "нет"
 msgstr "아니요"
+
+#: users/excel_import.py
+#, python-format
+msgid "номер повторяется — уже был в строке %(row)s"
+msgstr "번호가 중복됩니다 — %(row)s행에 이미 있습니다"
+
+#: users/excel_import.py
+#, python-format
+msgid "нужно целое число, а не «%(value)s»"
+msgstr "“%(value)s” 대신 정수를 입력하세요"
 
 #: pages/home/integrations/integration.html
 msgid "ошибок"
@@ -1577,23 +1934,61 @@ msgstr "오류"
 msgid "подробнее"
 msgstr "자세히"
 
+#: pages/home/import/excel_import.html
+msgid "с ошибками"
+msgstr "오류 있음"
+
+#: users/excel_import.py
+msgid "скидка должна быть от 0 до 100"
+msgstr "할인은 0~100이어야 합니다"
+
+#: users/excel_import.py
+#, python-format
+msgid "сотрудник «%(name)s» не найден"
+msgstr "직원 “%(name)s”을(를) 찾을 수 없습니다"
+
 #: pages/home/schools/school_list.html
 msgid "сотрудников"
 msgstr "명"
+
+#: users/excel_import.py
+msgid "срок должен быть больше нуля"
+msgstr "기간은 0보다 커야 합니다"
 
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "сторно"
 msgstr "취소"
 
+#: pages/home/import/excel_import.html
+msgid "сторно, пропущены"
+msgstr "취소, 건너뜀"
+
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "сум"
 msgstr "숨"
+
+#: users/excel_import.py
+msgid "сумма должна быть больше нуля"
+msgstr "금액은 0보다 커야 합니다"
+
+#: users/excel_import.py
+msgid "у сотрудника не указана школа — заполните колонку"
+msgstr "직원의 소속 학교가 없습니다. 열을 작성하세요"
+
+#: pages/home/import/excel_import.html
+msgid "уже есть на платформе"
+msgstr "이미 플랫폼에 있음"
+
+#: users/excel_import.py
+#, python-format
+msgid "школа «%(name)s» не найдена на платформе"
+msgstr "학교 “%(name)s”을(를) 플랫폼에서 찾을 수 없습니다"
 
 #: pages/home/contracts/contract_detail.html
 msgid "— договор"
 msgstr "— 계약"
 
-#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/models.py users/views.py
+#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
 msgid "№ договора"
 msgstr "계약 번호"
 

@@ -243,3 +243,10 @@ class ReversalForm(forms.Form):
         max_length=255,
         widget=forms.Textarea(attrs={'rows': 3, 'class': 'input-field', 'placeholder': _('Например: ошибка в сумме, оплата внесена дважды')}),
     )
+
+
+class ExcelUploadForm(forms.Form):
+    file = forms.FileField(
+        label=_("Файл Excel (.xlsx) или CSV"),
+        widget=forms.ClearableFileInput(attrs={'accept': '.xlsx,.xlsm,.csv', 'class': 'input-field'}),
+    )

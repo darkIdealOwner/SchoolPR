@@ -7,7 +7,8 @@ from .views import (
     ContractListView, ContractDetailView, ContractCreateView, ContractUpdateView, ContractDeleteView,
     PaymentListView, PaymentCreateView, PaymentReverseView, DebtListView,
     EmployeePayoutListView, EmployeePayoutCreateView, EmployeePayoutUpdateView, EmployeePayoutReverseView,
-    TransactionListView, TransactionCreateView, TransactionUpdateView, TransactionReverseView
+    TransactionListView, TransactionCreateView, TransactionUpdateView, TransactionReverseView,
+    ExcelImportView, ExcelTemplateView,
 )
 
 urlpatterns = [
@@ -48,4 +49,7 @@ urlpatterns = [
     path('transactions/add/', TransactionCreateView.as_view(), name='transaction_create'),
     path('transactions/<int:pk>/edit/', TransactionUpdateView.as_view(), name='transaction_edit'),
     path('transactions/<int:pk>/reverse/', TransactionReverseView.as_view(), name='transaction_reverse'),
+
+    path('import/<slug:kind>/', ExcelImportView.as_view(), name='excel_import'),
+    path('import/<slug:kind>/template/', ExcelTemplateView.as_view(), name='excel_template'),
 ]

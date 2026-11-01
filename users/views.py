@@ -1,23 +1,25 @@
 import csv
+import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db import models, transaction as db_transaction
+from django.db import IntegrityError, models, transaction as db_transaction
 from django.db.models import Prefetch, ProtectedError
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.utils.translation import gettext as _, gettext_lazy
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
+from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
-    EmployeePayoutForm, TransactionForm, ReversalForm,
+    EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm,
 )
+from . import excel_import
 from .models import User, School, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
 from .finance import (
     parse_month, contracts_with_active_payments, format_russian_month, get_debt_details,
@@ -777,3 +779,91 @@ class TransactionReverseView(BaseReverseView):
         if self.request.user.role == 'DIRECTOR':
             return qs.filter(school=self.request.user.school)
         return qs
+
+
+# Загрузка из Excel
+class ExcelImportAccessMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Загружать можно то же, что разрешено вносить вручную; директору и сотруднику нужна своя школа."""
+
+    def test_func(self):
+        kind = self.kwargs['kind']
+        if kind not in excel_import.KINDS:
+            raise Http404
+        user = self.request.user
+        return user.role in excel_import.KINDS[kind]['roles'] and (user.role == 'OWNER' or user.school_id)
+
+
+class ExcelTemplateView(ExcelImportAccessMixin, View):
+    def get(self, request, kind):
+        content = excel_import.build_template(kind, request.user)
+        response = HttpResponse(content, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="{excel_import.KINDS[kind]["filename"]}.xlsx"'
+        return response
+
+
+class ExcelImportView(ExcelImportAccessMixin, TemplateView):
+    """Загрузка файла → предпросмотр с ошибками по строкам → сохранение правильных строк."""
+    template_name = 'home/import/excel_import.html'
+    session_key = 'excel_import'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kind = self.kwargs['kind']
+        context.update({
+            'kind': kind,
+            'kind_title': excel_import.KINDS[kind]['title'],
+            'list_url': excel_import.KINDS[kind]['list_url'],
+            'columns': [(c, c.is_required(self.request.user)) for c in excel_import.columns_for(kind, self.request.user)],
+            'max_rows': excel_import.MAX_ROWS,
+            'form': kwargs.get('form') or ExcelUploadForm(),
+        })
+        return context
+
+    def post(self, request, kind):
+        action = request.POST.get('action')
+        if action == 'cancel':
+            request.session.pop(self.session_key, None)
+            return redirect('excel_import', kind=kind)
+        if action == 'confirm':
+            return self.confirm(request, kind)
+
+        form = ExcelUploadForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return self.render_to_response(self.get_context_data(form=form))
+        uploaded = form.cleaned_data['file']
+        try:
+            rows, ignored = excel_import.extract_rows(kind, request.user, excel_import.read_table(uploaded))
+        except excel_import.ImportFileError as exc:
+            form.add_error('file', str(exc))
+            return self.render_to_response(self.get_context_data(form=form))
+
+        results = excel_import.check_rows(kind, request.user, rows)
+        token = uuid.uuid4().hex
+        request.session[self.session_key] = {
+            'kind': kind, 'token': token, 'filename': uploaded.name, 'rows': rows, 'ignored': ignored,
+        }
+        counts = {status: sum(1 for r in results if r.status == status) for status in ('ok', 'exists', 'skipped', 'error')}
+        return self.render_to_response(self.get_context_data(
+            preview=True, results=results, counts=counts, ignored=ignored, token=token, filename=uploaded.name,
+        ))
+
+    def confirm(self, request, kind):
+        pending = request.session.get(self.session_key)
+        if not pending or pending.get('kind') != kind or pending.get('token') != request.POST.get('token'):
+            messages.error(request, _("Эта загрузка уже сохранена или устарела. Загрузите файл ещё раз."))
+            return redirect('excel_import', kind=kind)
+        # Проверяем заново: за время предпросмотра данные на платформе могли измениться
+        rows = [(number, values) for number, values in pending['rows']]
+        results = excel_import.check_rows(kind, request.user, rows)
+        try:
+            saved = excel_import.save_rows(kind, request.user, results, pending['filename'])
+        except IntegrityError:
+            messages.error(request, _("Не удалось сохранить: данные изменились во время загрузки. Загрузите файл ещё раз."))
+            return redirect('excel_import', kind=kind)
+        request.session.pop(self.session_key, None)
+        skipped = len(results) - saved
+        text = _("Из файла «%(file)s» загружено строк: %(saved)s.") % {'file': pending['filename'], 'saved': saved}
+        if skipped:
+            text += ' ' + _("Пропущено: %(skipped)s (ошибки или уже были на платформе).") % {'skipped': skipped}
+        messages.success(request, text)
+        return redirect(excel_import.KINDS[kind]['list_url'])
