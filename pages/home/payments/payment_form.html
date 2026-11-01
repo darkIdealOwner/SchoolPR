@@ -62,7 +62,7 @@
         {% if contract_obj %}
         <p style="color: var(--text-muted);">
             {% translate "Оплата для:" %} <strong>{{ contract_obj.student_full_name }}</strong><br>
-            {% translate "Месяц:" %} <strong>{{ selected_month_str }}</strong>
+            {% translate "Месяц:" %} <strong>{{ selected_month_label|default:selected_month_str }}</strong>
         </p>
         {% endif %}
     </div>

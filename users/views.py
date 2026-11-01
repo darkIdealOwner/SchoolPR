@@ -625,6 +625,8 @@ class PaymentCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Audi
         if contract_id:
             context['contract_obj'] = self.get_allowed_contracts().filter(id=contract_id).first()
         context['selected_month_str'] = self.request.GET.get('month')
+        if context['selected_month_str']:
+            context['selected_month_label'] = format_russian_month(parse_month(context['selected_month_str']))
         return context
 
 class PaymentReverseView(BaseReverseView):
