@@ -1,4 +1,4 @@
-{% load money %}
+{% load i18n %}{% load money %}
 {% comment %}
 Финансовая сводка для главных страниц.
 Параметры include: show_spending (зарплаты/расходы/результат), show_schools (таблица по школам),
@@ -36,40 +36,40 @@ show_debtors (список должников с именами), show_period (�
 </style>
 
 <div class="fin-section">
-    <h2>Финансы за {{ overview.current_label }}</h2>
+    <h2>{% blocktranslate with month=overview.current_label %}Финансы за {{ month }}{% endblocktranslate %}</h2>
     <div class="kpi-grid">
         <div class="kpi">
-            <span class="kpi-label">Собрано оплат</span>
-            <span class="kpi-value">{{ overview.current.collected|money }} <small>сум</small></span>
+            <span class="kpi-label">{% translate "Собрано оплат" %}</span>
+            <span class="kpi-value">{{ overview.current.collected|money }} <small>{% translate "сум" %}</small></span>
             {% if overview.previous %}
-            <span class="kpi-note">Прошлый месяц: {{ overview.previous.collected|money }}</span>
+            <span class="kpi-note">{% translate "Прошлый месяц:" %} {{ overview.previous.collected|money }}</span>
             {% endif %}
         </div>
         <div class="kpi">
-            <span class="kpi-label">Собираемость за месяц</span>
+            <span class="kpi-label">{% translate "Собираемость за месяц" %}</span>
             <span class="kpi-value">{{ overview.totals.collection_rate|percent }}</span>
-            <span class="kpi-note">Оплачено {{ overview.totals.paid_for_current|money }} из {{ overview.totals.accrued_current|money }}</span>
+            <span class="kpi-note">{% translate "Оплачено" %} {{ overview.totals.paid_for_current|money }} {% translate "из" %} {{ overview.totals.accrued_current|money }}</span>
         </div>
         <div class="kpi {% if overview.totals.debt %}alert{% endif %}">
-            <span class="kpi-label">Общий долг учеников</span>
-            <span class="kpi-value">{{ overview.totals.debt|money }} <small>сум</small></span>
-            <span class="kpi-note">Должников: {{ overview.totals.debtors }} · <a href="{% url 'debt_list' %}" style="color: inherit;">подробнее</a></span>
+            <span class="kpi-label">{% translate "Общий долг учеников" %}</span>
+            <span class="kpi-value">{{ overview.totals.debt|money }} <small>{% translate "сум" %}</small></span>
+            <span class="kpi-note">{% translate "Должников:" %} {{ overview.totals.debtors }} · <a href="{% url 'debt_list' %}" style="color: inherit;">{% translate "подробнее" %}</a></span>
         </div>
         <div class="kpi">
-            <span class="kpi-label">Активных договоров</span>
+            <span class="kpi-label">{% translate "Активных договоров" %}</span>
             <span class="kpi-value">{{ overview.totals.active_contracts }}</span>
-            <span class="kpi-note">С начислением в этом месяце</span>
+            <span class="kpi-note">{% translate "С начислением в этом месяце" %}</span>
         </div>
         {% if show_spending %}
         <div class="kpi">
-            <span class="kpi-label">Зарплаты и расходы</span>
-            <span class="kpi-value">{{ overview.current.spent|money }} <small>сум</small></span>
-            <span class="kpi-note">Зарплаты {{ overview.current.payouts|money }} · прочее {{ overview.current.expenses|money }}</span>
+            <span class="kpi-label">{% translate "Зарплаты и расходы" %}</span>
+            <span class="kpi-value">{{ overview.current.spent|money }} <small>{% translate "сум" %}</small></span>
+            <span class="kpi-note">{% translate "Зарплаты" %} {{ overview.current.payouts|money }} {% translate "· прочее" %} {{ overview.current.expenses|money }}</span>
         </div>
         <div class="kpi">
-            <span class="kpi-label">Результат месяца</span>
-            <span class="kpi-value {% if overview.current.result < 0 %}neg{% endif %}">{{ overview.current.result|money }} <small>сум</small></span>
-            <span class="kpi-note">Оплаты минус зарплаты и расходы</span>
+            <span class="kpi-label">{% translate "Результат месяца" %}</span>
+            <span class="kpi-value {% if overview.current.result < 0 %}neg{% endif %}">{{ overview.current.result|money }} <small>{% translate "сум" %}</small></span>
+            <span class="kpi-note">{% translate "Оплаты минус зарплаты и расходы" %}</span>
         </div>
         {% endif %}
     </div>
@@ -77,54 +77,54 @@ show_debtors (список должников с именами), show_period (�
 
 {% if show_period %}
 <div class="fin-section">
-    <h2>Итоги за 12 месяцев <span class="fin-sub">{{ overview.period_label }}</span></h2>
+    <h2>{% translate "Итоги за 12 месяцев" %} <span class="fin-sub">{{ overview.period_label }}</span></h2>
     <div class="kpi-grid">
         <div class="kpi">
-            <span class="kpi-label">Собрано оплат</span>
-            <span class="kpi-value">{{ overview.period_totals.collected|money }} <small>сум</small></span>
+            <span class="kpi-label">{% translate "Собрано оплат" %}</span>
+            <span class="kpi-value">{{ overview.period_totals.collected|money }} <small>{% translate "сум" %}</small></span>
         </div>
         <div class="kpi">
-            <span class="kpi-label">Зарплаты и расходы</span>
-            <span class="kpi-value">{{ overview.period_totals.spent|money }} <small>сум</small></span>
+            <span class="kpi-label">{% translate "Зарплаты и расходы" %}</span>
+            <span class="kpi-value">{{ overview.period_totals.spent|money }} <small>{% translate "сум" %}</small></span>
         </div>
         <div class="kpi">
-            <span class="kpi-label">Операционный результат</span>
-            <span class="kpi-value {% if overview.period_totals.result < 0 %}neg{% endif %}">{{ overview.period_totals.result|money }} <small>сум</small></span>
+            <span class="kpi-label">{% translate "Операционный результат" %}</span>
+            <span class="kpi-value {% if overview.period_totals.result < 0 %}neg{% endif %}">{{ overview.period_totals.result|money }} <small>{% translate "сум" %}</small></span>
         </div>
         <div class="kpi">
-            <span class="kpi-label">Инвестиции и прочие поступления</span>
-            <span class="kpi-value">{{ overview.period_totals.other_income|money }} <small>сум</small></span>
+            <span class="kpi-label">{% translate "Инвестиции и прочие поступления" %}</span>
+            <span class="kpi-value">{{ overview.period_totals.other_income|money }} <small>{% translate "сум" %}</small></span>
         </div>
     </div>
 </div>
 {% endif %}
 
 <div class="fin-section">
-    <h2>Динамика по месяцам <span class="fin-sub">{{ overview.period_label }}</span></h2>
+    <h2>{% translate "Динамика по месяцам" %} <span class="fin-sub">{{ overview.period_label }}</span></h2>
     <div class="chart-card">
         <div class="chart-legend">
-            <span><i style="background: #3987e5;"></i>Собрано оплат</span>
-            {% if show_spending %}<span><i style="background: #d95926;"></i>Зарплаты и расходы</span>{% endif %}
-            <span><i class="line" style="background: #199e70;"></i>Начислено</span>
+            <span><i style="background: #3987e5;"></i>{% translate "Собрано оплат" %}</span>
+            {% if show_spending %}<span><i style="background: #d95926;"></i>{% translate "Зарплаты и расходы" %}</span>{% endif %}
+            <span><i class="line" style="background: #199e70;"></i>{% translate "Начислено" %}</span>
         </div>
-        <div class="chart-box"><canvas id="finance-chart" aria-label="График: собрано, расходы и начислено по месяцам" role="img"></canvas></div>
+        <div class="chart-box"><canvas id="finance-chart" aria-label="{% translate "График: собрано, расходы и начислено по месяцам" %}" role="img"></canvas></div>
     </div>
 </div>
 
 {% if show_schools %}
 <div class="fin-section">
-    <h2>По школам <span class="fin-sub">{{ overview.current_label }}</span></h2>
+    <h2>{% translate "По школам" %} <span class="fin-sub">{{ overview.current_label }}</span></h2>
     <div class="fin-table-wrap">
         <table class="fin-table">
             <thead>
                 <tr>
-                    <th>Школа</th>
-                    <th>Договоры</th>
-                    <th>Начислено</th>
-                    <th>Собрано</th>
-                    <th>Собираемость</th>
-                    <th>Долг</th>
-                    {% if show_spending %}<th>Зарплаты и расходы</th><th>Результат</th>{% endif %}
+                    <th>{% translate "Школа" %}</th>
+                    <th>{% translate "Договоры" %}</th>
+                    <th>{% translate "Начислено" %}</th>
+                    <th>{% translate "Собрано" %}</th>
+                    <th>{% translate "Собираемость" %}</th>
+                    <th>{% translate "Долг" %}</th>
+                    {% if show_spending %}<th>{% translate "Зарплаты и расходы" %}</th><th>{% translate "Результат" %}</th>{% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -142,13 +142,13 @@ show_debtors (список должников с именами), show_period (�
                     {% endif %}
                 </tr>
                 {% empty %}
-                <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Данных пока нет.</td></tr>
+                <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">{% translate "Данных пока нет." %}</td></tr>
                 {% endfor %}
             </tbody>
             {% if overview.schools|length > 1 %}
             <tfoot>
                 <tr>
-                    <td>Вся сеть</td>
+                    <td>{% translate "Вся сеть" %}</td>
                     <td>{{ overview.totals.active_contracts }}</td>
                     <td>{{ overview.totals.accrued_current|money }}</td>
                     <td>{{ overview.current.collected|money }}</td>
@@ -168,11 +168,11 @@ show_debtors (список должников с именами), show_period (�
 
 {% if show_debtors and overview.top_debtors %}
 <div class="fin-section">
-    <h2>Крупнейшие должники</h2>
+    <h2>{% translate "Крупнейшие должники" %}</h2>
     <div class="fin-table-wrap">
         <table class="fin-table">
             <thead>
-                <tr><th>Ученик</th><th>№ договора</th><th>Месяцев</th><th>Долг</th></tr>
+                <tr><th>{% translate "Ученик" %}</th><th>{% translate "№ договора" %}</th><th>{% translate "Месяцев" %}</th><th>{% translate "Долг" %}</th></tr>
             </thead>
             <tbody>
                 {% for c in overview.top_debtors %}
@@ -194,15 +194,23 @@ show_debtors (список должников с именами), show_period (�
 <script>
 (function () {
     const data = JSON.parse(document.getElementById('finance-chart-data').textContent);
-    const fmt = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
-    const fmtMln = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 });
+    const locale = '{{ LANGUAGE_CODE|default:"ru"|escapejs }}';
+    const t = {
+        collected: '{% translate "Собрано оплат" as s %}{{ s|escapejs }}',
+        {% if show_spending %}spent: '{% translate "Зарплаты и расходы" as s %}{{ s|escapejs }}',{% endif %}
+        accrued: '{% translate "Начислено" as s %}{{ s|escapejs }}',
+        currency: '{% translate "сум" as s %}{{ s|escapejs }}',
+        million: '{% translate "млн" as s %}{{ s|escapejs }}',
+    };
+    const fmt = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
+    const fmtMln = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
     const datasets = [
-        { type: 'bar', label: 'Собрано оплат', data: data.collected, backgroundColor: '#3987e5', borderRadius: 4, maxBarThickness: 18, order: 2 },
+        { type: 'bar', label: t.collected, data: data.collected, backgroundColor: '#3987e5', borderRadius: 4, maxBarThickness: 18, order: 2 },
     ];
     {% if show_spending %}
-    datasets.push({ type: 'bar', label: 'Зарплаты и расходы', data: data.spent, backgroundColor: '#d95926', borderRadius: 4, maxBarThickness: 18, order: 2 });
+    datasets.push({ type: 'bar', label: t.spent, data: data.spent, backgroundColor: '#d95926', borderRadius: 4, maxBarThickness: 18, order: 2 });
     {% endif %}
-    datasets.push({ type: 'line', label: 'Начислено', data: data.accrued, borderColor: '#199e70', backgroundColor: '#199e70', borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0, order: 1 });
+    datasets.push({ type: 'line', label: t.accrued, data: data.accrued, borderColor: '#199e70', backgroundColor: '#199e70', borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0, order: 1 });
 
     new Chart(document.getElementById('finance-chart'), {
         data: { labels: data.labels, datasets: datasets },
@@ -211,14 +219,14 @@ show_debtors (список должников с именами), show_period (�
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { display: false },
-                tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt.format(ctx.parsed.y)} сум` } },
+                tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt.format(ctx.parsed.y)} ${t.currency}` } },
             },
             scales: {
                 x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
                 y: {
                     beginAtZero: true,
                     grid: { color: 'rgba(255,255,255,0.06)' },
-                    ticks: { color: '#94a3b8', callback: (v) => v >= 1e6 ? fmtMln.format(v / 1e6) + ' млн' : fmt.format(v) },
+                    ticks: { color: '#94a3b8', callback: (v) => v >= 1e6 ? fmtMln.format(v / 1e6) + ' ' + t.million : fmt.format(v) },
                 },
             },
         },

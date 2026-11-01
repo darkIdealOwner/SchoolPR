@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if is_edit %}Редактировать пользователя{% else %}Добавить пользователя{% endif %} - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% if is_edit %}{% translate "Редактировать пользователя" %}{% else %}{% translate "Добавить пользователя" %}{% endif %} - SchoolPR{% endblock %}
 
 {% block extra_css %}
 .form-card {
@@ -73,7 +74,7 @@ select.input-field {
 
 {% block content %}
 <div class="card form-card">
-    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}Редактировать{% else %}Добавить{% endif %} пользователя</h1>
+    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}{% translate "Редактировать пользователя" %}{% else %}{% translate "Добавить пользователя" %}{% endif %}</h1>
     
     <form method="post">
         {% csrf_token %}
@@ -84,40 +85,40 @@ select.input-field {
         {% endif %}
 
         <div class="form-group">
-            <label for="{{ form.username.id_for_label }}">Логин (username)</label>
+            <label for="{{ form.username.id_for_label }}">{% translate "Логин (username)" %}</label>
             {{ form.username }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.first_name.id_for_label }}">Имя</label>
+            <label for="{{ form.first_name.id_for_label }}">{% translate "Имя" %}</label>
             {{ form.first_name }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.phone_number.id_for_label }}">Номер телефона</label>
+            <label for="{{ form.phone_number.id_for_label }}">{% translate "Номер телефона" %}</label>
             {{ form.phone_number }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.role.id_for_label }}">Роль</label>
+            <label for="{{ form.role.id_for_label }}">{% translate "Роль" %}</label>
             {{ form.role }}
         </div>
 
         <div id="school-wrapper" class="form-group hidden">
-            <label for="{{ form.school.id_for_label }}">Школа</label>
+            <label for="{{ form.school.id_for_label }}">{% translate "Школа" %}</label>
             {{ form.school }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.password.id_for_label }}">Пароль</label>
+            <label for="{{ form.password.id_for_label }}">{% translate "Пароль" %}</label>
             {{ form.password }}
             {% if is_edit %}
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Оставьте пустым, если не хотите менять.</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{% translate "Оставьте пустым, если не хотите менять." %}</p>
             {% endif %}
         </div>
 
-        <button type="submit" class="btn-save">{% if is_edit %}Сохранить изменения{% else %}Применить{% endif %}</button>
-        <a href="{% url 'user_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">Отмена</a>
+        <button type="submit" class="btn-save">{% if is_edit %}{% translate "Сохранить изменения" %}{% else %}{% translate "Применить" %}{% endif %}</button>
+        <a href="{% url 'user_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "Отмена" %}</a>
     </form>
 </div>
 {% endblock %}

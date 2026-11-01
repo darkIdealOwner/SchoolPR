@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Инвестиционный портфель - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Инвестиционный портфель - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .stats-grid {
@@ -27,26 +28,22 @@ border: 1px solid rgba(255, 255, 255, 0.1);
 
 {% block content %}
 <div class="welcome-section">
-    <h1 style="font-size: 2.25rem;">Привет, {{ user.first_name }}! 👋</h1>
-    <p style="color: var(--text-muted); margin-top: 0.5rem;">Ваш инвестиционный обзор в SchoolPR. Здесь отображаются
-        сводные показатели по всем подразделениям.</p>
+    <h1 style="font-size: 2.25rem;">{% blocktranslate with name=user.first_name %}Привет, {{ name }}!{% endblocktranslate %} 👋</h1>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;">{% translate "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям." %}</p>
 </div>
 
 {% include 'home/partials/finance_overview.html' with show_spending=True show_schools=True show_period=True %}
 
 <div class="quick-links" style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
     <a href="{% url 'contract_list' %}" class="btn-action"
-        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #f59e0b;">Просмотр
-        договоров</a>
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #f59e0b;">{% translate "Просмотр договоров" %}</a>
     <a href="{% url 'payment_list' %}" class="btn-action"
-        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #3b82f6;">Просмотр
-        выплат</a>
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #3b82f6;">{% translate "Просмотр выплат" %}</a>
     <a href="{% url 'debt_list' %}" class="btn-action"
-        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #ef4444;">Задолженности</a>
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #ef4444;">{% translate "Задолженности" %}</a>
     <a href="{% url 'payout_list' %}" class="btn-action"
-        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #8b5cf6;">Выплаты
-        сотрудникам</a>
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #8b5cf6;">{% translate "Выплаты сотрудникам" %}</a>
     <a href="{% url 'transaction_list' %}" class="btn-action"
-        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #10b981;">Транзакции</a>
+        style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #10b981;">{% translate "Транзакции" %}</a>
 </div>
 {% endblock %}

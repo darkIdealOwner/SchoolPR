@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Управление школами - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Управление школами - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .toolbar {
@@ -58,17 +59,17 @@
 
 {% block content %}
 <div class="toolbar">
-    <h1 style="margin: 0;">Школы</h1>
-    <a href="{% url 'school_add' %}" class="btn-action" style="background-color: var(--primary); color: white; padding: 0.625rem 1.25rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600;">Добавить школу</a>
+    <h1 style="margin: 0;">{% translate "Школы" %}</h1>
+    <a href="{% url 'school_add' %}" class="btn-action" style="background-color: var(--primary); color: white; padding: 0.625rem 1.25rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600;">{% translate "Добавить школу" %}</a>
 </div>
 
 <table class="school-table">
     <thead>
         <tr>
-            <th>Название</th>
-            <th>Директор</th>
-            <th>Сотрудники</th>
-            <th>Действия</th>
+            <th>{% translate "Название" %}</th>
+            <th>{% translate "Директор" %}</th>
+            <th>{% translate "Сотрудники" %}</th>
+            <th>{% translate "Действия" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -76,35 +77,35 @@
         <tr>
             <td>
                 <div style="font-weight: 600;">{{ s.name }}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ s.address|default:"Адрес не указан" }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ s.address|default:_("Адрес не указан") }}</div>
             </td>
             <td>
                 {% if s.director %}
                     <div style="font-weight: 500;">{{ s.director.first_name }}</div>
                     <div style="font-size: 0.75rem; color: var(--text-muted);">{{ s.director.masked_phone }}</div>
                 {% else %}
-                    <span style="color: #ef4444; font-size: 0.875rem;">Не назначен</span>
+                    <span style="color: #ef4444; font-size: 0.875rem;">{% translate "Не назначен" %}</span>
                 {% endif %}
             </td>
             <td>
-                <span class="stat-badge">{{ s.employee_count }} сотрудников</span>
+                <span class="stat-badge">{{ s.employee_count }} {% translate "сотрудников" %}</span>
             </td>
             <td>
                 <div class="action-links">
-                    <a href="{% url 'school_edit' s.pk %}" class="action-link">Изменить</a>
-                    <a href="{% url 'school_delete' s.pk %}" class="action-link" style="color: #ef4444;">Удалить</a>
+                    <a href="{% url 'school_edit' s.pk %}" class="action-link">{% translate "Изменить" %}</a>
+                    <a href="{% url 'school_delete' s.pk %}" class="action-link" style="color: #ef4444;">{% translate "Удалить" %}</a>
                 </div>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 3rem;">Школы не найдены.</td>
+            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 3rem;">{% translate "Школы не найдены." %}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
 <div style="margin-top: 2rem;">
-    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Вернуться на главную</a>
+    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>
 </div>
 {% endblock %}

@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load money %}
 
-{% block title %}{{ contract.student_full_name }} — договор {{ contract.number }} - SchoolPR{% endblock %}
+{% block title %}{{ contract.student_full_name }} {% translate "— договор" %} {{ contract.number }} - SchoolPR{% endblock %}
 
 {% block extra_css %}
 .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
@@ -39,13 +40,13 @@
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'contract_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← К списку договоров</a>
+<a href="{% url 'contract_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← К списку договоров" %}</a>
 
 <div class="card-head">
     <div>
         <h1>{{ contract.student_full_name }}</h1>
         <div class="meta">
-            Договор № {{ contract.number }} от {{ contract.date|date:"d.m.Y" }} · {{ contract.school.name|default:"Без школы" }} · {{ contract.student_class }} класс · {{ contract.specialization }}
+            {% blocktranslate with number=contract.number date=contract.date|date:"d.m.Y" %}Договор № {{ number }} от {{ date }}{% endblocktranslate %} · {{ contract.school.name|default:_("Без школы") }} · {% blocktranslate with grade=contract.student_class %}{{ grade }} класс{% endblocktranslate %} · {{ contract.get_specialization_display }}
         </div>
         <div style="margin-top: 0.6rem;">
             <span class="badge {{ status.0 }}">{{ status.1 }}{% if contract.is_cancelled and contract.cancelled_at %} {{ contract.cancelled_at|date:"d.m.Y" }}{% endif %}</span>
@@ -53,60 +54,60 @@
     </div>
     {% if can_edit %}
     <div class="head-actions">
-        <a href="{% url 'contract_edit' contract.pk %}" class="btn secondary">Изменить договор</a>
+        <a href="{% url 'contract_edit' contract.pk %}" class="btn secondary">{% translate "Изменить договор" %}</a>
     </div>
     {% endif %}
 </div>
 
 <div class="kpi-grid">
     <div class="kpi">
-        <div class="kpi-label">Платёж в месяц</div>
-        <div class="kpi-value">{{ contract.total_amount|money }} <small style="font-size: 0.8rem; color: var(--text-muted);">сум</small></div>
+        <div class="kpi-label">{% translate "Платёж в месяц" %}</div>
+        <div class="kpi-value">{{ contract.total_amount|money }} <small style="font-size: 0.8rem; color: var(--text-muted);">{% translate "сум" %}</small></div>
     </div>
     <div class="kpi">
-        <div class="kpi-label">Срок</div>
-        <div class="kpi-value">{{ contract.duration_months }} мес.</div>
+        <div class="kpi-label">{% translate "Срок" %}</div>
+        <div class="kpi-value">{{ contract.duration_months }} {% translate "мес." %}</div>
     </div>
     <div class="kpi">
-        <div class="kpi-label">Оплачено всего</div>
+        <div class="kpi-label">{% translate "Оплачено всего" %}</div>
         <div class="kpi-value">{{ paid_total|money }}</div>
     </div>
     <div class="kpi">
-        <div class="kpi-label">Долг на сегодня</div>
+        <div class="kpi-label">{% translate "Долг на сегодня" %}</div>
         <div class="kpi-value {% if debt %}neg{% endif %}">{{ debt|money }}</div>
-        {% if unpaid_count %}<div class="kpi-label" style="margin-top: 0.25rem;">Неоплаченных месяцев: {{ unpaid_count }}</div>{% endif %}
+        {% if unpaid_count %}<div class="kpi-label" style="margin-top: 0.25rem;">{% translate "Неоплаченных месяцев:" %} {{ unpaid_count }}</div>{% endif %}
     </div>
 </div>
 
 <div class="section">
-    <h2>Данные договора</h2>
+    <h2>{% translate "Данные договора" %}</h2>
     <dl class="info-grid">
-        <div><dt>Год рождения</dt><dd>{{ contract.student_birth_year }}</dd></div>
-        <div><dt>Стоимость обучения</dt><dd>{{ contract.tuition_fee|money }}</dd></div>
-        <div><dt>Скидка</dt><dd>{{ contract.discount_percentage }}% ({{ contract.discount_amount|money }})</dd></div>
-        <div><dt>Питание</dt><dd>{{ contract.food_cost|money }}</dd></div>
+        <div><dt>{% translate "Год рождения" %}</dt><dd>{{ contract.student_birth_year }}</dd></div>
+        <div><dt>{% translate "Стоимость обучения" %}</dt><dd>{{ contract.tuition_fee|money }}</dd></div>
+        <div><dt>{% translate "Скидка" %}</dt><dd>{{ contract.discount_percentage }}% ({{ contract.discount_amount|money }})</dd></div>
+        <div><dt>{% translate "Питание" %}</dt><dd>{{ contract.food_cost|money }}</dd></div>
         {% if user.can_view_personal_data %}
-        <div><dt>Родители</dt><dd>{{ contract.parents_full_name|default:"—" }}</dd></div>
-        <div><dt>Телефон</dt><dd>{{ contract.phone_number|default:"—" }}</dd></div>
-        <div><dt>Адрес</dt><dd>{{ contract.address|default:"—" }}</dd></div>
-        <div><dt>Паспорт / ИНПС</dt><dd>{{ contract.passport_data|default:"—" }} / {{ contract.inps|default:"—" }}</dd></div>
+        <div><dt>{% translate "Родители" %}</dt><dd>{{ contract.parents_full_name|default:"—" }}</dd></div>
+        <div><dt>{% translate "Телефон" %}</dt><dd>{{ contract.phone_number|default:"—" }}</dd></div>
+        <div><dt>{% translate "Адрес" %}</dt><dd>{{ contract.address|default:"—" }}</dd></div>
+        <div><dt>{% translate "Паспорт / ИНПС" %}</dt><dd>{{ contract.passport_data|default:"—" }} / {{ contract.inps|default:"—" }}</dd></div>
         {% endif %}
-        {% if contract.notes %}<div style="grid-column: 1 / -1;"><dt>Примечание</dt><dd>{{ contract.notes }}</dd></div>{% endif %}
+        {% if contract.notes %}<div style="grid-column: 1 / -1;"><dt>{% translate "Примечание" %}</dt><dd>{{ contract.notes }}</dd></div>{% endif %}
     </dl>
 </div>
 
 <div class="section">
-    <h2>График оплат</h2>
+    <h2>{% translate "График оплат" %}</h2>
     <div class="table-wrap">
         <table class="tbl">
             <thead>
                 <tr>
-                    <th>Месяц</th>
-                    <th class="num">Начислено</th>
-                    <th class="num">Оплачено</th>
-                    <th class="num">Остаток</th>
-                    <th class="num">Долг нарастающим</th>
-                    <th>Статус</th>
+                    <th>{% translate "Месяц" %}</th>
+                    <th class="num">{% translate "Начислено" %}</th>
+                    <th class="num">{% translate "Оплачено" %}</th>
+                    <th class="num">{% translate "Остаток" %}</th>
+                    <th class="num">{% translate "Долг нарастающим" %}</th>
+                    <th>{% translate "Статус" %}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -120,23 +121,23 @@
                     <td class="num">{% if row.status != 'upcoming' %}{{ row.running_debt|money }}{% else %}—{% endif %}</td>
                     <td>
                         <span class="st {{ row.status }}">
-                            {% if row.status == 'paid' %}✓ Оплачено{% elif row.status == 'partial' %}◐ Частично{% elif row.status == 'debt' %}✕ Долг{% else %}Предстоит{% endif %}
+                            {% if row.status == 'paid' %}{% translate "✓ Оплачено" %}{% elif row.status == 'partial' %}{% translate "◐ Частично" %}{% elif row.status == 'debt' %}{% translate "✕ Долг" %}{% else %}{% translate "Предстоит" %}{% endif %}
                         </span>
                     </td>
                     <td>
                         {% if can_edit and row.balance > 0 %}
-                        <a class="pay-link" href="{% url 'payment_create' %}?contract={{ contract.pk }}&month={{ row.month_str }}&next={{ request.path|urlencode }}">{% if row.paid %}Доплатить{% else %}Оплатить{% endif %}</a>
+                        <a class="pay-link" href="{% url 'payment_create' %}?contract={{ contract.pk }}&month={{ row.month_str }}&next={{ request.path|urlencode }}">{% if row.paid %}{% translate "Доплатить" %}{% else %}{% translate "Оплатить" %}{% endif %}</a>
                         {% endif %}
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">По договору нет начислений.</td></tr>
+                <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "По договору нет начислений." %}</td></tr>
                 {% endfor %}
             </tbody>
             {% if schedule %}
             <tfoot>
                 <tr style="font-weight: 700;">
-                    <td>Итого</td>
+                    <td>{% translate "Итого" %}</td>
                     <td class="num">{{ accrued_total|money }}</td>
                     <td class="num">{{ paid_total|money }}</td>
                     <td colspan="4"></td>
@@ -148,17 +149,17 @@
 </div>
 
 <div class="section">
-    <h2>История оплат</h2>
+    <h2>{% translate "История оплат" %}</h2>
     <div class="table-wrap">
         <table class="tbl">
             <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>За месяц</th>
-                    <th class="num">Сумма</th>
-                    <th>Способ</th>
-                    <th>Принял</th>
-                    <th>Примечание</th>
+                    <th>{% translate "Дата" %}</th>
+                    <th>{% translate "За месяц" %}</th>
+                    <th class="num">{% translate "Сумма" %}</th>
+                    <th>{% translate "Способ" %}</th>
+                    <th>{% translate "Принял" %}</th>
+                    <th>{% translate "Примечание" %}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -166,24 +167,24 @@
                 {% for p in payments_history %}
                 <tr{% if p.is_reversed %} class="reversed-row"{% endif %}>
                     <td>{{ p.payment_date|date:"d.m.Y" }}</td>
-                    <td>{{ p.for_month|date:"F Y" }}</td>
+                    <td>{{ p.for_month|date:"YEAR_MONTH_FORMAT" }}</td>
                     <td class="num">{{ p.amount|money }}</td>
                     <td>{{ p.get_method_display }}</td>
                     <td>{{ p.created_by.first_name|default:"—" }}</td>
                     <td style="white-space: normal; max-width: 240px;">{{ p.notes|default:"—" }}</td>
                     <td class="reversal-info">
                         {% if p.is_reversed %}
-                            <span style="color: #f87171; font-size: 0.75rem;">Сторно {{ p.reversed_at|date:"d.m.Y" }}{% if p.reversed_by %} · {{ p.reversed_by.first_name }}{% endif %}</span>
+                            <span style="color: #f87171; font-size: 0.75rem;">{% translate "Сторно" %} {{ p.reversed_at|date:"d.m.Y" }}{% if p.reversed_by %} · {{ p.reversed_by.first_name }}{% endif %}</span>
                             <div style="color: var(--text-muted); font-size: 0.7rem;">{{ p.reversal_reason }}</div>
                         {% elif p.is_from_1c %}
-                            <span title="Документ из 1С: исправляется в 1С" style="font-size: 0.7rem; font-weight: 700; color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); border-radius: 0.25rem; padding: 0.05rem 0.3rem;">1С</span>
+                            <span title="{% translate "Документ из 1С: исправляется в 1С" %}" style="font-size: 0.7rem; font-weight: 700; color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); border-radius: 0.25rem; padding: 0.05rem 0.3rem;">{% translate "1С" %}</span>
                         {% elif can_reverse %}
-                            <a class="small-link" href="{% url 'payment_reverse' p.pk %}?next={{ request.path|urlencode }}">сторно</a>
+                            <a class="small-link" href="{% url 'payment_reverse' p.pk %}?next={{ request.path|urlencode }}">{% translate "сторно" %}</a>
                         {% endif %}
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Оплат пока нет.</td></tr>
+                <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Оплат пока нет." %}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

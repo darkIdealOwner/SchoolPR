@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if is_edit %}Редактировать выплату{% else %}Зафиксировать выплату{% endif %} - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% if is_edit %}{% translate "Редактировать выплату" %}{% else %}{% translate "Зафиксировать выплату" %}{% endif %} - SchoolPR{% endblock %}
 
 {% block extra_css %}
 .form-card {
@@ -71,7 +72,7 @@ select.input-field {
 
 {% block content %}
 <div class="card form-card">
-    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}Редактировать{% else %}Зафиксировать{% endif %} выплату</h1>
+    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}{% translate "Редактировать выплату" %}{% else %}{% translate "Зафиксировать выплату" %}{% endif %}</h1>
     
     <form method="post">
         {% csrf_token %}
@@ -82,39 +83,39 @@ select.input-field {
         {% endif %}
 
         <div class="form-group">
-            <label for="{{ form.employee.id_for_label }}">Сотрудник</label>
+            <label for="{{ form.employee.id_for_label }}">{% translate "Сотрудник" %}</label>
             {{ form.employee }}
         </div>
 
         {% if form.school %}
         <div class="form-group">
-            <label for="{{ form.school.id_for_label }}">Школа</label>
+            <label for="{{ form.school.id_for_label }}">{% translate "Школа" %}</label>
             {{ form.school }}
         </div>
         {% endif %}
 
         <div class="form-group">
-            <label for="{{ form.for_month.id_for_label }}">За месяц (любое число месяца)</label>
+            <label for="{{ form.for_month.id_for_label }}">{% translate "За месяц (любое число месяца)" %}</label>
             {{ form.for_month }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.amount.id_for_label }}">Сумма выплат (сум)</label>
+            <label for="{{ form.amount.id_for_label }}">{% translate "Сумма выплат (сум)" %}</label>
             {{ form.amount }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.payout_date.id_for_label }}">Дата выплаты</label>
+            <label for="{{ form.payout_date.id_for_label }}">{% translate "Дата выплаты" %}</label>
             {{ form.payout_date }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.notes.id_for_label }}">Примечание</label>
+            <label for="{{ form.notes.id_for_label }}">{% translate "Примечание" %}</label>
             {{ form.notes }}
         </div>
 
-        <button type="submit" class="btn-save">{% if is_edit %}Сохранить изменения{% else %}Зафиксировать выплату{% endif %}</button>
-        <a href="{% url 'payout_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">Отмена</a>
+        <button type="submit" class="btn-save">{% if is_edit %}{% translate "Сохранить изменения" %}{% else %}{% translate "Зафиксировать выплату" %}{% endif %}</button>
+        <a href="{% url 'payout_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "Отмена" %}</a>
     </form>
 </div>
 {% endblock %}

@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import User, School, Contract, Payment, EmployeePayout, Transaction
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
+from django.utils.translation import gettext_lazy as _
 
 PHONE_ATTRS = {
     'class': 'input-field phone-input',
@@ -21,11 +22,11 @@ class ISODateInput(forms.DateInput):
 
 class PhoneAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
-        label="Номер телефона",
+        label=_("Номер телефона"),
         widget=forms.TextInput(attrs={**PHONE_ATTRS, 'type': 'tel', 'autofocus': True})
     )
     password = forms.CharField(
-        label="Пароль",
+        label=_("Пароль"),
         widget=forms.PasswordInput(attrs={'class': 'input-field', 'placeholder': '••••••••'})
     )
 
@@ -35,9 +36,9 @@ class PhoneAuthenticationForm(AuthenticationForm):
 
 class UserManagementForm(forms.ModelForm):
     password = forms.CharField(
-        label="Пароль", 
+        label=_("Пароль"), 
         required=False, 
-        widget=forms.PasswordInput(attrs={'placeholder': 'Оставьте пустым, чтобы не менять'})
+        widget=forms.PasswordInput(attrs={'placeholder': _('Оставьте пустым, чтобы не менять')})
     )
     
     class Meta:
@@ -52,7 +53,7 @@ class UserManagementForm(forms.ModelForm):
         
         # If we are editing the existing OWNER, we must keep OWNER in choices to avoid validation error
         if self.instance and self.instance.role == 'OWNER':
-            role_choices.insert(0, ('OWNER', 'Владелец'))
+            role_choices.insert(0, ('OWNER', dict(User.ROLE_CHOICES)['OWNER']))
             
         self.fields['role'].choices = role_choices
         
@@ -68,7 +69,7 @@ class UserManagementForm(forms.ModelForm):
             if 'school' in self.fields:
                 self.fields.pop('school')
             # Directors can only manage EMPLOYEEs
-            self.fields['role'].choices = [('EMPLOYEE', 'Сотрудник')]
+            self.fields['role'].choices = [('EMPLOYEE', dict(User.ROLE_CHOICES)['EMPLOYEE'])]
             if not self.instance.pk:
                 self.fields['role'].initial = 'EMPLOYEE'
 
@@ -81,7 +82,7 @@ class UserManagementForm(forms.ModelForm):
     def clean_phone_number(self):
         phone = normalize_phone(self.cleaned_data.get('phone_number'))
         if not is_valid_uz_phone(phone):
-            raise forms.ValidationError("Введите номер в формате +998 (XX)-XXX-XX-XX.")
+            raise forms.ValidationError(_("Введите номер в формате +998 (XX)-XXX-XX-XX."))
         return phone
 
 class SchoolForm(forms.ModelForm):
@@ -135,7 +136,7 @@ class ContractForm(forms.ModelForm):
             self.fields.pop('is_cancelled', None)
             self.fields.pop('cancelled_at', None)
         else:
-            self.fields['cancelled_at'].help_text = "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
+            self.fields['cancelled_at'].help_text=_("С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата.")
 
         # Hide school field for non-OWNER users
         if user and user.role != 'OWNER':
@@ -148,7 +149,7 @@ class ContractForm(forms.ModelForm):
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
-            raise forms.ValidationError("Договор с таким номером уже существует.")
+            raise forms.ValidationError(_("Договор с таким номером уже существует."))
         return number
 
     def clean(self):
@@ -156,7 +157,7 @@ class ContractForm(forms.ModelForm):
         cancelled_at = cleaned.get('cancelled_at')
         start = cleaned.get('date')
         if cleaned.get('is_cancelled') and cancelled_at and start and cancelled_at < start:
-            self.add_error('cancelled_at', "Дата отмены не может быть раньше даты договора.")
+            self.add_error('cancelled_at', _("Дата отмены не может быть раньше даты договора."))
         return cleaned
 
 class PaymentForm(forms.ModelForm):
@@ -184,7 +185,7 @@ class PaymentForm(forms.ModelForm):
     def clean_amount(self):
         amount = self.cleaned_data['amount']
         if amount <= 0:
-            raise forms.ValidationError("Сумма оплаты должна быть больше нуля.")
+            raise forms.ValidationError(_("Сумма оплаты должна быть больше нуля."))
         return amount
 
 class EmployeePayoutForm(forms.ModelForm):
@@ -238,7 +239,7 @@ class TransactionForm(forms.ModelForm):
 
 class ReversalForm(forms.Form):
     reason = forms.CharField(
-        label="Причина сторно",
+        label=_("Причина сторно"),
         max_length=255,
-        widget=forms.Textarea(attrs={'rows': 3, 'class': 'input-field', 'placeholder': 'Например: ошибка в сумме, оплата внесена дважды'}),
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'input-field', 'placeholder': _('Например: ошибка в сумме, оплата внесена дважды')}),
     )

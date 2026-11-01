@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Панель директора - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Панель директора - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .dashboard-grid {
@@ -45,18 +46,18 @@
 
 {% block content %}
 <div class="welcome-section">
-    <div class="school-info">🏫 {{ user.school.name|default:"Школа не указана" }}</div>
-    <h1 style="font-size: 2.25rem;">Привет, {{ user.first_name }}! 👋</h1>
-    <p style="color: var(--text-muted); margin-top: 0.5rem;">Панель управления операциями школы. Вот краткая сводка:</p>
+    <div class="school-info">🏫 {{ user.school.name|default:_("Школа не указана") }}</div>
+    <h1 style="font-size: 2.25rem;">{% blocktranslate with name=user.first_name %}Привет, {{ name }}!{% endblocktranslate %} 👋</h1>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;">{% translate "Панель управления операциями школы. Вот краткая сводка:" %}</p>
 </div>
 
 <div class="dashboard-grid">
     <div class="stats-card">
-        <span class="label">Сотрудников в школе</span>
+        <span class="label">{% translate "Сотрудников в школе" %}</span>
         <span class="value">{{ total_employees }}</span>
     </div>
     <div class="stats-card">
-        <span class="label">Активных договоров</span>
+        <span class="label">{% translate "Активных договоров" %}</span>
         <span class="value">{{ total_contracts }}</span>
     </div>
 </div>
@@ -66,11 +67,11 @@
 {% endif %}
 
 <div class="quick-links" style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-    <a href="{% url 'user_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: var(--primary);">Управление сотрудниками</a>
-    <a href="{% url 'contract_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #f59e0b;">Управление договорами</a>
-    <a href="{% url 'payment_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #3b82f6;">Оплаты родителей</a>
-    <a href="{% url 'debt_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #ef4444;">Задолженности</a>
-    <a href="{% url 'payout_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #8b5cf6;">Выплаты сотрудникам</a>
-    <a href="{% url 'transaction_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #10b981;">Транзакции школы</a>
+    <a href="{% url 'user_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: var(--primary);">{% translate "Управление сотрудниками" %}</a>
+    <a href="{% url 'contract_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #f59e0b;">{% translate "Управление договорами" %}</a>
+    <a href="{% url 'payment_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #3b82f6;">{% translate "Оплаты родителей" %}</a>
+    <a href="{% url 'debt_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #ef4444;">{% translate "Задолженности" %}</a>
+    <a href="{% url 'payout_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #8b5cf6;">{% translate "Выплаты сотрудникам" %}</a>
+    <a href="{% url 'transaction_list' %}" class="btn-action" style="padding: 1rem; border-radius: 0.75rem; text-decoration: none; color: white; font-weight: 600; text-align: center; background-color: #10b981;">{% translate "Транзакции школы" %}</a>
 </div>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if is_edit %}Редактировать договор{% else %}Новый договор{% endif %} - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% if is_edit %}{% translate "Редактировать договор" %}{% else %}{% translate "Новый договор" %}{% endif %} - SchoolPR{% endblock %}
 
 {% block extra_css %}
 .form-container {
@@ -75,8 +76,8 @@
 {% block content %}
 <div class="form-container">
     <div style="margin-bottom: 2rem;">
-        <a href="{% url 'contract_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Назад к списку</a>
-        <h1 style="margin: 1rem 0 0.5rem 0;">{% if is_edit %}Редактировать договор{% else %}Новый договор{% endif %}</h1>
+        <a href="{% url 'contract_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Назад к списку" %}</a>
+        <h1 style="margin: 1rem 0 0.5rem 0;">{% if is_edit %}{% translate "Редактировать договор" %}{% else %}{% translate "Новый договор" %}{% endif %}</h1>
     </div>
 
     <form method="post" class="card">
@@ -98,7 +99,7 @@
         </div>
 
         <button type="submit" class="btn-submit">
-            {% if is_edit %}Сохранить изменения{% else %}Создать договор{% endif %}
+            {% if is_edit %}{% translate "Сохранить изменения" %}{% else %}{% translate "Создать договор" %}{% endif %}
         </button>
     </form>
 </div>

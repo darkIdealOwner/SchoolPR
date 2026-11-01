@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Управление пользователями - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Управление пользователями - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .toolbar {
@@ -119,32 +120,32 @@
 
 {% block content %}
 <div class="toolbar">
-    <h1 style="margin: 0;">Пользователи</h1>
+    <h1 style="margin: 0;">{% translate "Пользователи" %}</h1>
     
     <form class="search-form" method="get">
-        <input type="text" name="q" class="search-input" placeholder="Поиск по имени, тел. или школе..." value="{{ request.GET.q }}">
-        <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">Найти</button>
+        <input type="text" name="q" class="search-input" placeholder="{% translate "Поиск по имени, тел. или школе..." %}" value="{{ request.GET.q }}">
+        <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">{% translate "Найти" %}</button>
     </form>
 
-    <a href="{% url 'user_add' %}" class="btn-add">Добавить</a>
+    <a href="{% url 'user_add' %}" class="btn-add">{% translate "Добавить" %}</a>
 </div>
 
 <table class="user-table">
     <thead>
         <tr>
-            <th>Имя</th>
+            <th>{% translate "Имя" %}</th>
             <th>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    Роль
+                    {% translate "Роль" %}
                     <div style="display: flex; flex-direction: column; font-size: 10px; line-height: 1;">
                         <a href="?sort=priority&q={{ request.GET.q }}" style="text-decoration: none; color: inherit;">▲</a>
                         <a href="?sort=-priority&q={{ request.GET.q }}" style="text-decoration: none; color: inherit;">▼</a>
                     </div>
                 </div>
             </th>
-            <th>Телефон</th>
-            <th>Школа</th>
-            <th>Действия</th>
+            <th>{% translate "Телефон" %}</th>
+            <th>{% translate "Школа" %}</th>
+            <th>{% translate "Действия" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -161,14 +162,14 @@
             <td style="color: var(--text-muted);">{{ u.school.name|default:"—" }}</td>
             <td>
                 <div style="display: flex; gap: 1rem;">
-                    <a href="{% url 'user_edit' u.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.875rem;">Изменить</a>
-                    <a href="{% url 'user_delete' u.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.875rem;">Удалить</a>
+                    <a href="{% url 'user_edit' u.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.875rem;">{% translate "Изменить" %}</a>
+                    <a href="{% url 'user_delete' u.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.875rem;">{% translate "Удалить" %}</a>
                 </div>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">Пользователи не найдены.</td>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">{% translate "Пользователи не найдены." %}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -180,7 +181,7 @@
         <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" class="page-link">&laquo;</a>
     {% endif %}
 
-    <span class="page-info">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+    <span class="page-info">{% blocktranslate with page=page_obj.number pages=page_obj.paginator.num_pages %}Страница {{ page }} из {{ pages }}{% endblocktranslate %}</span>
 
     {% if page_obj.has_next %}
         <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" class="page-link">&raquo;</a>
@@ -189,6 +190,6 @@
 {% endif %}
 
 <div style="margin-top: 2rem;">
-    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Вернуться на главную</a>
+    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>
 </div>
 {% endblock %}

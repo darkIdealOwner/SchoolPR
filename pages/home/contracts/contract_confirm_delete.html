@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Удаление договора - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Удаление договора - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .confirm-container {
@@ -33,14 +34,14 @@
 
 {% block content %}
 <div class="confirm-container card">
-    <h2 style="color: #ef4444; margin-top: 0;">Удаление договора</h2>
-    <p>Вы уверены, что хотите удалить договор <strong>{{ object.number }}</strong> для ученика <strong>{{ object.student_full_name }}</strong>?</p>
-    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem;">Это действие необратимо.</p>
+    <h2 style="color: #ef4444; margin-top: 0;">{% translate "Удаление договора" %}</h2>
+    <p>{% blocktranslate with number=object.number student=object.student_full_name %}Вы уверены, что хотите удалить договор <strong>{{ number }}</strong> для ученика <strong>{{ student }}</strong>?{% endblocktranslate %}</p>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem;">{% translate "Это действие необратимо." %}</p>
 
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn-delete">Да, удалить</button>
-        <a href="{% url 'contract_list' %}" class="btn-cancel">Отмена</a>
+        <button type="submit" class="btn-delete">{% translate "Да, удалить" %}</button>
+        <a href="{% url 'contract_list' %}" class="btn-cancel">{% translate "Отмена" %}</a>
     </form>
 </div>
 {% endblock %}

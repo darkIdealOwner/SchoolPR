@@ -1,0 +1,1626 @@
+# Переводы интерфейса SchoolPR. Исходный язык — русский.
+# Обновление: python scripts/i18n.py extract && python scripts/i18n.py compile
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: uz\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: users/models.py
+#, python-format
+msgid "%(employee)s - %(amount)s за %(month)s"
+msgstr "%(employee)s - %(amount)s, %(month)s uchun"
+
+#: integrations/views.py
+#, python-format
+msgid "%(entity)s: всего %(total)s, создано %(created)s, обновлено %(updated)s, сторнировано %(reversed)s, без изменений %(skipped)s, ошибок %(failed)s."
+msgstr "%(entity)s: jami %(total)s, yaratildi %(created)s, yangilandi %(updated)s, storno %(reversed)s, oʻzgarishsiz %(skipped)s, xatolar %(failed)s."
+
+#: pages/home/contracts/contract_detail.html
+#, python-format
+msgid "%(grade)s класс"
+msgstr "%(grade)s-sinf"
+
+#: users/finance.py
+#, python-format
+msgid "%(month)s %(year)s"
+msgstr "%(month)s %(year)s"
+
+#: pages/home/integrations/integration.html
+msgid "(пробный)"
+msgstr "(sinov)"
+
+#: pages/home/debts/debt_list.html
+msgid "(только должники)"
+msgstr "(faqat qarzdorlar)"
+
+#: pages/home/debts/debt_list.html
+msgid "/ Тел."
+msgstr "/ Tel."
+
+#: pages/base.html pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py
+msgid "1С"
+msgstr "1C"
+
+#: integrations/models.py
+msgid "1С OData"
+msgstr "1C OData"
+
+#: pages/home/integrations/integration.html
+msgid "1С забирает их через"
+msgstr "1C ularni quyidagi orqali oladi:"
+
+#: pages/home/finance/reverse_confirm.html
+#, python-format
+msgid "<strong>%(obj)s</strong>, сумма <strong>%(amount)s сум</strong>."
+msgstr "<strong>%(obj)s</strong>, summa <strong>%(amount)s soʻm</strong>."
+
+#: integrations/models.py
+msgid "API (1С отправила сама)"
+msgstr "API (1C oʻzi yubordi)"
+
+#: pages/home/integrations/integration.html
+msgid "API для 1С:"
+msgstr "1C uchun API:"
+
+#: users/models.py
+msgid "ID в 1С"
+msgstr "1C dagi ID"
+
+#: users/models.py
+msgid "ID объекта"
+msgstr "Obyekt ID"
+
+#: integrations/views.py
+msgid "JSON-файл из 1С"
+msgstr "1C dan JSON fayl"
+
+#: pages/home/integrations/integration.html
+msgid "ONEC_API_TOKEN в .env, адреса —"
+msgstr "ONEC_API_TOKEN .env faylida, manzillar —"
+
+#: pages/home/integrations/integration.html
+msgid "ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD в .env"
+msgstr "ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD .env faylida"
+
+#: pages/home/partials/finance_overview.html
+msgid "· прочее"
+msgstr "· boshqa"
+
+#: users/models.py
+msgid "Август"
+msgstr "Avgust"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/schools/school_form.html users/models.py users/views.py
+msgid "Адрес"
+msgstr "Manzil"
+
+#: pages/home/schools/school_list.html
+msgid "Адрес не указан"
+msgstr "Manzil koʻrsatilmagan"
+
+#: pages/home/director.html pages/home/partials/finance_overview.html
+msgid "Активных договоров"
+msgstr "Faol shartnomalar"
+
+#: pages/home/employee.html
+msgid "Активных договоров вашей школы"
+msgstr "Maktabingizdagi faol shartnomalar"
+
+#: users/models.py
+msgid "Апрель"
+msgstr "Aprel"
+
+#: integrations/models.py
+msgid "Без изменений"
+msgstr "Oʻzgarishsiz"
+
+#: pages/home/contracts/contract_detail.html users/finance.py
+msgid "Без школы"
+msgstr "Maktabsiz"
+
+#: integrations/views.py
+msgid "В файле должен быть список записей или {\"records\": [...]}"
+msgstr "Faylda yozuvlar roʻyxati yoki {\"records\": [...]} boʻlishi kerak"
+
+#: pages/home/investor.html
+msgid "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям."
+msgstr "SchoolPR dagi investitsiya sharhingiz. Bu yerda barcha boʻlinmalar boʻyicha umumiy koʻrsatkichlar."
+
+#: users/forms.py
+msgid "Введите номер в формате +998 (XX)-XXX-XX-XX."
+msgstr "Raqamni +998 (XX)-XXX-XX-XX formatida kiriting."
+
+#: users/models.py
+msgid "Владелец"
+msgstr "Egasi"
+
+#: pages/authorization/login.html
+msgid "Войти"
+msgstr "Kirish"
+
+#: pages/home/integrations/integration.html
+msgid "Всего"
+msgstr "Jami"
+
+#: pages/home/partials/finance_overview.html
+msgid "Вся сеть"
+msgstr "Butun tarmoq"
+
+#: pages/authorization/login.html
+msgid "Вход"
+msgstr "Kirish"
+
+#: pages/authorization/login.html
+msgid "Вход в систему"
+msgstr "Tizimga kirish"
+
+#: pages/home/contracts/contract_confirm_delete.html
+#, python-format
+msgid "Вы уверены, что хотите удалить договор <strong>%(number)s</strong> для ученика <strong>%(student)s</strong>?"
+msgstr "<strong>%(student)s</strong> oʻquvchisining <strong>%(number)s</strong> shartnomasini oʻchirishni xohlaysizmi?"
+
+#: pages/home/users/user_confirm_delete.html
+#, python-format
+msgid "Вы уверены, что хотите удалить пользователя <strong>%(name)s</strong> (@%(username)s)?"
+msgstr "<strong>%(name)s</strong> (@%(username)s) foydalanuvchisini oʻchirishni xohlaysizmi?"
+
+#: pages/home/schools/school_confirm_delete.html
+#, python-format
+msgid "Вы уверены, что хотите удалить школу <strong>%(name)s</strong>?"
+msgstr "<strong>%(name)s</strong> maktabini oʻchirishni xohlaysizmi?"
+
+#: pages/home/schools/school_form.html
+msgid "Выберите пользователя с ролью Директор."
+msgstr "Direktor rolidagi foydalanuvchini tanlang."
+
+#: pages/base.html
+msgid "Выйти"
+msgstr "Chiqish"
+
+#: pages/home/home.html
+msgid "Выйти из системы"
+msgstr "Tizimdan chiqish"
+
+#: users/models.py
+msgid "Выплата сотруднику"
+msgstr "Xodimga toʻlov"
+
+#: pages/base.html
+msgid "Выплаты"
+msgstr "Toʻlovlar"
+
+#: pages/home/payouts/payout_list.html
+msgid "Выплаты не зафиксированы."
+msgstr "Toʻlovlar qayd etilmagan."
+
+#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/models.py
+msgid "Выплаты сотрудникам"
+msgstr "Xodimlarga toʻlovlar"
+
+#: pages/home/payouts/payout_list.html
+msgid "Выплаты сотрудникам - SchoolPR"
+msgstr "Xodimlarga toʻlovlar - SchoolPR"
+
+#: integrations/models.py
+msgid "Выполняется"
+msgstr "Bajarilmoqda"
+
+#: pages/authorization/profile.html
+msgid "Выход из системы"
+msgstr "Tizimdan chiqish"
+
+#: pages/base.html
+msgid "Главная"
+msgstr "Bosh sahifa"
+
+#: pages/home/home.html
+msgid "Главная страница"
+msgstr "Bosh sahifa"
+
+#: pages/home/contracts/contract_list.html
+msgid "Год рожд."
+msgstr "Tug‘ilgan yili"
+
+#: pages/home/contracts/contract_detail.html users/models.py users/views.py
+msgid "Год рождения"
+msgstr "Tug‘ilgan yili"
+
+#: pages/home/contracts/contract_detail.html
+msgid "График оплат"
+msgstr "Toʻlov jadvali"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: собрано, расходы и начислено по месяцам"
+msgstr "Grafik: oylar boʻyicha yigʻilgan, xarajatlar va hisoblangan"
+
+#: pages/home/contracts/contract_confirm_delete.html
+msgid "Да, удалить"
+msgstr "Ha, oʻchirish"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Данные"
+msgstr "Maʼlumotlar"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Данные договора"
+msgstr "Shartnoma maʼlumotlari"
+
+#: pages/home/partials/finance_overview.html
+msgid "Данных пока нет."
+msgstr "Hozircha maʼlumot yoʻq."
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+msgid "Дата"
+msgstr "Sana"
+
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+msgid "Дата выплаты"
+msgstr "Toʻlov sanasi"
+
+#: users/models.py
+msgid "Дата оплаты"
+msgstr "Toʻlov sanasi"
+
+#: users/views.py
+msgid "Дата отмены"
+msgstr "Bekor qilingan sana"
+
+#: users/models.py
+msgid "Дата отмены договора"
+msgstr "Shartnoma bekor qilingan sana"
+
+#: users/forms.py
+msgid "Дата отмены не может быть раньше даты договора."
+msgstr "Bekor qilish sanasi shartnoma sanasidan oldin boʻlishi mumkin emas."
+
+#: users/models.py
+msgid "Дата сторно"
+msgstr "Storno sanasi"
+
+#: users/models.py
+msgid "Действие"
+msgstr "Amal"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+msgid "Действия"
+msgstr "Amallar"
+
+#: users/views.py
+msgid "Действует"
+msgstr "Amalda"
+
+#: users/models.py
+msgid "Декабрь"
+msgstr "Dekabr"
+
+#: pages/home/integrations/integration.html
+msgid "Деньги ведёт 1С, договоры и ученики — платформа. Документы из 1С здесь только читаются: исправлять их нужно в 1С, изменения придут при следующем обмене."
+msgstr "Pullar 1C da, shartnomalar va oʻquvchilar platformada yuritiladi. 1C hujjatlari bu yerda faqat oʻqiladi: ularni 1C da tuzating, oʻzgarishlar keyingi almashinuvda keladi."
+
+#: pages/home/integrations/integration.html
+msgid "Детали"
+msgstr "Tafsilotlar"
+
+#: pages/home/partials/finance_overview.html
+msgid "Динамика по месяцам"
+msgstr "Oylar boʻyicha dinamika"
+
+#: pages/home/schools/school_form.html pages/home/schools/school_list.html users/models.py
+msgid "Директор"
+msgstr "Direktor"
+
+#: pages/authorization/password_change.html
+msgid "Для безопасности укажите старый и новый пароли."
+msgstr "Xavfsizlik uchun eski va yangi parolni kiriting."
+
+#: pages/home/users/user_list.html
+msgid "Добавить"
+msgstr "Qoʻshish"
+
+#: pages/home/users/user_form.html
+msgid "Добавить пользователя"
+msgstr "Foydalanuvchi qoʻshish"
+
+#: pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html
+msgid "Добавить транзакцию"
+msgstr "Tranzaksiya qoʻshish"
+
+#: pages/home/schools/school_form.html pages/home/schools/school_list.html
+msgid "Добавить школу"
+msgstr "Maktab qoʻshish"
+
+#: pages/home/owner.html
+msgid "Добро пожаловать в панель управления SchoolPR."
+msgstr "SchoolPR boshqaruv paneliga xush kelibsiz."
+
+#: pages/home/employee.html
+msgid "Добро пожаловать в рабочую область сотрудника. Вот краткая сводка вашей школы:"
+msgstr "Xodim ish maydoniga xush kelibsiz. Maktabingiz boʻyicha qisqa maʼlumot:"
+
+#: pages/home/home.html
+msgid "Добро пожаловать в систему."
+msgstr "Tizimga xush kelibsiz."
+
+#: users/models.py
+msgid "Договор"
+msgstr "Shartnoma"
+
+#: users/forms.py
+msgid "Договор с таким номером уже существует."
+msgstr "Bunday raqamli shartnoma allaqachon mavjud."
+
+#: pages/home/contracts/contract_detail.html
+#, python-format
+msgid "Договор № %(number)s от %(date)s"
+msgstr "%(date)s sanadagi %(number)s-sonli shartnoma"
+
+#: pages/home/owner.html
+msgid "Договоров"
+msgstr "Shartnomalar"
+
+#: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html
+msgid "Договоры"
+msgstr "Shartnomalar"
+
+#: pages/home/contracts/contract_list.html
+msgid "Договоры не найдены."
+msgstr "Shartnomalar topilmadi."
+
+#: integrations/views.py
+msgid "Договоры ↔ договоры контрагентов 1С"
+msgstr "Shartnomalar ↔ 1C kontragent shartnomalari"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Документ из 1С: исправляется в 1С"
+msgstr "1C hujjati: 1C da tuzatiladi"
+
+#: pages/home/partials/finance_overview.html
+msgid "Долг"
+msgstr "Qarz"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Долг на сегодня"
+msgstr "Bugungi qarz"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Долг нарастающим"
+msgstr "Jamlangan qarz"
+
+#: pages/base.html
+msgid "Долги"
+msgstr "Qarzlar"
+
+#: pages/home/debts/debt_list.html
+msgid "Долги за месяц:"
+msgstr "Oy boʻyicha qarzlar:"
+
+#: pages/home/partials/finance_overview.html
+msgid "Должников:"
+msgstr "Qarzdorlar:"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "Доплатить"
+msgstr "Qoʻshimcha toʻlash"
+
+#: users/models.py
+msgid "Журнал действий"
+msgstr "Amallar jurnali"
+
+#: pages/home/integrations/integration.html
+msgid "Журнал обменов"
+msgstr "Almashinuvlar jurnali"
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/views.py
+msgid "За месяц"
+msgstr "Oy uchun"
+
+#: users/models.py
+msgid "За месяц (1-е число)"
+msgstr "Oy uchun (1-sana)"
+
+#: pages/home/payouts/payout_form.html
+msgid "За месяц (любое число месяца)"
+msgstr "Oy uchun (oyning istalgan kuni)"
+
+#: users/views.py
+msgid "Завершён"
+msgstr "Yakunlangan"
+
+#: pages/home/integrations/integration.html
+msgid "Загружено из 1С:"
+msgstr "1C dan yuklangan:"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузить"
+msgstr "Yuklash"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузить файл из 1С"
+msgstr "1C dan fayl yuklash"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузка из 1С по OData:"
+msgstr "1C dan OData orqali yuklash:"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузка файлом:"
+msgstr "Fayl orqali yuklash:"
+
+#: pages/home/debts/debt_list.html
+msgid "Задолженностей не найдено. Прекрасно!"
+msgstr "Qarzlar topilmadi. Ajoyib!"
+
+#: pages/home/debts/debt_list.html pages/home/director.html pages/home/employee.html pages/home/investor.html pages/home/owner.html
+msgid "Задолженности"
+msgstr "Qarzlar"
+
+#: pages/home/debts/debt_list.html
+msgid "Задолженности - SchoolPR"
+msgstr "Qarzlar - SchoolPR"
+
+#: integrations/models.py
+msgid "Записей"
+msgstr "Yozuvlar"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах."
+msgstr "Yozuv oʻchirilmaydi: u tarixda «storno» belgisi bilan qoladi va hisob-kitoblarda inobatga olinmaydi."
+
+#: users/views.py
+msgid "Запись сторнирована."
+msgstr "Yozuv storno qilindi."
+
+#: users/views.py
+msgid "Запись удалена."
+msgstr "Yozuv oʻchirildi."
+
+#: integrations/models.py
+msgid "Запустил"
+msgstr "Ishga tushirgan"
+
+#: pages/home/partials/finance_overview.html
+msgid "Зарплаты"
+msgstr "Ish haqi"
+
+#: pages/home/partials/finance_overview.html
+msgid "Зарплаты и расходы"
+msgstr "Ish haqi va xarajatlar"
+
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html
+msgid "Зафиксировать выплату"
+msgstr "Toʻlovni qayd etish"
+
+#: pages/home/payments/payment_form.html
+msgid "Зафиксировать оплату"
+msgstr "Toʻlovni qayd etish"
+
+#: pages/home/owner.html
+#, python-format
+msgid "Здравствуйте, %(name)s!"
+msgstr "Assalomu alaykum, %(name)s!"
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "ИНПС"
+msgstr "JShShIR"
+
+#: users/models.py
+msgid "Изменение"
+msgstr "Oʻzgartirish"
+
+#: users/models.py
+msgid "Изменения"
+msgstr "Oʻzgarishlar"
+
+#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+msgid "Изменить"
+msgstr "Oʻzgartirish"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Изменить договор"
+msgstr "Shartnomani oʻzgartirish"
+
+#: pages/home/users/user_form.html pages/home/users/user_list.html
+msgid "Имя"
+msgstr "Ism"
+
+#: pages/home/partials/finance_overview.html
+msgid "Инвестиции и прочие поступления"
+msgstr "Investitsiyalar va boshqa tushumlar"
+
+#: pages/home/investor.html
+msgid "Инвестиционный портфель - SchoolPR"
+msgstr "Investitsiya portfeli - SchoolPR"
+
+#: users/models.py
+msgid "Инвестор"
+msgstr "Investor"
+
+#: pages/home/owner.html
+msgid "Инвесторов"
+msgstr "Investorlar"
+
+#: pages/home/integrations/integration.html pages/home/owner.html
+msgid "Интеграция с 1С"
+msgstr "1C bilan integratsiya"
+
+#: pages/home/integrations/integration.html
+msgid "Интеграция с 1С - SchoolPR"
+msgstr "1C bilan integratsiya - SchoolPR"
+
+#: pages/authorization/login.html
+msgid "Используйте номер телефона для входа"
+msgstr "Kirish uchun telefon raqamingizdan foydalaning"
+
+#: pages/home/contracts/contract_detail.html
+msgid "История оплат"
+msgstr "Toʻlovlar tarixi"
+
+#: users/models.py
+msgid "Источник"
+msgstr "Manba"
+
+#: pages/home/partials/finance_overview.html
+msgid "Итоги за 12 месяцев"
+msgstr "12 oy yakunlari"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html
+msgid "Итого"
+msgstr "Jami"
+
+#: users/views.py
+msgid "Итого в месяц"
+msgstr "Oyiga jami"
+
+#: users/models.py
+msgid "Июль"
+msgstr "Iyul"
+
+#: users/models.py
+msgid "Июнь"
+msgstr "Iyun"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Канал"
+msgstr "Kanal"
+
+#: pages/home/debts/debt_list.html
+msgid "Карточка"
+msgstr "Kartochka"
+
+#: users/views.py
+msgid "Категория"
+msgstr "Toifa"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Категория / Назначение"
+msgstr "Toifa / Maqsad"
+
+#: pages/home/transactions/transaction_list.html users/models.py
+msgid "Категория/Назначение"
+msgstr "Toifa/Maqsad"
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "Класс"
+msgstr "Sinf"
+
+#: pages/home/integrations/integration.html users/models.py
+msgid "Когда"
+msgstr "Qachon"
+
+#: pages/home/partials/finance_overview.html
+msgid "Крупнейшие должники"
+msgstr "Eng katta qarzdorlar"
+
+#: users/models.py
+msgid "Кто внёс"
+msgstr "Kiritgan"
+
+#: users/models.py
+msgid "Кто сторнировал"
+msgstr "Storno qilgan"
+
+#: pages/home/users/user_form.html
+msgid "Логин (username)"
+msgstr "Login (username)"
+
+#: users/models.py
+msgid "Май"
+msgstr "May"
+
+#: users/models.py
+msgid "Март"
+msgstr "Mart"
+
+#: pages/base.html
+msgid "Меню"
+msgstr "Menyu"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "Месяц"
+msgstr "Oy"
+
+#: pages/home/payments/payment_form.html
+msgid "Месяц:"
+msgstr "Oy:"
+
+#: pages/home/partials/finance_overview.html
+msgid "Месяцев"
+msgstr "Oylar"
+
+#: pages/home/schools/school_list.html
+msgid "Название"
+msgstr "Nomi"
+
+#: pages/home/schools/school_form.html users/models.py
+msgid "Название школы"
+msgstr "Maktab nomi"
+
+#: pages/home/contracts/contract_list.html pages/home/users/user_list.html
+msgid "Найти"
+msgstr "Qidirish"
+
+#: users/models.py
+msgid "Наличные"
+msgstr "Naqd pul"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/models.py users/views.py
+msgid "Направление"
+msgstr "Yoʻnalish"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Например: \"Инвестиция от Олега\" или \"Замена сломанного замка в кабинете\""
+msgstr "Masalan: \"Olegdan investitsiya\" yoki \"Xonadagi buzilgan qulfni almashtirish\""
+
+#: pages/home/transactions/transaction_form.html
+msgid "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды"
+msgstr "Masalan: Investitsiyalar, Kutilmagan xarajatlar, Xoʻjalik ehtiyojlari"
+
+#: users/forms.py
+msgid "Например: ошибка в сумме, оплата внесена дважды"
+msgstr "Masalan: summada xato, toʻlov ikki marta kiritilgan"
+
+#: integrations/models.py
+msgid "Начало"
+msgstr "Boshlanishi"
+
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html users/views.py
+msgid "Начислено"
+msgstr "Hisoblangan"
+
+#: pages/home/schools/school_list.html
+msgid "Не назначен"
+msgstr "Tayinlanmagan"
+
+#: pages/home/payments/payment_list.html
+msgid "Не оплачено"
+msgstr "Toʻlanmagan"
+
+#: pages/authorization/login.html
+msgid "Неверный номер телефона или пароль"
+msgstr "Telefon raqami yoki parol notoʻgʻri"
+
+#: users/views.py
+msgid "Нельзя удалить договор: по нему есть оплаты. Отметьте договор как отменённый."
+msgstr "Shartnomani oʻchirib boʻlmaydi: unda toʻlovlar bor. Uni bekor qilingan deb belgilang."
+
+#: users/views.py
+msgid "Нельзя удалить пользователя: по нему есть выплаты. Отключите доступ вместо удаления."
+msgstr "Foydalanuvchini oʻchirib boʻlmaydi: unga toʻlovlar bor. Oʻchirish oʻrniga kirishni oʻchiring."
+
+#: users/views.py
+msgid "Нельзя удалить школу: к ней привязаны договоры, выплаты или транзакции."
+msgstr "Maktabni oʻchirib boʻlmaydi: unga shartnomalar, toʻlovlar yoki tranzaksiyalar bogʻlangan."
+
+#: users/views.py
+msgid "Нельзя удалить: есть связанные финансовые записи."
+msgstr "Oʻchirib boʻlmaydi: bogʻliq moliyaviy yozuvlar bor."
+
+#: pages/home/debts/debt_list.html users/views.py
+msgid "Неоплаченные месяцы"
+msgstr "Toʻlanmagan oylar"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Неоплаченных месяцев:"
+msgstr "Toʻlanmagan oylar:"
+
+#: pages/home/payments/payment_list.html
+msgid "Нет договоров с начислением за этот месяц."
+msgstr "Bu oy uchun hisoblangan shartnomalar yoʻq."
+
+#: pages/home/contracts/contract_form.html
+msgid "Новый договор"
+msgstr "Yangi shartnoma"
+
+#: pages/authorization/login.html pages/authorization/profile.html pages/home/users/user_form.html users/forms.py users/models.py
+msgid "Номер телефона"
+msgstr "Telefon raqami"
+
+#: users/models.py
+msgid "Ноябрь"
+msgstr "Noyabr"
+
+#: integrations/models.py
+msgid "Обмен с 1С"
+msgstr "1C bilan almashinuv"
+
+#: pages/home/integrations/integration.html
+msgid "Обменов ещё не было."
+msgstr "Hali almashinuvlar boʻlmagan."
+
+#: integrations/models.py
+msgid "Обмены с 1С"
+msgstr "1C bilan almashinuvlar"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Обновлено"
+msgstr "Yangilandi"
+
+#: pages/home/debts/debt_list.html
+msgid "Общий долг"
+msgstr "Umumiy qarz"
+
+#: pages/home/debts/debt_list.html
+msgid "Общий долг учащихся на текущий момент"
+msgstr "Oʻquvchilarning hozirgi umumiy qarzi"
+
+#: pages/home/partials/finance_overview.html
+msgid "Общий долг учеников"
+msgstr "Oʻquvchilarning umumiy qarzi"
+
+#: users/models.py
+msgid "Объект"
+msgstr "Obyekt"
+
+#: integrations/models.py
+msgid "Окончание"
+msgstr "Tugashi"
+
+#: users/models.py
+msgid "Октябрь"
+msgstr "Oktabr"
+
+#: pages/home/partials/finance_overview.html
+msgid "Операционный результат"
+msgstr "Operatsion natija"
+
+#: users/models.py
+msgid "Описание"
+msgstr "Tavsif"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Оплат пока нет."
+msgstr "Hozircha toʻlovlar yoʻq."
+
+#: users/models.py
+msgid "Оплата"
+msgstr "Toʻlov"
+
+#: users/models.py
+#, python-format
+msgid "Оплата %(student)s за %(month)s"
+msgstr "%(student)s toʻlovi, %(month)s uchun"
+
+#: pages/home/payments/payment_form.html
+msgid "Оплата для:"
+msgstr "Toʻlov:"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "Оплатить"
+msgstr "Toʻlash"
+
+#: pages/base.html pages/home/integrations/integration.html users/models.py
+msgid "Оплаты"
+msgstr "Toʻlovlar"
+
+#: pages/home/payments/payment_list.html
+msgid "Оплаты - SchoolPR"
+msgstr "Toʻlovlar - SchoolPR"
+
+#: pages/home/payments/payment_list.html
+msgid "Оплаты за месяц"
+msgstr "Oylik toʻlovlar"
+
+#: pages/home/partials/finance_overview.html
+msgid "Оплаты минус зарплаты и расходы"
+msgstr "Toʻlovlar minus ish haqi va xarajatlar"
+
+#: integrations/models.py pages/home/director.html pages/home/employee.html pages/home/owner.html
+msgid "Оплаты родителей"
+msgstr "Ota-onalar toʻlovlari"
+
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
+msgid "Оплачено"
+msgstr "Toʻlangan"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Оплачено всего"
+msgstr "Jami toʻlangan"
+
+#: pages/home/users/user_form.html
+msgid "Оставьте пустым, если не хотите менять."
+msgstr "Oʻzgartirmoqchi boʻlmasangiz, boʻsh qoldiring."
+
+#: users/forms.py
+msgid "Оставьте пустым, чтобы не менять"
+msgstr "Oʻzgartirmaslik uchun boʻsh qoldiring"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html users/views.py
+msgid "Остаток"
+msgstr "Qoldiq"
+
+#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
+msgid "Отмена"
+msgstr "Bekor qilish"
+
+#: users/views.py
+msgid "Отменён"
+msgstr "Bekor qilingan"
+
+#: users/models.py
+msgid "Отметка об отмены договора"
+msgstr "Shartnoma bekor qilinganligi"
+
+#: integrations/models.py
+msgid "Ошибка"
+msgstr "Xato"
+
+#: integrations/models.py
+msgid "Ошибки"
+msgstr "Xatolar"
+
+#: pages/home/integrations/integration.html
+msgid "Ошибок"
+msgstr "Xatolar"
+
+#: pages/home/owner.html
+msgid "Панель владельца - SchoolPR"
+msgstr "Egasi paneli - SchoolPR"
+
+#: pages/home/director.html
+msgid "Панель директора - SchoolPR"
+msgstr "Direktor paneli - SchoolPR"
+
+#: pages/home/director.html
+msgid "Панель управления операциями школы. Вот краткая сводка:"
+msgstr "Maktab faoliyatini boshqarish paneli. Qisqa maʼlumot:"
+
+#: pages/authorization/login.html pages/home/users/user_form.html users/forms.py
+msgid "Пароль"
+msgstr "Parol"
+
+#: pages/home/contracts/contract_list.html users/views.py
+msgid "Паспорт"
+msgstr "Pasport"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Паспорт / ИНПС"
+msgstr "Pasport / JShShIR"
+
+#: users/models.py
+msgid "Перечисление на счёт"
+msgstr "Hisob raqamiga oʻtkazma"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/views.py
+msgid "Питание"
+msgstr "Ovqatlanish"
+
+#: users/models.py
+msgid "Платформа"
+msgstr "Platforma"
+
+#: pages/home/contracts/contract_detail.html users/views.py
+msgid "Платёж в месяц"
+msgstr "Oylik toʻlov"
+
+#: pages/home/contracts/contract_detail.html
+msgid "По договору нет начислений."
+msgstr "Shartnoma boʻyicha hisoblash yoʻq."
+
+#: pages/home/debts/debt_list.html
+msgid "По месяцам"
+msgstr "Oylar boʻyicha"
+
+#: pages/home/partials/finance_overview.html
+msgid "По школам"
+msgstr "Maktablar boʻyicha"
+
+#: pages/home/integrations/integration.html
+msgid "Подключение"
+msgstr "Ulanish"
+
+#: pages/home/schools/school_confirm_delete.html pages/home/users/user_confirm_delete.html
+msgid "Подтвердить удаление"
+msgstr "Oʻchirishni tasdiqlash"
+
+#: pages/home/schools/school_confirm_delete.html pages/home/users/user_confirm_delete.html
+msgid "Подтверждение удаления - SchoolPR"
+msgstr "Oʻchirishni tasdiqlash - SchoolPR"
+
+#: pages/home/users/user_list.html
+msgid "Поиск по имени, тел. или школе..."
+msgstr "Ism, tel. yoki maktab boʻyicha qidirish..."
+
+#: pages/home/contracts/contract_list.html
+msgid "Поиск по номеру, ФИО ученика..."
+msgstr "Raqam, oʻquvchi F.I.Sh. boʻyicha qidirish..."
+
+#: pages/home/contracts/contract_list.html
+msgid "Поиск по номеру, ФИО, телефону..."
+msgstr "Raqam, F.I.Sh., telefon boʻyicha qidirish..."
+
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Показать"
+msgstr "Koʻrsatish"
+
+#: pages/home/owner.html
+msgid "Пользователей"
+msgstr "Foydalanuvchilar"
+
+#: pages/base.html pages/home/users/user_list.html
+msgid "Пользователи"
+msgstr "Foydalanuvchilar"
+
+#: pages/home/users/user_list.html
+msgid "Пользователи не найдены."
+msgstr "Foydalanuvchilar topilmadi."
+
+#: users/models.py
+msgid "Пользователь"
+msgstr "Foydalanuvchi"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Предстоит"
+msgstr "Kutilmoqda"
+
+#: pages/home/director.html pages/home/employee.html pages/home/home.html pages/home/investor.html
+#, python-format
+msgid "Привет, %(name)s!"
+msgstr "Salom, %(name)s!"
+
+#: pages/home/users/user_form.html
+msgid "Применить"
+msgstr "Qoʻllash"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+msgid "Примечание"
+msgstr "Izoh"
+
+#: users/models.py
+msgid "Примечание / Описание / От кого"
+msgstr "Izoh / Tavsif / Kimdan"
+
+#: pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html
+msgid "Примечание / От кого"
+msgstr "Izoh / Kimdan"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Принял"
+msgstr "Qabul qilgan"
+
+#: pages/home/integrations/integration.html
+msgid "Приняты на платформе и ещё не проведены в 1С:"
+msgstr "Platformada qabul qilingan, hali 1C da oʻtkazilmagan:"
+
+#: pages/home/transactions/transaction_list.html users/models.py
+msgid "Приход / Инвестиция"
+msgstr "Kirim / Investitsiya"
+
+#: users/forms.py users/models.py users/views.py
+msgid "Причина сторно"
+msgstr "Storno sababi"
+
+#: integrations/models.py
+msgid "Пробный запуск"
+msgstr "Sinov ishga tushirish"
+
+#: integrations/views.py
+msgid "Пробный запуск (только проверить, ничего не сохранять)"
+msgstr "Sinov (faqat tekshirish, hech narsa saqlanmaydi)"
+
+#: integrations/views.py
+msgid "Пробный запуск, ничего не сохранено."
+msgstr "Sinov ishga tushirish, hech narsa saqlanmadi."
+
+#: pages/home/investor.html
+msgid "Просмотр выплат"
+msgstr "Toʻlovlarni koʻrish"
+
+#: pages/home/investor.html
+msgid "Просмотр договоров"
+msgstr "Shartnomalarni koʻrish"
+
+#: pages/home/debts/debt_list.html users/views.py
+msgid "Просрочено месяцев"
+msgstr "Kechiktirilgan oylar"
+
+#: pages/authorization/profile.html
+msgid "Профиль - SchoolPR"
+msgstr "Profil - SchoolPR"
+
+#: integrations/models.py
+msgid "Прочие приходы и расходы"
+msgstr "Boshqa kirim va chiqimlar"
+
+#: pages/home/partials/finance_overview.html
+msgid "Прошлый месяц:"
+msgstr "Oʻtgan oy:"
+
+#: pages/home/employee.html
+msgid "Рабочая панель - SchoolPR"
+msgstr "Ish paneli - SchoolPR"
+
+#: pages/base.html pages/home/owner.html
+msgid "Разделы"
+msgstr "Boʻlimlar"
+
+#: users/models.py
+msgid "Расход / Непредвиденные траты"
+msgstr "Chiqim / Kutilmagan xarajatlar"
+
+#: pages/home/transactions/transaction_list.html
+msgid "Расход / Траты"
+msgstr "Chiqim / Xarajatlar"
+
+#: pages/home/payments/payment_form.html
+msgid "Регистрация оплаты"
+msgstr "Toʻlovni roʻyxatga olish"
+
+#: pages/home/payments/payment_form.html
+msgid "Регистрация оплаты - SchoolPR"
+msgstr "Toʻlovni roʻyxatga olish - SchoolPR"
+
+#: pages/home/payouts/payout_form.html
+msgid "Редактировать выплату"
+msgstr "Toʻlovni tahrirlash"
+
+#: pages/home/contracts/contract_form.html
+msgid "Редактировать договор"
+msgstr "Shartnomani tahrirlash"
+
+#: pages/home/users/user_form.html
+msgid "Редактировать пользователя"
+msgstr "Foydalanuvchini tahrirlash"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Редактировать транзакцию"
+msgstr "Tranzaksiyani tahrirlash"
+
+#: pages/home/schools/school_form.html
+msgid "Редактировать школу"
+msgstr "Maktabni tahrirlash"
+
+#: pages/home/partials/finance_overview.html
+msgid "Результат"
+msgstr "Natija"
+
+#: pages/home/partials/finance_overview.html
+msgid "Результат месяца"
+msgstr "Oy natijasi"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Родители"
+msgstr "Ota-onalar"
+
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/views.py
+msgid "Родитель"
+msgstr "Ota-ona"
+
+#: pages/authorization/profile.html pages/home/users/user_form.html pages/home/users/user_list.html users/models.py
+msgid "Роль"
+msgstr "Rol"
+
+#: users/models.py
+msgid "Русский язык"
+msgstr "Rus tili"
+
+#: users/forms.py
+msgid "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
+msgstr "Bekor qilingan oydan boshlab toʻlov hisoblanmaydi. Koʻrsatilmasa — bugungi sana."
+
+#: pages/home/partials/finance_overview.html
+msgid "С начислением в этом месяце"
+msgstr "Shu oyda hisoblangan"
+
+#: integrations/models.py
+msgid "С ошибками"
+msgstr "Xatolar bilan"
+
+#: integrations/models.py
+msgid "Связка договоров"
+msgstr "Shartnomalarni bogʻlash"
+
+#: integrations/models.py
+msgid "Связка сотрудников"
+msgstr "Xodimlarni bogʻlash"
+
+#: integrations/models.py
+msgid "Связка школ"
+msgstr "Maktablarni bogʻlash"
+
+#: pages/home/integrations/integration.html
+msgid "Связь записей с 1С"
+msgstr "Yozuvlarning 1C bilan bogʻlanishi"
+
+#: users/models.py
+msgid "Сентябрь"
+msgstr "Sentabr"
+
+#: users/models.py
+msgid "Серия и номер паспорта"
+msgstr "Pasport seriyasi va raqami"
+
+#: users/models.py
+msgid "Синхронизировано"
+msgstr "Sinxronlangan"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Скачать таблицу для Excel"
+msgstr "Excel uchun jadvalni yuklab olish"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Скидка"
+msgstr "Chegirma"
+
+#: pages/home/contracts/contract_list.html users/views.py
+msgid "Скидка %"
+msgstr "Chegirma %"
+
+#: pages/home/contracts/contract_list.html
+msgid "Скидка сум"
+msgstr "Chegirma soʻm"
+
+#: users/models.py
+msgid "Скидка, %"
+msgstr "Chegirma, %"
+
+#: users/models.py users/views.py
+msgid "Скидка, сум"
+msgstr "Chegirma, soʻm"
+
+#: pages/authorization/password_change.html
+msgid "Смена пароля"
+msgstr "Parolni almashtirish"
+
+#: pages/authorization/password_change.html
+msgid "Смена пароля - SchoolPR"
+msgstr "Parolni almashtirish - SchoolPR"
+
+#: pages/authorization/profile.html
+msgid "Сменить пароль"
+msgstr "Parolni almashtirish"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собираемость"
+msgstr "Yigʻilish darajasi"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собираемость за месяц"
+msgstr "Oylik yigʻilish darajasi"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собрано"
+msgstr "Yigʻildi"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собрано оплат"
+msgstr "Yigʻilgan toʻlovlar"
+
+#: users/models.py
+msgid "Создал"
+msgstr "Yaratgan"
+
+#: users/models.py
+msgid "Создание"
+msgstr "Yaratish"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Создано"
+msgstr "Yaratildi"
+
+#: pages/home/contracts/contract_form.html pages/home/contracts/contract_list.html
+msgid "Создать договор"
+msgstr "Shartnoma yaratish"
+
+#: pages/home/schools/school_form.html
+msgid "Создать школу"
+msgstr "Maktab yaratish"
+
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+msgid "Сотрудник"
+msgstr "Xodim"
+
+#: pages/base.html pages/home/schools/school_list.html
+msgid "Сотрудники"
+msgstr "Xodimlar"
+
+#: integrations/views.py
+msgid "Сотрудники ↔ физлица 1С"
+msgstr "Xodimlar ↔ 1C jismoniy shaxslari"
+
+#: pages/home/director.html
+msgid "Сотрудников в школе"
+msgstr "Maktabdagi xodimlar"
+
+#: pages/authorization/password_change.html pages/home/contracts/contract_form.html pages/home/payouts/payout_form.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_form.html
+msgid "Сохранить изменения"
+msgstr "Oʻzgarishlarni saqlash"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Способ"
+msgstr "Usul"
+
+#: users/models.py
+msgid "Способ оплаты"
+msgstr "Toʻlov usuli"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Срок"
+msgstr "Muddat"
+
+#: pages/home/contracts/contract_list.html
+msgid "Срок (мес)"
+msgstr "Muddat (oy)"
+
+#: users/models.py users/views.py
+msgid "Срок, мес"
+msgstr "Muddat, oy"
+
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/integrations/integration.html
+msgid "Статус"
+msgstr "Holat"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/views.py
+msgid "Стоимость"
+msgstr "Narx"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Стоимость обучения"
+msgstr "Oʻqish narxi"
+
+#: users/models.py
+msgid "Стоимость питания"
+msgstr "Ovqatlanish narxi"
+
+#: users/models.py
+msgid "Стоимость учебы"
+msgstr "Oʻqish narxi"
+
+#: integrations/models.py users/models.py
+msgid "Сторнировано"
+msgstr "Storno qilingan"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Сторнировать"
+msgstr "Storno qilish"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Сторнировать запись?"
+msgstr "Yozuvni storno qilasizmi?"
+
+#: pages/home/contracts/contract_detail.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+msgid "Сторно"
+msgstr "Storno"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Сторно записи - SchoolPR"
+msgstr "Yozuvni storno qilish - SchoolPR"
+
+#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#, python-format
+msgid "Страница %(page)s из %(pages)s"
+msgstr "%(page)s-sahifa, jami %(pages)s"
+
+#: pages/home/integrations/integration.html
+msgid "Строка"
+msgstr "Qator"
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+msgid "Сумма"
+msgstr "Summa"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Сумма (сум)"
+msgstr "Summa (soʻm)"
+
+#: pages/home/payouts/payout_form.html
+msgid "Сумма выплат (сум)"
+msgstr "Toʻlov summasi (soʻm)"
+
+#: pages/home/debts/debt_list.html users/views.py
+msgid "Сумма долга"
+msgstr "Qarz summasi"
+
+#: users/models.py
+msgid "Сумма оплаты"
+msgstr "Toʻlov summasi"
+
+#: users/forms.py
+msgid "Сумма оплаты должна быть больше нуля."
+msgstr "Toʻlov summasi noldan katta boʻlishi kerak."
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/views.py
+msgid "Телефон"
+msgstr "Telefon"
+
+#: users/models.py
+msgid "Терминал / карта"
+msgstr "Terminal / karta"
+
+#: pages/home/transactions/transaction_list.html users/views.py
+msgid "Тип"
+msgstr "Turi"
+
+#: pages/home/transactions/transaction_form.html users/models.py
+msgid "Тип операции"
+msgstr "Operatsiya turi"
+
+#: pages/base.html pages/home/investor.html users/models.py
+msgid "Транзакции"
+msgstr "Tranzaksiyalar"
+
+#: pages/home/transactions/transaction_list.html
+msgid "Транзакции - SchoolPR"
+msgstr "Tranzaksiyalar - SchoolPR"
+
+#: pages/home/transactions/transaction_list.html
+msgid "Транзакции не найдены."
+msgstr "Tranzaksiyalar topilmadi."
+
+#: pages/home/owner.html
+msgid "Транзакции школ"
+msgstr "Maktablar tranzaksiyalari"
+
+#: pages/home/director.html pages/home/transactions/transaction_list.html
+msgid "Транзакции школы"
+msgstr "Maktab tranzaksiyalari"
+
+#: users/models.py
+msgid "Транзакция"
+msgstr "Tranzaksiya"
+
+#: users/models.py
+msgid "Удаление"
+msgstr "Oʻchirish"
+
+#: pages/home/contracts/contract_confirm_delete.html
+msgid "Удаление договора"
+msgstr "Shartnomani oʻchirish"
+
+#: pages/home/contracts/contract_confirm_delete.html
+msgid "Удаление договора - SchoolPR"
+msgstr "Shartnomani oʻchirish - SchoolPR"
+
+#: pages/home/contracts/contract_list.html pages/home/schools/school_list.html pages/home/users/user_list.html
+msgid "Удалить"
+msgstr "Oʻchirish"
+
+#: pages/home/users/user_confirm_delete.html
+msgid "Удалить пользователя?"
+msgstr "Foydalanuvchini oʻchirasizmi?"
+
+#: pages/home/schools/school_confirm_delete.html
+msgid "Удалить школу?"
+msgstr "Maktabni oʻchirasizmi?"
+
+#: users/models.py
+msgid "Узбекский язык"
+msgstr "Oʻzbek tili"
+
+#: pages/home/director.html pages/home/employee.html pages/home/owner.html
+msgid "Управление договорами"
+msgstr "Shartnomalarni boshqarish"
+
+#: pages/home/contracts/contract_list.html
+msgid "Управление договорами - SchoolPR"
+msgstr "Shartnomalarni boshqarish - SchoolPR"
+
+#: pages/home/owner.html
+msgid "Управление пользователями"
+msgstr "Foydalanuvchilarni boshqarish"
+
+#: pages/home/users/user_list.html
+msgid "Управление пользователями - SchoolPR"
+msgstr "Foydalanuvchilarni boshqarish - SchoolPR"
+
+#: pages/home/director.html
+msgid "Управление сотрудниками"
+msgstr "Xodimlarni boshqarish"
+
+#: pages/home/owner.html
+msgid "Управление школами"
+msgstr "Maktablarni boshqarish"
+
+#: pages/home/schools/school_list.html
+msgid "Управление школами - SchoolPR"
+msgstr "Maktablarni boshqarish - SchoolPR"
+
+#: integrations/models.py
+msgid "Успешно"
+msgstr "Muvaffaqiyatli"
+
+#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
+msgid "Ученик"
+msgstr "Oʻquvchi"
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "ФИО родителей"
+msgstr "Ota-onalar F.I.Sh."
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "ФИО ученика"
+msgstr "Oʻquvchi F.I.Sh."
+
+#: integrations/models.py
+msgid "Файл"
+msgstr "Fayl"
+
+#: integrations/views.py
+msgid "Файл больше 20 МБ — разбейте выгрузку на части."
+msgstr "Fayl 20 MB dan katta — eksportni qismlarga boʻling."
+
+#: users/models.py
+msgid "Февраль"
+msgstr "Fevral"
+
+#: pages/home/partials/finance_overview.html
+#, python-format
+msgid "Финансы за %(month)s"
+msgstr "%(month)s moliyasi"
+
+#: pages/home/integrations/integration.html
+msgid "Формат файла и примеры — в docs/1c-integration.md. Повторная загрузка того же файла не создаёт дублей."
+msgstr "Fayl formati va namunalar — docs/1c-integration.md da. Xuddi shu faylni qayta yuklash dublikat yaratmaydi."
+
+#: pages/home/payments/payment_list.html
+msgid "Частично"
+msgstr "Qisman"
+
+#: integrations/views.py
+msgid "Что загружаем"
+msgstr "Nima yuklanadi"
+
+#: pages/home/owner.html
+msgid "Школ"
+msgstr "Maktablar"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/models.py users/views.py
+msgid "Школа"
+msgstr "Maktab"
+
+#: pages/home/director.html pages/home/employee.html
+msgid "Школа не указана"
+msgstr "Maktab koʻrsatilmagan"
+
+#: pages/base.html pages/home/schools/school_list.html
+msgid "Школы"
+msgstr "Maktablar"
+
+#: pages/home/schools/school_list.html
+msgid "Школы не найдены."
+msgstr "Maktablar topilmadi."
+
+#: integrations/views.py
+msgid "Школы ↔ подразделения 1С"
+msgstr "Maktablar ↔ 1C boʻlinmalari"
+
+#: pages/home/contracts/contract_confirm_delete.html pages/home/users/user_confirm_delete.html
+msgid "Это действие необратимо."
+msgstr "Bu amalni qaytarib boʻlmaydi."
+
+#: pages/home/schools/school_confirm_delete.html
+msgid "Это действие необратимо. Связанные сотрудники не будут удалены, но потеряют привязку к этой школе."
+msgstr "Bu amalni qaytarib boʻlmaydi. Bogʻliq xodimlar oʻchirilmaydi, lekin bu maktabga bogʻlanishini yoʻqotadi."
+
+#: integrations/views.py
+#, python-format
+msgid "Это не JSON: %(error)s"
+msgstr "Bu JSON emas: %(error)s"
+
+#: pages/partials/language_switcher.html
+msgid "Язык интерфейса"
+msgstr "Interfeys tili"
+
+#: users/models.py
+msgid "Январь"
+msgstr "Yanvar"
+
+#: pages/home/integrations/integration.html
+msgid "включено"
+msgstr "yoqilgan"
+
+#: pages/home/integrations/integration.html
+msgid "выключено"
+msgstr "oʻchirilgan"
+
+#: users/views.py
+msgid "да"
+msgstr "ha"
+
+#: pages/home/integrations/integration.html
+msgid "доступна всегда"
+msgstr "har doim mavjud"
+
+#: pages/home/integrations/integration.html pages/home/partials/finance_overview.html
+msgid "из"
+msgstr "dan"
+
+#: pages/home/contracts/contract_detail.html pages/home/debts/debt_list.html
+msgid "мес."
+msgstr "oy"
+
+#: pages/home/partials/finance_overview.html
+msgid "млн"
+msgstr "mln"
+
+#: pages/home/integrations/integration.html
+msgid "настроена"
+msgstr "sozlangan"
+
+#: pages/home/integrations/integration.html
+msgid "не настроена"
+msgstr "sozlanmagan"
+
+#: users/views.py
+msgid "нет"
+msgstr "yoʻq"
+
+#: pages/home/integrations/integration.html
+msgid "ошибок"
+msgstr "xato"
+
+#: pages/home/partials/finance_overview.html
+msgid "подробнее"
+msgstr "batafsil"
+
+#: pages/home/schools/school_list.html
+msgid "сотрудников"
+msgstr "xodim"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "сторно"
+msgstr "storno"
+
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "сум"
+msgstr "soʻm"
+
+#: pages/home/contracts/contract_detail.html
+msgid "— договор"
+msgstr "— shartnoma"
+
+#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/models.py users/views.py
+msgid "№ договора"
+msgstr "Shartnoma №"
+
+#: users/models.py
+msgid "№ телефона"
+msgstr "Telefon №"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+msgid "← Вернуться на главную"
+msgstr "← Bosh sahifaga qaytish"
+
+#: pages/home/contracts/contract_detail.html
+msgid "← К списку договоров"
+msgstr "← Shartnomalar roʻyxatiga"
+
+#: pages/home/integrations/integration.html
+msgid "← На главную"
+msgstr "← Bosh sahifaga"
+
+#: pages/home/contracts/contract_form.html pages/home/payments/payment_form.html
+msgid "← Назад к списку"
+msgstr "← Roʻyxatga qaytish"
+
+#: pages/home/contracts/contract_detail.html
+msgid "◐ Частично"
+msgstr "◐ Qisman"
+
+#: pages/home/contracts/contract_detail.html
+msgid "✓ Оплачено"
+msgstr "✓ Toʻlangan"
+
+#: pages/home/contracts/contract_detail.html
+msgid "✕ Долг"
+msgstr "✕ Qarz"

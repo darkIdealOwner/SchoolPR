@@ -9,29 +9,23 @@ from decimal import Decimal
 
 from django.db.models import Prefetch
 from django.utils import timezone
+from django.utils.dates import MONTHS, MONTHS_3
+from django.utils.translation import gettext
 
 from .models import Contract, Payment, EmployeePayout, Transaction, School, shift_month
 
 ZERO = Decimal(0)
 
-RUSSIAN_MONTHS = {
-    1: 'Январь', 2: 'Февраль', 3: 'Март', 4: 'Апрель',
-    5: 'Май', 6: 'Июнь', 7: 'Июль', 8: 'Август',
-    9: 'Сентябрь', 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'
-}
-
-RUSSIAN_MONTHS_SHORT = {
-    1: 'янв', 2: 'фев', 3: 'мар', 4: 'апр', 5: 'май', 6: 'июн',
-    7: 'июл', 8: 'авг', 9: 'сен', 10: 'окт', 11: 'ноя', 12: 'дек'
-}
 
 
 def format_russian_month(d):
-    return f"{RUSSIAN_MONTHS[d.month]} {d.year}"
+    """«Январь 2026» на языке интерфейса (названия месяцев — из переводов Django)."""
+    # Порядок «месяц год» переводится: в корейском «2026년 10월»
+    return gettext('%(month)s %(year)s') % {'month': MONTHS[d.month], 'year': d.year}
 
 
 def format_short_month(d):
-    return f"{RUSSIAN_MONTHS_SHORT[d.month]} {d.strftime('%y')}"
+    return gettext('%(month)s %(year)s') % {'month': MONTHS_3[d.month], 'year': d.strftime('%y')}
 
 
 def current_month():
@@ -231,7 +225,7 @@ def build_overview(school=None, months=12, today=None):
         info = per_school[sid]
         m.update(info)
         m['school'] = schools_by_id.get(sid)
-        m['name'] = m['school'].name if m['school'] else 'Без школы'
+        m['name'] = m['school'].name if m['school'] else gettext('Без школы')
         m['collection_rate'] = _rate(info['paid_for_current'], info['accrued_current'])
         school_rows.append(m)
     school_rows.sort(key=lambda r: r['name'])

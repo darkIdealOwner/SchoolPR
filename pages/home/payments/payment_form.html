@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Регистрация оплаты - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Регистрация оплаты - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .form-container {
@@ -56,12 +57,12 @@
 {% block content %}
 <div class="form-container">
     <div style="margin-bottom: 2rem;">
-        <a href="{% url 'payment_list' %}?month={{ selected_month_str }}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Назад к списку</a>
-        <h1 style="margin: 1rem 0 0.5rem 0;">Регистрация оплаты</h1>
+        <a href="{% url 'payment_list' %}?month={{ selected_month_str }}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Назад к списку" %}</a>
+        <h1 style="margin: 1rem 0 0.5rem 0;">{% translate "Регистрация оплаты" %}</h1>
         {% if contract_obj %}
         <p style="color: var(--text-muted);">
-            Оплата для: <strong>{{ contract_obj.student_full_name }}</strong><br>
-            Месяц: <strong>{{ selected_month_str }}</strong>
+            {% translate "Оплата для:" %} <strong>{{ contract_obj.student_full_name }}</strong><br>
+            {% translate "Месяц:" %} <strong>{{ selected_month_str }}</strong>
         </p>
         {% endif %}
     </div>
@@ -112,7 +113,7 @@
             {% endif %}
         </div>
 
-        <button type="submit" class="btn-submit">Зафиксировать оплату</button>
+        <button type="submit" class="btn-submit">{% translate "Зафиксировать оплату" %}</button>
     </form>
 </div>
 {% endblock %}

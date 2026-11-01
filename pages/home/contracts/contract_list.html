@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load money %}
 
-{% block title %}Управление договорами - SchoolPR{% endblock %}
+{% block title %}{% translate "Управление договорами - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .toolbar {
@@ -124,17 +125,17 @@
 
 {% block content %}
 <div class="toolbar">
-    <h1 style="margin: 0;">Договоры</h1>
+    <h1 style="margin: 0;">{% translate "Договоры" %}</h1>
     
     <form class="search-form" method="get">
-        <input type="text" name="q" class="search-input" placeholder="{% if user.can_view_personal_data %}Поиск по номеру, ФИО, телефону...{% else %}Поиск по номеру, ФИО ученика...{% endif %}" value="{{ request.GET.q }}">
-        <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">Найти</button>
+        <input type="text" name="q" class="search-input" placeholder="{% if user.can_view_personal_data %}{% translate "Поиск по номеру, ФИО, телефону..." %}{% else %}{% translate "Поиск по номеру, ФИО ученика..." %}{% endif %}" value="{{ request.GET.q }}">
+        <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">{% translate "Найти" %}</button>
     </form>
 
     <div style="display: flex; gap: 0.75rem; align-items: center;">
-        <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}export=csv" class="btn-excel" title="Скачать таблицу для Excel">⬇ Excel</a>
+        <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}export=csv" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
         {% if user.role != 'INVESTOR' %}
-        <a href="{% url 'contract_add' %}" class="btn-add">Создать договор</a>
+        <a href="{% url 'contract_add' %}" class="btn-add">{% translate "Создать договор" %}</a>
         {% endif %}
     </div>
 </div>
@@ -144,29 +145,29 @@
         <thead>
             <tr>
                 <th>№</th>
-                <th>Школа</th>
-                <th>Дата</th>
-                <th>Месяц</th>
-                <th>ФИО ученика</th>
-                <th>Год рожд.</th>
-                <th>Класс</th>
-                <th>Срок (мес)</th>
+                <th>{% translate "Школа" %}</th>
+                <th>{% translate "Дата" %}</th>
+                <th>{% translate "Месяц" %}</th>
+                <th>{% translate "ФИО ученика" %}</th>
+                <th>{% translate "Год рожд." %}</th>
+                <th>{% translate "Класс" %}</th>
+                <th>{% translate "Срок (мес)" %}</th>
                 {% if user.can_view_personal_data %}
-                <th>ФИО родителей</th>
-                <th>Паспорт</th>
-                <th>ИНПС</th>
-                <th>Адрес</th>
-                <th>Телефон</th>
+                <th>{% translate "ФИО родителей" %}</th>
+                <th>{% translate "Паспорт" %}</th>
+                <th>{% translate "ИНПС" %}</th>
+                <th>{% translate "Адрес" %}</th>
+                <th>{% translate "Телефон" %}</th>
                 {% endif %}
-                <th>Направление</th>
-                <th>Стоимость</th>
-                <th>Скидка %</th>
-                <th>Скидка сум</th>
-                <th>Питание</th>
-                <th>Итого</th>
-                <th>Отмена</th>
-                <th>Примечание</th>
-                <th>Действия</th>
+                <th>{% translate "Направление" %}</th>
+                <th>{% translate "Стоимость" %}</th>
+                <th>{% translate "Скидка %" %}</th>
+                <th>{% translate "Скидка сум" %}</th>
+                <th>{% translate "Питание" %}</th>
+                <th>{% translate "Итого" %}</th>
+                <th>{% translate "Отмена" %}</th>
+                <th>{% translate "Примечание" %}</th>
+                <th>{% translate "Действия" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -211,15 +212,15 @@
                         <span style="color: var(--text-muted);">—</span>
                     {% else %}
                         <div style="display: flex; gap: 0.75rem;">
-                            <a href="{% url 'contract_edit' c.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.75rem;">Изменить</a>
-                            <a href="{% url 'contract_delete' c.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">Удалить</a>
+                            <a href="{% url 'contract_edit' c.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.75rem;">{% translate "Изменить" %}</a>
+                            <a href="{% url 'contract_delete' c.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">{% translate "Удалить" %}</a>
                         </div>
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="22" style="text-align: center; color: var(--text-muted); padding: 3rem;">Договоры не найдены.</td>
+                <td colspan="22" style="text-align: center; color: var(--text-muted); padding: 3rem;">{% translate "Договоры не найдены." %}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -232,7 +233,7 @@
         <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}" class="page-link">&laquo;</a>
     {% endif %}
 
-    <span class="page-info">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+    <span class="page-info">{% blocktranslate with page=page_obj.number pages=page_obj.paginator.num_pages %}Страница {{ page }} из {{ pages }}{% endblocktranslate %}</span>
 
     {% if page_obj.has_next %}
         <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}" class="page-link">&raquo;</a>
@@ -241,6 +242,6 @@
 {% endif %}
 
 <div style="margin-top: 2rem;">
-    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Вернуться на главную</a>
+    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>
 </div>
 {% endblock %}

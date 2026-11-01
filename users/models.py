@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.utils.translation import gettext, gettext_lazy as _
 
 
 def shift_month(month_first, delta):
@@ -18,13 +19,13 @@ class ExternalSyncMixin(models.Model):
     SOURCE_MANUAL = 'MANUAL'
     SOURCE_1C = '1C'
     SOURCE_CHOICES = [
-        (SOURCE_MANUAL, 'Платформа'),
-        (SOURCE_1C, '1С'),
+        (SOURCE_MANUAL, _('Платформа')),
+        (SOURCE_1C, _('1С')),
     ]
 
-    external_id = models.CharField(max_length=64, null=True, blank=True, unique=True, verbose_name="ID в 1С")
-    source = models.CharField(max_length=10, choices=SOURCE_CHOICES, default=SOURCE_MANUAL, verbose_name="Источник")
-    synced_at = models.DateTimeField(null=True, blank=True, verbose_name="Синхронизировано")
+    external_id = models.CharField(max_length=64, null=True, blank=True, unique=True, verbose_name=_("ID в 1С"))
+    source = models.CharField(max_length=10, choices=SOURCE_CHOICES, default=SOURCE_MANUAL, verbose_name=_("Источник"))
+    synced_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Синхронизировано"))
 
     class Meta:
         abstract = True
@@ -36,15 +37,15 @@ class ExternalSyncMixin(models.Model):
 
 class User(AbstractUser, ExternalSyncMixin):
     ROLE_CHOICES = [
-        ('OWNER', 'Владелец'),
-        ('DIRECTOR', 'Директор'),
-        ('EMPLOYEE', 'Сотрудник'),
-        ('INVESTOR', 'Инвестор'),
+        ('OWNER', _('Владелец')),
+        ('DIRECTOR', _('Директор')),
+        ('EMPLOYEE', _('Сотрудник')),
+        ('INVESTOR', _('Инвестор')),
     ]
 
-    phone_number = models.CharField(max_length=20, unique=True, verbose_name="Номер телефона")
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name="Роль")
-    school = models.ForeignKey('School', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Школа")
+    phone_number = models.CharField(max_length=20, unique=True, verbose_name=_("Номер телефона"))
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name=_("Роль"))
+    school = models.ForeignKey('School', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Школа"))
 
     # We'll use phone_number instead of username for login if needed,
     # but for now we'll keep both or just use phone_number for display.
@@ -77,15 +78,15 @@ class User(AbstractUser, ExternalSyncMixin):
         return priorities.get(self.role, 5)
 
 class School(ExternalSyncMixin, models.Model):
-    name = models.CharField(max_length=255, verbose_name="Название школы")
-    address = models.CharField(max_length=255, verbose_name="Адрес", blank=True)
+    name = models.CharField(max_length=255, verbose_name=_("Название школы"))
+    address = models.CharField(max_length=255, verbose_name=_("Адрес"), blank=True)
     director = models.OneToOneField(
         'User',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='managed_school',
-        verbose_name="Директор"
+        verbose_name=_("Директор")
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -99,41 +100,41 @@ class School(ExternalSyncMixin, models.Model):
 
 class Contract(ExternalSyncMixin, models.Model):
     MONTH_CHOICES = [
-        ('Январь', 'Январь'), ('Февраль', 'Февраль'), ('Март', 'Март'),
-        ('Апрель', 'Апрель'), ('Май', 'Май'), ('Июнь', 'Июнь'),
-        ('Июль', 'Июль'), ('Август', 'Август'), ('Сентябрь', 'Сентябрь'),
-        ('Октябрь', 'Октябрь'), ('Ноябрь', 'Ноябрь'), ('Декабрь', 'Декабрь'),
+        ('Январь', _('Январь')), ('Февраль', _('Февраль')), ('Март', _('Март')),
+        ('Апрель', _('Апрель')), ('Май', _('Май')), ('Июнь', _('Июнь')),
+        ('Июль', _('Июль')), ('Август', _('Август')), ('Сентябрь', _('Сентябрь')),
+        ('Октябрь', _('Октябрь')), ('Ноябрь', _('Ноябрь')), ('Декабрь', _('Декабрь')),
     ]
 
     SPECIALIZATION_CHOICES = [
-        ('Русский язык', 'Русский язык'),
-        ('Узбекский язык', 'Узбекский язык'),
+        ('Русский язык', _('Русский язык')),
+        ('Узбекский язык', _('Узбекский язык')),
     ]
 
-    number = models.CharField(max_length=100, unique=True, verbose_name="№ договора")
-    date = models.DateField(default=timezone.now, verbose_name="Дата")
-    month = models.CharField(max_length=20, choices=MONTH_CHOICES, default='Январь', verbose_name="Месяц")
-    student_full_name = models.CharField(max_length=255, default="", verbose_name="ФИО ученика")
-    student_birth_year = models.IntegerField(default=2000, verbose_name="Год рождения")
-    student_class = models.CharField(max_length=50, default="", verbose_name="Класс")
-    duration_months = models.IntegerField(default=12, verbose_name="Срок, мес")
-    parents_full_name = models.CharField(max_length=255, default="", verbose_name="ФИО родителей")
-    passport_data = models.CharField(max_length=100, default="", verbose_name="Серия и номер паспорта")
-    inps = models.CharField(max_length=50, default="", verbose_name="ИНПС")
-    address = models.CharField(max_length=255, default="", verbose_name="Адрес")
-    phone_number = models.CharField(max_length=20, default="", verbose_name="№ телефона")
-    specialization = models.CharField(max_length=50, choices=SPECIALIZATION_CHOICES, default='Русский язык', verbose_name="Направление")
-    tuition_fee = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Стоимость учебы")
-    discount_percentage = models.IntegerField(default=0, verbose_name="Скидка, %")
-    discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Скидка, сум")
-    food_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Стоимость питания")
-    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Сумма")
-    is_cancelled = models.BooleanField(default=False, verbose_name="Отметка об отмены договора")
-    cancelled_at = models.DateField(null=True, blank=True, verbose_name="Дата отмены договора")
-    notes = models.TextField(blank=True, verbose_name="Примечание")
+    number = models.CharField(max_length=100, unique=True, verbose_name=_("№ договора"))
+    date = models.DateField(default=timezone.now, verbose_name=_("Дата"))
+    month = models.CharField(max_length=20, choices=MONTH_CHOICES, default='Январь', verbose_name=_("Месяц"))
+    student_full_name = models.CharField(max_length=255, default="", verbose_name=_("ФИО ученика"))
+    student_birth_year = models.IntegerField(default=2000, verbose_name=_("Год рождения"))
+    student_class = models.CharField(max_length=50, default="", verbose_name=_("Класс"))
+    duration_months = models.IntegerField(default=12, verbose_name=_("Срок, мес"))
+    parents_full_name = models.CharField(max_length=255, default="", verbose_name=_("ФИО родителей"))
+    passport_data = models.CharField(max_length=100, default="", verbose_name=_("Серия и номер паспорта"))
+    inps = models.CharField(max_length=50, default="", verbose_name=_("ИНПС"))
+    address = models.CharField(max_length=255, default="", verbose_name=_("Адрес"))
+    phone_number = models.CharField(max_length=20, default="", verbose_name=_("№ телефона"))
+    specialization = models.CharField(max_length=50, choices=SPECIALIZATION_CHOICES, default='Русский язык', verbose_name=_("Направление"))
+    tuition_fee = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Стоимость учебы"))
+    discount_percentage = models.IntegerField(default=0, verbose_name=_("Скидка, %"))
+    discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Скидка, сум"))
+    food_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Стоимость питания"))
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
+    is_cancelled = models.BooleanField(default=False, verbose_name=_("Отметка об отмены договора"))
+    cancelled_at = models.DateField(null=True, blank=True, verbose_name=_("Дата отмены договора"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание"))
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contracts', verbose_name="Создал")
-    school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True, related_name='contracts', verbose_name="Школа")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contracts', verbose_name=_("Создал"))
+    school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True, related_name='contracts', verbose_name=_("Школа"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -188,11 +189,11 @@ class ActiveManager(models.Manager):
 
 class FinancialRecord(ExternalSyncMixin, models.Model):
     """Общие поля денежных записей: кто внёс и сторно вместо удаления."""
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name="Кто внёс")
-    is_reversed = models.BooleanField(default=False, verbose_name="Сторнировано")
-    reversed_at = models.DateTimeField(null=True, blank=True, verbose_name="Дата сторно")
-    reversed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name="Кто сторнировал")
-    reversal_reason = models.CharField(max_length=255, blank=True, verbose_name="Причина сторно")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name=_("Кто внёс"))
+    is_reversed = models.BooleanField(default=False, verbose_name=_("Сторнировано"))
+    reversed_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Дата сторно"))
+    reversed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name=_("Кто сторнировал"))
+    reversal_reason = models.CharField(max_length=255, blank=True, verbose_name=_("Причина сторно"))
     updated_at = models.DateTimeField(auto_now=True)
 
     objects = models.Manager()
@@ -211,63 +212,65 @@ class FinancialRecord(ExternalSyncMixin, models.Model):
 
 class Payment(FinancialRecord):
     METHOD_CHOICES = [
-        ('CASH', 'Наличные'),
-        ('CARD', 'Терминал / карта'),
+        ('CASH', _('Наличные')),
+        ('CARD', _('Терминал / карта')),
         ('CLICK', 'Click'),
         ('PAYME', 'Payme'),
         ('UZUM', 'Uzum'),
-        ('BANK', 'Перечисление на счёт'),
+        ('BANK', _('Перечисление на счёт')),
     ]
 
-    contract = models.ForeignKey(Contract, on_delete=models.PROTECT, related_name='payments', verbose_name="Договор")
-    for_month = models.DateField(verbose_name="За месяц (1-е число)")
-    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Сумма оплаты")
-    method = models.CharField(max_length=20, choices=METHOD_CHOICES, default='CASH', verbose_name="Способ оплаты")
-    payment_date = models.DateField(default=timezone.now, verbose_name="Дата оплаты")
-    notes = models.TextField(blank=True, verbose_name="Примечание")
+    contract = models.ForeignKey(Contract, on_delete=models.PROTECT, related_name='payments', verbose_name=_("Договор"))
+    for_month = models.DateField(verbose_name=_("За месяц (1-е число)"))
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма оплаты"))
+    method = models.CharField(max_length=20, choices=METHOD_CHOICES, default='CASH', verbose_name=_("Способ оплаты"))
+    payment_date = models.DateField(default=timezone.now, verbose_name=_("Дата оплаты"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание"))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Оплата"
-        verbose_name_plural = "Оплаты"
+        verbose_name=_("Оплата")
+        verbose_name_plural=_("Оплаты")
         ordering = ['-payment_date']
 
     def __str__(self):
-        return f"Оплата {self.contract.student_full_name} за {self.for_month.strftime('%m/%Y')}"
+        return gettext("Оплата %(student)s за %(month)s") % {
+            'student': self.contract.student_full_name, 'month': self.for_month.strftime('%m/%Y')}
 
 class EmployeePayout(FinancialRecord):
-    employee = models.ForeignKey(User, on_delete=models.PROTECT, limit_choices_to={'role': 'EMPLOYEE'}, related_name='employee_payouts', verbose_name="Сотрудник")
-    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='employee_payouts', verbose_name="Школа")
-    for_month = models.DateField(verbose_name="За месяц (1-е число)")
-    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Сумма")
-    payout_date = models.DateField(default=timezone.now, verbose_name="Дата выплаты")
-    notes = models.TextField(blank=True, verbose_name="Примечание")
+    employee = models.ForeignKey(User, on_delete=models.PROTECT, limit_choices_to={'role': 'EMPLOYEE'}, related_name='employee_payouts', verbose_name=_("Сотрудник"))
+    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='employee_payouts', verbose_name=_("Школа"))
+    for_month = models.DateField(verbose_name=_("За месяц (1-е число)"))
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
+    payout_date = models.DateField(default=timezone.now, verbose_name=_("Дата выплаты"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание"))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Выплата сотруднику"
-        verbose_name_plural = "Выплаты сотрудникам"
+        verbose_name=_("Выплата сотруднику")
+        verbose_name_plural=_("Выплаты сотрудникам")
         ordering = ['-payout_date']
 
     def __str__(self):
-        return f"{self.employee.first_name} - {self.amount} за {self.for_month.strftime('%m/%Y')}"
+        return gettext("%(employee)s - %(amount)s за %(month)s") % {
+            'employee': self.employee.first_name, 'amount': self.amount, 'month': self.for_month.strftime('%m/%Y')}
 
 class Transaction(FinancialRecord):
     TYPE_CHOICES = [
-        ('INCOME', 'Приход / Инвестиция'),
-        ('EXPENSE', 'Расход / Непредвиденные траты'),
+        ('INCOME', _('Приход / Инвестиция')),
+        ('EXPENSE', _('Расход / Непредвиденные траты')),
     ]
-    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='transactions', verbose_name="Школа")
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name="Тип операции")
-    category = models.CharField(max_length=100, blank=True, verbose_name="Категория/Назначение")
-    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Сумма")
-    date = models.DateField(default=timezone.now, verbose_name="Дата")
-    notes = models.TextField(blank=True, verbose_name="Примечание / Описание / От кого")
+    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='transactions', verbose_name=_("Школа"))
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name=_("Тип операции"))
+    category = models.CharField(max_length=100, blank=True, verbose_name=_("Категория/Назначение"))
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
+    date = models.DateField(default=timezone.now, verbose_name=_("Дата"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание / Описание / От кого"))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Транзакция"
-        verbose_name_plural = "Транзакции"
+        verbose_name=_("Транзакция")
+        verbose_name_plural=_("Транзакции")
         ordering = ['-date']
 
     def __str__(self):
@@ -276,22 +279,22 @@ class Transaction(FinancialRecord):
 
 class AuditLog(models.Model):
     ACTION_CHOICES = [
-        ('CREATE', 'Создание'),
-        ('UPDATE', 'Изменение'),
-        ('REVERSE', 'Сторно'),
-        ('DELETE', 'Удаление'),
+        ('CREATE', _('Создание')),
+        ('UPDATE', _('Изменение')),
+        ('REVERSE', _('Сторно')),
+        ('DELETE', _('Удаление')),
     ]
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_logs', verbose_name="Пользователь")
-    action = models.CharField(max_length=20, choices=ACTION_CHOICES, verbose_name="Действие")
-    model_name = models.CharField(max_length=100, verbose_name="Объект")
-    object_id = models.CharField(max_length=64, verbose_name="ID объекта")
-    object_repr = models.CharField(max_length=255, blank=True, verbose_name="Описание")
-    changes = models.JSONField(default=dict, blank=True, verbose_name="Изменения")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Когда")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_logs', verbose_name=_("Пользователь"))
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES, verbose_name=_("Действие"))
+    model_name = models.CharField(max_length=100, verbose_name=_("Объект"))
+    object_id = models.CharField(max_length=64, verbose_name=_("ID объекта"))
+    object_repr = models.CharField(max_length=255, blank=True, verbose_name=_("Описание"))
+    changes = models.JSONField(default=dict, blank=True, verbose_name=_("Изменения"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Когда"))
 
     class Meta:
-        verbose_name = "Журнал действий"
-        verbose_name_plural = "Журнал действий"
+        verbose_name=_("Журнал действий")
+        verbose_name_plural=_("Журнал действий")
         ordering = ['-created_at']
 
     def __str__(self):

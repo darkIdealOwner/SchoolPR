@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Панель владельца - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Панель владельца - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .dashboard-grid {
@@ -92,41 +93,41 @@
 
 {% block content %}
 <div class="welcome-section">
-    <h1 style="margin: 0; font-size: 2.5rem; letter-spacing: -0.025em;">Здравствуйте, {{ user.first_name }}! 👋</h1>
-    <p style="color: var(--text-muted); font-size: 1.125rem; margin-top: 0.5rem;">Добро пожаловать в панель управления SchoolPR.</p>
+    <h1 style="margin: 0; font-size: 2.5rem; letter-spacing: -0.025em;">{% blocktranslate with name=user.first_name %}Здравствуйте, {{ name }}!{% endblocktranslate %} 👋</h1>
+    <p style="color: var(--text-muted); font-size: 1.125rem; margin-top: 0.5rem;">{% translate "Добро пожаловать в панель управления SchoolPR." %}</p>
 </div>
 
 <div class="dashboard-grid">
     <div class="stat-card">
-        <div class="stat-label">Пользователей</div>
+        <div class="stat-label">{% translate "Пользователей" %}</div>
         <div class="stat-value">{{ total_users }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-label">Школ</div>
+        <div class="stat-label">{% translate "Школ" %}</div>
         <div class="stat-value">{{ total_schools }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-label">Инвесторов</div>
+        <div class="stat-label">{% translate "Инвесторов" %}</div>
         <div class="stat-value">{{ total_investors }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-label">Договоров</div>
+        <div class="stat-label">{% translate "Договоров" %}</div>
         <div class="stat-value">{{ total_contracts }}</div>
     </div>
 </div>
 
 {% include 'home/partials/finance_overview.html' with show_spending=True show_schools=True show_debtors=True %}
 
-<h2 style="font-size: 1.125rem; margin: 2.5rem 0 0 0; font-weight: 600;">Разделы</h2>
+<h2 style="font-size: 1.125rem; margin: 2.5rem 0 0 0; font-weight: 600;">{% translate "Разделы" %}</h2>
 <div class="actions-container" style="flex-wrap: wrap; margin-top: 1rem;">
-    <a href="{% url 'user_list' %}" class="btn-action">Управление пользователями</a>
-    <a href="{% url 'school_list' %}" class="btn-action" style="background-color: #10b981;">Управление школами</a>
-    <a href="{% url 'contract_list' %}" class="btn-action" style="background-color: #f59e0b;">Управление договорами</a>
-    <a href="{% url 'payment_list' %}" class="btn-action" style="background-color: #3b82f6;">Оплаты родителей</a>
-    <a href="{% url 'debt_list' %}" class="btn-action" style="background-color: #ef4444;">Задолженности</a>
-    <a href="{% url 'payout_list' %}" class="btn-action" style="background-color: #8b5cf6;">Выплаты сотрудникам</a>
-    <a href="{% url 'transaction_list' %}" class="btn-action" style="background-color: #06b6d4;">Транзакции школ</a>
-    <a href="{% url 'integration' %}" class="btn-action" style="background-color: #475569;">Интеграция с 1С</a>
+    <a href="{% url 'user_list' %}" class="btn-action">{% translate "Управление пользователями" %}</a>
+    <a href="{% url 'school_list' %}" class="btn-action" style="background-color: #10b981;">{% translate "Управление школами" %}</a>
+    <a href="{% url 'contract_list' %}" class="btn-action" style="background-color: #f59e0b;">{% translate "Управление договорами" %}</a>
+    <a href="{% url 'payment_list' %}" class="btn-action" style="background-color: #3b82f6;">{% translate "Оплаты родителей" %}</a>
+    <a href="{% url 'debt_list' %}" class="btn-action" style="background-color: #ef4444;">{% translate "Задолженности" %}</a>
+    <a href="{% url 'payout_list' %}" class="btn-action" style="background-color: #8b5cf6;">{% translate "Выплаты сотрудникам" %}</a>
+    <a href="{% url 'transaction_list' %}" class="btn-action" style="background-color: #06b6d4;">{% translate "Транзакции школ" %}</a>
+    <a href="{% url 'integration' %}" class="btn-action" style="background-color: #475569;">{% translate "Интеграция с 1С" %}</a>
 </div>
 
 {% load static %}

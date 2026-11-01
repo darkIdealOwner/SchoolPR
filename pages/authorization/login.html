@@ -1,9 +1,9 @@
-{% load static %}<!DOCTYPE html>
-<html lang="ru">
+{% load static i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'ru' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход в систему</title>
+    <title>{% translate "Вход в систему" %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -104,32 +104,56 @@
             font-size: 0.8125rem;
             margin-bottom: 1rem;
         }
+        .login-lang {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+        }
+        .lang-form { margin: 0; }
+        .lang-label { display: flex; align-items: center; gap: 0.35rem; }
+        .lang-select {
+            background-color: var(--card-bg);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.5rem;
+            padding: 0.45rem 0.5rem;
+            font: inherit;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        .lang-select option { background-color: #0f172a; }
+        @media (max-width: 480px) {
+            body { padding: 0 1rem; box-sizing: border-box; }
+            .login-card { padding: 1.75rem 1.25rem; }
+            .input-field { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
+    <div class="login-lang">{% include 'partials/language_switcher.html' %}</div>
     <div class="login-card">
-        <h1>Вход</h1>
-        <p class="subtitle">Используйте номер телефона для входа</p>
+        <h1>{% translate "Вход" %}</h1>
+        <p class="subtitle">{% translate "Используйте номер телефона для входа" %}</p>
         
         <form method="post">
             {% csrf_token %}
             {% if form.errors %}
                 <ul class="errorlist">
-                    <li>Неверный номер телефона или пароль</li>
+                    <li>{% translate "Неверный номер телефона или пароль" %}</li>
                 </ul>
             {% endif %}
             
             <div class="form-group">
-                <label for="{{ form.username.id_for_label }}">Номер телефона</label>
+                <label for="{{ form.username.id_for_label }}">{% translate "Номер телефона" %}</label>
                 {{ form.username }}
             </div>
             
             <div class="form-group">
-                <label for="{{ form.password.id_for_label }}">Пароль</label>
+                <label for="{{ form.password.id_for_label }}">{% translate "Пароль" %}</label>
                 {{ form.password }}
             </div>
             
-            <button type="submit" class="btn-submit">Войти</button>
+            <button type="submit" class="btn-submit">{% translate "Войти" %}</button>
         </form>
     </div>
     <script src="{% static 'js/phone-mask.js' %}"></script>

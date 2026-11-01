@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load money %}
 
-{% block title %}Сторно записи - SchoolPR{% endblock %}
+{% block title %}{% translate "Сторно записи - SchoolPR" %}{% endblock %}
 
 {% block content %}
 <div class="card" style="max-width: 480px; margin: 2rem auto;">
-    <h1 style="color: #ef4444; margin-top: 0;">Сторнировать запись?</h1>
-    <p>{{ object_verbose_name|capfirst }}: <strong>{{ object }}</strong>, сумма <strong>{{ object.amount|money }} сум</strong>.</p>
+    <h1 style="color: #ef4444; margin-top: 0;">{% translate "Сторнировать запись?" %}</h1>
+    <p>{{ object_verbose_name|capfirst }}: {% blocktranslate with obj=object amount=object.amount|money %}<strong>{{ obj }}</strong>, сумма <strong>{{ amount }} сум</strong>.{% endblocktranslate %}</p>
     <p style="color: var(--text-muted); font-size: 0.875rem;">
-        Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах.
+        {% translate "Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах." %}
     </p>
 
     <form method="post">
@@ -19,9 +20,9 @@
         <div style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem;">{{ form.reason.errors|striptags }}</div>
         {% endif %}
         <button type="submit"
-            style="background-color: #ef4444; border: none; width: 100%; border-radius: 0.5rem; padding: 0.75rem; color: white; font-weight: 600; cursor: pointer; margin-top: 1.5rem;">Сторнировать</button>
+            style="background-color: #ef4444; border: none; width: 100%; border-radius: 0.5rem; padding: 0.75rem; color: white; font-weight: 600; cursor: pointer; margin-top: 1.5rem;">{% translate "Сторнировать" %}</button>
         <a href="{{ back_url }}"
-            style="display: block; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem; text-align: center;">Отмена</a>
+            style="display: block; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem; text-align: center;">{% translate "Отмена" %}</a>
     </form>
 </div>
 {% endblock %}

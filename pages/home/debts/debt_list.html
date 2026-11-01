@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load money %}
 
-{% block title %}Задолженности - SchoolPR{% endblock %}
+{% block title %}{% translate "Задолженности - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .toolbar {
@@ -79,28 +80,28 @@
 {% block content %}
 <div class="toolbar">
     <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <h1 style="margin: 0;">Задолженности</h1>
+        <h1 style="margin: 0;">{% translate "Задолженности" %}</h1>
         <p style="color: var(--text-muted); margin: 0; font-size: 0.875rem;">
             {% if view_mode == 'general' %}
-                Общий долг учащихся на текущий момент
+                {% translate "Общий долг учащихся на текущий момент" %}
             {% else %}
-                Долги за месяц: <strong>{{ target_month_label }}</strong> (только должники)
+                {% translate "Долги за месяц:" %} <strong>{{ target_month_label }}</strong> {% translate "(только должники)" %}
             {% endif %}
         </p>
     </div>
     
     <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-        <a href="?mode={{ view_mode }}&month={{ month_str }}&export=csv" class="btn-excel" title="Скачать таблицу для Excel">⬇ Excel</a>
+        <a href="?mode={{ view_mode }}&month={{ month_str }}&export=csv" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
         <div class="mode-tabs">
-            <a href="?mode=general" class="mode-tab {% if view_mode == 'general' %}active{% endif %}">Общий долг</a>
-            <a href="?mode=monthly&month={{ month_str }}" class="mode-tab {% if view_mode == 'monthly' %}active{% endif %}">По месяцам</a>
+            <a href="?mode=general" class="mode-tab {% if view_mode == 'general' %}active{% endif %}">{% translate "Общий долг" %}</a>
+            <a href="?mode=monthly&month={{ month_str }}" class="mode-tab {% if view_mode == 'monthly' %}active{% endif %}">{% translate "По месяцам" %}</a>
         </div>
 
         {% if view_mode == 'monthly' %}
         <form method="get" style="display: flex; gap: 0.5rem;">
             <input type="hidden" name="mode" value="monthly">
             <input type="month" name="month" value="{{ month_str }}" class="input-field" style="margin: 0; width: auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; padding: 0.5rem;">
-            <button type="submit" class="btn-action">Показать</button>
+            <button type="submit" class="btn-action">{% translate "Показать" %}</button>
         </form>
         {% endif %}
     </div>
@@ -110,16 +111,16 @@
     <table class="debt-table">
         <thead>
             <tr>
-                <th>№ договора</th>
-                <th>Школа</th>
-                <th>Ученик{% if user.can_view_personal_data %} / Тел.{% endif %}</th>
-                {% if user.can_view_personal_data %}<th>Родитель</th>{% endif %}
-                <th>Направление</th>
-                <th>Стоимость</th>
-                <th>Просрочено месяцев</th>
-                <th>Неоплаченные месяцы</th>
-                <th>Сумма долга</th>
-                <th>Действия</th>
+                <th>{% translate "№ договора" %}</th>
+                <th>{% translate "Школа" %}</th>
+                <th>{% translate "Ученик" %}{% if user.can_view_personal_data %} {% translate "/ Тел." %}{% endif %}</th>
+                {% if user.can_view_personal_data %}<th>{% translate "Родитель" %}</th>{% endif %}
+                <th>{% translate "Направление" %}</th>
+                <th>{% translate "Стоимость" %}</th>
+                <th>{% translate "Просрочено месяцев" %}</th>
+                <th>{% translate "Неоплаченные месяцы" %}</th>
+                <th>{% translate "Сумма долга" %}</th>
+                <th>{% translate "Действия" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -135,7 +136,7 @@
                 <td>{{ contract.specialization }}</td>
                 <td>{{ contract.total_amount|money }}</td>
                 <td>
-                    <span class="status-badge">{{ contract.unpaid_count }} мес.</span>
+                    <span class="status-badge">{{ contract.unpaid_count }} {% translate "мес." %}</span>
                 </td>
                 <td style="max-width: 250px; font-size: 0.85rem; color: var(--text-muted);">
                     {{ contract.unpaid_months|join:", " }}
@@ -144,12 +145,12 @@
                     {{ contract.total_debt|money }}
                 </td>
                 <td>
-                    <a href="{% url 'contract_detail' contract.pk %}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px; white-space: nowrap;">Карточка</a>
+                    <a href="{% url 'contract_detail' contract.pk %}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px; white-space: nowrap;">{% translate "Карточка" %}</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="10" style="text-align: center; padding: 3rem; color: var(--text-muted);">Задолженностей не найдено. Прекрасно!</td>
+                <td colspan="10" style="text-align: center; padding: 3rem; color: var(--text-muted);">{% translate "Задолженностей не найдено. Прекрасно!" %}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -157,6 +158,6 @@
 </div>
 
 <div style="margin-top: 2rem;">
-    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Вернуться на главную</a>
+    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>
 </div>
 {% endblock %}

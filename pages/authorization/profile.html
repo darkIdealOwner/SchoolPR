@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Профиль - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Профиль - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .profile-card {
@@ -96,21 +97,21 @@
     </div>
 
     <div class="info-item">
-        <span class="label">Роль</span>
+        <span class="label">{% translate "Роль" %}</span>
         <span class="value">{{ user.get_role_display }}</span>
     </div>
 
     <div class="info-item">
-        <span class="label">Номер телефона</span>
+        <span class="label">{% translate "Номер телефона" %}</span>
         <span class="value">{{ user.masked_phone }}</span>
     </div>
 
     <div class="profile-actions">
-        <a href="{% url 'password_change' %}" class="btn btn-primary">Сменить пароль</a>
+        <a href="{% url 'password_change' %}" class="btn btn-primary">{% translate "Сменить пароль" %}</a>
         
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger" style="width: 100%;">Выход из системы</button>
+            <button type="submit" class="btn btn-danger" style="width: 100%;">{% translate "Выход из системы" %}</button>
         </form>
     </div>
 </div>

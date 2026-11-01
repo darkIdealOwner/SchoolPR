@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load money %}
 
-{% block title %}Оплаты - SchoolPR{% endblock %}
+{% block title %}{% translate "Оплаты - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .toolbar {
@@ -50,12 +51,12 @@
 
 {% block content %}
 <div class="toolbar">
-    <h1 style="margin: 0;">Оплаты за месяц</h1>
+    <h1 style="margin: 0;">{% translate "Оплаты за месяц" %}</h1>
     
     <form method="get" style="display: flex; gap: 0.5rem;">
         <input type="month" name="month" value="{{ month_str }}" class="input-field" style="margin: 0; width: auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; padding: 0.5rem;">
-        <button type="submit" class="btn-action">Показать</button>
-        <a href="?month={{ month_str }}&export=csv" class="btn-excel" title="Скачать таблицу для Excel">⬇ Excel</a>
+        <button type="submit" class="btn-action">{% translate "Показать" %}</button>
+        <a href="?month={{ month_str }}&export=csv" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
     </form>
 </div>
 
@@ -63,15 +64,15 @@
     <table class="payment-table">
         <thead>
             <tr>
-                <th>№ договора</th>
-                <th>Школа</th>
-                <th>Ученик</th>
-                {% if user.can_view_personal_data %}<th>Родитель</th>{% endif %}
-                <th>Направление</th>
-                <th>Стоимость</th>
-                <th>Оплачено</th>
-                <th>Остаток</th>
-                <th>Действия</th>
+                <th>{% translate "№ договора" %}</th>
+                <th>{% translate "Школа" %}</th>
+                <th>{% translate "Ученик" %}</th>
+                {% if user.can_view_personal_data %}<th>{% translate "Родитель" %}</th>{% endif %}
+                <th>{% translate "Направление" %}</th>
+                <th>{% translate "Стоимость" %}</th>
+                <th>{% translate "Оплачено" %}</th>
+                <th>{% translate "Остаток" %}</th>
+                <th>{% translate "Действия" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -92,19 +93,19 @@
                 </td>
                 <td>
                     {% if contract.this_month_balance <= 0 %}
-                        <span class="status-paid">Оплачено</span>
+                        <span class="status-paid">{% translate "Оплачено" %}</span>
                     {% elif user.role == 'INVESTOR' %}
-                        <span class="status-debt">{% if contract.this_month_paid %}Частично{% else %}Не оплачено{% endif %}</span>
+                        <span class="status-debt">{% if contract.this_month_paid %}{% translate "Частично" %}{% else %}{% translate "Не оплачено" %}{% endif %}</span>
                     {% else %}
-                        <a href="{% url 'payment_create' %}?contract={{ contract.id }}&month={{ month_str }}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px;">{% if contract.this_month_paid %}Доплатить{% else %}Оплатить{% endif %}</a>
+                        <a href="{% url 'payment_create' %}?contract={{ contract.id }}&month={{ month_str }}" class="btn-action" style="padding: 5px 12px; font-size: 0.8rem; background-color: #3b82f6; border-radius: 4px;">{% if contract.this_month_paid %}{% translate "Доплатить" %}{% else %}{% translate "Оплатить" %}{% endif %}</a>
                     {% endif %}
                     {% for p in contract.month_payments %}
                     <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; white-space: nowrap;">
                         {{ p.payment_date|date:"d.m" }} · {{ p.amount|money }} · {{ p.get_method_display }}
                         {% if p.is_from_1c %}
-                        · <span title="Документ из 1С: исправляется в 1С" style="font-size: 0.7rem; font-weight: 700; color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); border-radius: 0.25rem; padding: 0.05rem 0.3rem;">1С</span>
+                        · <span title="{% translate "Документ из 1С: исправляется в 1С" %}" style="font-size: 0.7rem; font-weight: 700; color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); border-radius: 0.25rem; padding: 0.05rem 0.3rem;">{% translate "1С" %}</span>
                         {% elif user.role == 'OWNER' or user.role == 'DIRECTOR' %}
-                        · <a href="{% url 'payment_reverse' p.pk %}" style="color: #ef4444; text-decoration: none;">сторно</a>
+                        · <a href="{% url 'payment_reverse' p.pk %}" style="color: #ef4444; text-decoration: none;">{% translate "сторно" %}</a>
                         {% endif %}
                     </div>
                     {% endfor %}
@@ -112,7 +113,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-muted);">Нет договоров с начислением за этот месяц.</td>
+                <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-muted);">{% translate "Нет договоров с начислением за этот месяц." %}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -120,6 +121,6 @@
 </div>
 
 <div style="margin-top: 2rem;">
-    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← Вернуться на главную</a>
+    <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>
 </div>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if is_edit %}Редактировать транзакцию{% else %}Добавить транзакцию{% endif %} - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% if is_edit %}{% translate "Редактировать транзакцию" %}{% else %}{% translate "Добавить транзакцию" %}{% endif %} - SchoolPR{% endblock %}
 
 {% block extra_css %}
 .form-card {
@@ -71,7 +72,7 @@ select.input-field {
 
 {% block content %}
 <div class="card form-card">
-    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}Редактировать{% else %}Добавить{% endif %} транзакцию</h1>
+    <h1 style="margin-top: 0; margin-bottom: 2rem;">{% if is_edit %}{% translate "Редактировать транзакцию" %}{% else %}{% translate "Добавить транзакцию" %}{% endif %}</h1>
     
     <form method="post">
         {% csrf_token %}
@@ -83,40 +84,40 @@ select.input-field {
 
         {% if form.school %}
         <div class="form-group">
-            <label for="{{ form.school.id_for_label }}">Школа</label>
+            <label for="{{ form.school.id_for_label }}">{% translate "Школа" %}</label>
             {{ form.school }}
         </div>
         {% endif %}
 
         <div class="form-group">
-            <label for="{{ form.type.id_for_label }}">Тип операции</label>
+            <label for="{{ form.type.id_for_label }}">{% translate "Тип операции" %}</label>
             {{ form.type }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.category.id_for_label }}">Категория / Назначение</label>
+            <label for="{{ form.category.id_for_label }}">{% translate "Категория / Назначение" %}</label>
             {{ form.category }}
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Например: Инвестиции, Непредвиденные расходы, Хоз. нужды</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{% translate "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды" %}</p>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.amount.id_for_label }}">Сумма (сум)</label>
+            <label for="{{ form.amount.id_for_label }}">{% translate "Сумма (сум)" %}</label>
             {{ form.amount }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.date.id_for_label }}">Дата</label>
+            <label for="{{ form.date.id_for_label }}">{% translate "Дата" %}</label>
             {{ form.date }}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.notes.id_for_label }}">Примечание / От кого</label>
+            <label for="{{ form.notes.id_for_label }}">{% translate "Примечание / От кого" %}</label>
             {{ form.notes }}
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Например: "Инвестиция от Олега" или "Замена сломанного замка в кабинете"</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{% translate 'Например: "Инвестиция от Олега" или "Замена сломанного замка в кабинете"' %}</p>
         </div>
 
-        <button type="submit" class="btn-save">{% if is_edit %}Сохранить изменения{% else %}Добавить транзакцию{% endif %}</button>
-        <a href="{% url 'transaction_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">Отмена</a>
+        <button type="submit" class="btn-save">{% if is_edit %}{% translate "Сохранить изменения" %}{% else %}{% translate "Добавить транзакцию" %}{% endif %}</button>
+        <a href="{% url 'transaction_list' %}" style="display: block; text-align: center; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "Отмена" %}</a>
     </form>
 </div>
 {% endblock %}

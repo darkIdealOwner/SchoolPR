@@ -1,0 +1,1626 @@
+# Переводы интерфейса SchoolPR. Исходный язык — русский.
+# Обновление: python scripts/i18n.py extract && python scripts/i18n.py compile
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ko\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: users/models.py
+#, python-format
+msgid "%(employee)s - %(amount)s за %(month)s"
+msgstr "%(employee)s - %(amount)s (%(month)s)"
+
+#: integrations/views.py
+#, python-format
+msgid "%(entity)s: всего %(total)s, создано %(created)s, обновлено %(updated)s, сторнировано %(reversed)s, без изменений %(skipped)s, ошибок %(failed)s."
+msgstr "%(entity)s: 전체 %(total)s, 생성 %(created)s, 업데이트 %(updated)s, 취소 %(reversed)s, 변경 없음 %(skipped)s, 오류 %(failed)s."
+
+#: pages/home/contracts/contract_detail.html
+#, python-format
+msgid "%(grade)s класс"
+msgstr "%(grade)s학년"
+
+#: users/finance.py
+#, python-format
+msgid "%(month)s %(year)s"
+msgstr "%(year)s년 %(month)s"
+
+#: pages/home/integrations/integration.html
+msgid "(пробный)"
+msgstr "(테스트)"
+
+#: pages/home/debts/debt_list.html
+msgid "(только должники)"
+msgstr "(미납자만)"
+
+#: pages/home/debts/debt_list.html
+msgid "/ Тел."
+msgstr "/ 전화"
+
+#: pages/base.html pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py
+msgid "1С"
+msgstr "1C"
+
+#: integrations/models.py
+msgid "1С OData"
+msgstr "1C OData"
+
+#: pages/home/integrations/integration.html
+msgid "1С забирает их через"
+msgstr "1C가 다음을 통해 가져갑니다:"
+
+#: pages/home/finance/reverse_confirm.html
+#, python-format
+msgid "<strong>%(obj)s</strong>, сумма <strong>%(amount)s сум</strong>."
+msgstr "<strong>%(obj)s</strong>, 금액 <strong>%(amount)s 숨</strong>."
+
+#: integrations/models.py
+msgid "API (1С отправила сама)"
+msgstr "API (1C가 직접 전송)"
+
+#: pages/home/integrations/integration.html
+msgid "API для 1С:"
+msgstr "1C용 API:"
+
+#: users/models.py
+msgid "ID в 1С"
+msgstr "1C ID"
+
+#: users/models.py
+msgid "ID объекта"
+msgstr "객체 ID"
+
+#: integrations/views.py
+msgid "JSON-файл из 1С"
+msgstr "1C JSON 파일"
+
+#: pages/home/integrations/integration.html
+msgid "ONEC_API_TOKEN в .env, адреса —"
+msgstr ".env의 ONEC_API_TOKEN, 주소 —"
+
+#: pages/home/integrations/integration.html
+msgid "ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD в .env"
+msgstr ".env의 ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD"
+
+#: pages/home/partials/finance_overview.html
+msgid "· прочее"
+msgstr "· 기타"
+
+#: users/models.py
+msgid "Август"
+msgstr "8월"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/schools/school_form.html users/models.py users/views.py
+msgid "Адрес"
+msgstr "주소"
+
+#: pages/home/schools/school_list.html
+msgid "Адрес не указан"
+msgstr "주소 미입력"
+
+#: pages/home/director.html pages/home/partials/finance_overview.html
+msgid "Активных договоров"
+msgstr "활성 계약"
+
+#: pages/home/employee.html
+msgid "Активных договоров вашей школы"
+msgstr "우리 학교의 활성 계약"
+
+#: users/models.py
+msgid "Апрель"
+msgstr "4월"
+
+#: integrations/models.py
+msgid "Без изменений"
+msgstr "변경 없음"
+
+#: pages/home/contracts/contract_detail.html users/finance.py
+msgid "Без школы"
+msgstr "학교 없음"
+
+#: integrations/views.py
+msgid "В файле должен быть список записей или {\"records\": [...]}"
+msgstr "파일에는 레코드 목록 또는 {\"records\": [...]}가 있어야 합니다"
+
+#: pages/home/investor.html
+msgid "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям."
+msgstr "SchoolPR 투자 개요입니다. 모든 지점의 요약 지표가 표시됩니다."
+
+#: users/forms.py
+msgid "Введите номер в формате +998 (XX)-XXX-XX-XX."
+msgstr "+998 (XX)-XXX-XX-XX 형식으로 번호를 입력하세요."
+
+#: users/models.py
+msgid "Владелец"
+msgstr "소유자"
+
+#: pages/authorization/login.html
+msgid "Войти"
+msgstr "로그인"
+
+#: pages/home/integrations/integration.html
+msgid "Всего"
+msgstr "전체"
+
+#: pages/home/partials/finance_overview.html
+msgid "Вся сеть"
+msgstr "전체 네트워크"
+
+#: pages/authorization/login.html
+msgid "Вход"
+msgstr "로그인"
+
+#: pages/authorization/login.html
+msgid "Вход в систему"
+msgstr "로그인"
+
+#: pages/home/contracts/contract_confirm_delete.html
+#, python-format
+msgid "Вы уверены, что хотите удалить договор <strong>%(number)s</strong> для ученика <strong>%(student)s</strong>?"
+msgstr "학생 <strong>%(student)s</strong>의 계약 <strong>%(number)s</strong>을(를) 삭제하시겠습니까?"
+
+#: pages/home/users/user_confirm_delete.html
+#, python-format
+msgid "Вы уверены, что хотите удалить пользователя <strong>%(name)s</strong> (@%(username)s)?"
+msgstr "사용자 <strong>%(name)s</strong> (@%(username)s)을(를) 삭제하시겠습니까?"
+
+#: pages/home/schools/school_confirm_delete.html
+#, python-format
+msgid "Вы уверены, что хотите удалить школу <strong>%(name)s</strong>?"
+msgstr "학교 <strong>%(name)s</strong>을(를) 삭제하시겠습니까?"
+
+#: pages/home/schools/school_form.html
+msgid "Выберите пользователя с ролью Директор."
+msgstr "교장 역할의 사용자를 선택하세요."
+
+#: pages/base.html
+msgid "Выйти"
+msgstr "로그아웃"
+
+#: pages/home/home.html
+msgid "Выйти из системы"
+msgstr "로그아웃"
+
+#: users/models.py
+msgid "Выплата сотруднику"
+msgstr "직원 급여"
+
+#: pages/base.html
+msgid "Выплаты"
+msgstr "급여"
+
+#: pages/home/payouts/payout_list.html
+msgid "Выплаты не зафиксированы."
+msgstr "기록된 급여가 없습니다."
+
+#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/models.py
+msgid "Выплаты сотрудникам"
+msgstr "직원 급여"
+
+#: pages/home/payouts/payout_list.html
+msgid "Выплаты сотрудникам - SchoolPR"
+msgstr "직원 급여 - SchoolPR"
+
+#: integrations/models.py
+msgid "Выполняется"
+msgstr "진행 중"
+
+#: pages/authorization/profile.html
+msgid "Выход из системы"
+msgstr "로그아웃"
+
+#: pages/base.html
+msgid "Главная"
+msgstr "홈"
+
+#: pages/home/home.html
+msgid "Главная страница"
+msgstr "홈 페이지"
+
+#: pages/home/contracts/contract_list.html
+msgid "Год рожд."
+msgstr "출생 연도"
+
+#: pages/home/contracts/contract_detail.html users/models.py users/views.py
+msgid "Год рождения"
+msgstr "출생 연도"
+
+#: pages/home/contracts/contract_detail.html
+msgid "График оплат"
+msgstr "납부 일정"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: собрано, расходы и начислено по месяцам"
+msgstr "차트: 월별 수납, 지출, 청구액"
+
+#: pages/home/contracts/contract_confirm_delete.html
+msgid "Да, удалить"
+msgstr "예, 삭제"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Данные"
+msgstr "데이터"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Данные договора"
+msgstr "계약 정보"
+
+#: pages/home/partials/finance_overview.html
+msgid "Данных пока нет."
+msgstr "아직 데이터가 없습니다."
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+msgid "Дата"
+msgstr "날짜"
+
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+msgid "Дата выплаты"
+msgstr "지급일"
+
+#: users/models.py
+msgid "Дата оплаты"
+msgstr "납부일"
+
+#: users/views.py
+msgid "Дата отмены"
+msgstr "해지일"
+
+#: users/models.py
+msgid "Дата отмены договора"
+msgstr "계약 해지일"
+
+#: users/forms.py
+msgid "Дата отмены не может быть раньше даты договора."
+msgstr "해지일은 계약일보다 앞설 수 없습니다."
+
+#: users/models.py
+msgid "Дата сторно"
+msgstr "취소일"
+
+#: users/models.py
+msgid "Действие"
+msgstr "작업"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+msgid "Действия"
+msgstr "작업"
+
+#: users/views.py
+msgid "Действует"
+msgstr "유효"
+
+#: users/models.py
+msgid "Декабрь"
+msgstr "12월"
+
+#: pages/home/integrations/integration.html
+msgid "Деньги ведёт 1С, договоры и ученики — платформа. Документы из 1С здесь только читаются: исправлять их нужно в 1С, изменения придут при следующем обмене."
+msgstr "금전은 1C에서, 계약과 학생은 플랫폼에서 관리합니다. 1C 문서는 여기서 읽기 전용입니다. 1C에서 수정하면 다음 동기화 때 반영됩니다."
+
+#: pages/home/integrations/integration.html
+msgid "Детали"
+msgstr "상세"
+
+#: pages/home/partials/finance_overview.html
+msgid "Динамика по месяцам"
+msgstr "월별 추이"
+
+#: pages/home/schools/school_form.html pages/home/schools/school_list.html users/models.py
+msgid "Директор"
+msgstr "교장"
+
+#: pages/authorization/password_change.html
+msgid "Для безопасности укажите старый и новый пароли."
+msgstr "보안을 위해 기존 비밀번호와 새 비밀번호를 입력하세요."
+
+#: pages/home/users/user_list.html
+msgid "Добавить"
+msgstr "추가"
+
+#: pages/home/users/user_form.html
+msgid "Добавить пользователя"
+msgstr "사용자 추가"
+
+#: pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html
+msgid "Добавить транзакцию"
+msgstr "거래 추가"
+
+#: pages/home/schools/school_form.html pages/home/schools/school_list.html
+msgid "Добавить школу"
+msgstr "학교 추가"
+
+#: pages/home/owner.html
+msgid "Добро пожаловать в панель управления SchoolPR."
+msgstr "SchoolPR 관리 패널에 오신 것을 환영합니다."
+
+#: pages/home/employee.html
+msgid "Добро пожаловать в рабочую область сотрудника. Вот краткая сводка вашей школы:"
+msgstr "직원 작업 공간에 오신 것을 환영합니다. 학교 요약입니다:"
+
+#: pages/home/home.html
+msgid "Добро пожаловать в систему."
+msgstr "시스템에 오신 것을 환영합니다."
+
+#: users/models.py
+msgid "Договор"
+msgstr "계약"
+
+#: users/forms.py
+msgid "Договор с таким номером уже существует."
+msgstr "같은 번호의 계약이 이미 있습니다."
+
+#: pages/home/contracts/contract_detail.html
+#, python-format
+msgid "Договор № %(number)s от %(date)s"
+msgstr "계약 번호 %(number)s (%(date)s)"
+
+#: pages/home/owner.html
+msgid "Договоров"
+msgstr "계약"
+
+#: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html
+msgid "Договоры"
+msgstr "계약"
+
+#: pages/home/contracts/contract_list.html
+msgid "Договоры не найдены."
+msgstr "계약이 없습니다."
+
+#: integrations/views.py
+msgid "Договоры ↔ договоры контрагентов 1С"
+msgstr "계약 ↔ 1C 거래처 계약"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Документ из 1С: исправляется в 1С"
+msgstr "1C 문서: 1C에서 수정하세요"
+
+#: pages/home/partials/finance_overview.html
+msgid "Долг"
+msgstr "미납액"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Долг на сегодня"
+msgstr "현재 미납액"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Долг нарастающим"
+msgstr "누적 미납액"
+
+#: pages/base.html
+msgid "Долги"
+msgstr "미납"
+
+#: pages/home/debts/debt_list.html
+msgid "Долги за месяц:"
+msgstr "월별 미납:"
+
+#: pages/home/partials/finance_overview.html
+msgid "Должников:"
+msgstr "미납자:"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "Доплатить"
+msgstr "추가 납부"
+
+#: users/models.py
+msgid "Журнал действий"
+msgstr "작업 기록"
+
+#: pages/home/integrations/integration.html
+msgid "Журнал обменов"
+msgstr "동기화 기록"
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/views.py
+msgid "За месяц"
+msgstr "대상 월"
+
+#: users/models.py
+msgid "За месяц (1-е число)"
+msgstr "대상 월 (1일)"
+
+#: pages/home/payouts/payout_form.html
+msgid "За месяц (любое число месяца)"
+msgstr "대상 월 (해당 월의 아무 날짜)"
+
+#: users/views.py
+msgid "Завершён"
+msgstr "종료"
+
+#: pages/home/integrations/integration.html
+msgid "Загружено из 1С:"
+msgstr "1C에서 가져옴:"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузить"
+msgstr "업로드"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузить файл из 1С"
+msgstr "1C 파일 업로드"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузка из 1С по OData:"
+msgstr "OData로 1C에서 가져오기:"
+
+#: pages/home/integrations/integration.html
+msgid "Загрузка файлом:"
+msgstr "파일 업로드:"
+
+#: pages/home/debts/debt_list.html
+msgid "Задолженностей не найдено. Прекрасно!"
+msgstr "미납이 없습니다. 좋습니다!"
+
+#: pages/home/debts/debt_list.html pages/home/director.html pages/home/employee.html pages/home/investor.html pages/home/owner.html
+msgid "Задолженности"
+msgstr "미납"
+
+#: pages/home/debts/debt_list.html
+msgid "Задолженности - SchoolPR"
+msgstr "미납 - SchoolPR"
+
+#: integrations/models.py
+msgid "Записей"
+msgstr "레코드"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах."
+msgstr "기록은 삭제되지 않습니다. \"취소\" 표시로 이력에 남고 계산에서 제외됩니다."
+
+#: users/views.py
+msgid "Запись сторнирована."
+msgstr "기록이 취소되었습니다."
+
+#: users/views.py
+msgid "Запись удалена."
+msgstr "기록이 삭제되었습니다."
+
+#: integrations/models.py
+msgid "Запустил"
+msgstr "실행자"
+
+#: pages/home/partials/finance_overview.html
+msgid "Зарплаты"
+msgstr "급여"
+
+#: pages/home/partials/finance_overview.html
+msgid "Зарплаты и расходы"
+msgstr "급여 및 지출"
+
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html
+msgid "Зафиксировать выплату"
+msgstr "급여 기록"
+
+#: pages/home/payments/payment_form.html
+msgid "Зафиксировать оплату"
+msgstr "납부 기록"
+
+#: pages/home/owner.html
+#, python-format
+msgid "Здравствуйте, %(name)s!"
+msgstr "안녕하세요, %(name)s님!"
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "ИНПС"
+msgstr "개인식별번호"
+
+#: users/models.py
+msgid "Изменение"
+msgstr "수정"
+
+#: users/models.py
+msgid "Изменения"
+msgstr "변경 내용"
+
+#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+msgid "Изменить"
+msgstr "수정"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Изменить договор"
+msgstr "계약 수정"
+
+#: pages/home/users/user_form.html pages/home/users/user_list.html
+msgid "Имя"
+msgstr "이름"
+
+#: pages/home/partials/finance_overview.html
+msgid "Инвестиции и прочие поступления"
+msgstr "투자 및 기타 수입"
+
+#: pages/home/investor.html
+msgid "Инвестиционный портфель - SchoolPR"
+msgstr "투자 포트폴리오 - SchoolPR"
+
+#: users/models.py
+msgid "Инвестор"
+msgstr "투자자"
+
+#: pages/home/owner.html
+msgid "Инвесторов"
+msgstr "투자자"
+
+#: pages/home/integrations/integration.html pages/home/owner.html
+msgid "Интеграция с 1С"
+msgstr "1C 연동"
+
+#: pages/home/integrations/integration.html
+msgid "Интеграция с 1С - SchoolPR"
+msgstr "1C 연동 - SchoolPR"
+
+#: pages/authorization/login.html
+msgid "Используйте номер телефона для входа"
+msgstr "전화번호로 로그인하세요"
+
+#: pages/home/contracts/contract_detail.html
+msgid "История оплат"
+msgstr "납부 이력"
+
+#: users/models.py
+msgid "Источник"
+msgstr "출처"
+
+#: pages/home/partials/finance_overview.html
+msgid "Итоги за 12 месяцев"
+msgstr "12개월 합계"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html
+msgid "Итого"
+msgstr "합계"
+
+#: users/views.py
+msgid "Итого в месяц"
+msgstr "월 합계"
+
+#: users/models.py
+msgid "Июль"
+msgstr "7월"
+
+#: users/models.py
+msgid "Июнь"
+msgstr "6월"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Канал"
+msgstr "채널"
+
+#: pages/home/debts/debt_list.html
+msgid "Карточка"
+msgstr "상세"
+
+#: users/views.py
+msgid "Категория"
+msgstr "분류"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Категория / Назначение"
+msgstr "분류 / 용도"
+
+#: pages/home/transactions/transaction_list.html users/models.py
+msgid "Категория/Назначение"
+msgstr "분류/용도"
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "Класс"
+msgstr "학년"
+
+#: pages/home/integrations/integration.html users/models.py
+msgid "Когда"
+msgstr "시간"
+
+#: pages/home/partials/finance_overview.html
+msgid "Крупнейшие должники"
+msgstr "주요 미납자"
+
+#: users/models.py
+msgid "Кто внёс"
+msgstr "입력자"
+
+#: users/models.py
+msgid "Кто сторнировал"
+msgstr "취소자"
+
+#: pages/home/users/user_form.html
+msgid "Логин (username)"
+msgstr "로그인 ID (username)"
+
+#: users/models.py
+msgid "Май"
+msgstr "5월"
+
+#: users/models.py
+msgid "Март"
+msgstr "3월"
+
+#: pages/base.html
+msgid "Меню"
+msgstr "메뉴"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "Месяц"
+msgstr "월"
+
+#: pages/home/payments/payment_form.html
+msgid "Месяц:"
+msgstr "월:"
+
+#: pages/home/partials/finance_overview.html
+msgid "Месяцев"
+msgstr "개월"
+
+#: pages/home/schools/school_list.html
+msgid "Название"
+msgstr "이름"
+
+#: pages/home/schools/school_form.html users/models.py
+msgid "Название школы"
+msgstr "학교 이름"
+
+#: pages/home/contracts/contract_list.html pages/home/users/user_list.html
+msgid "Найти"
+msgstr "검색"
+
+#: users/models.py
+msgid "Наличные"
+msgstr "현금"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/models.py users/views.py
+msgid "Направление"
+msgstr "과정"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Например: \"Инвестиция от Олега\" или \"Замена сломанного замка в кабинете\""
+msgstr "예: \"올레그의 투자\" 또는 \"교실 고장 난 자물쇠 교체\""
+
+#: pages/home/transactions/transaction_form.html
+msgid "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды"
+msgstr "예: 투자, 예상치 못한 지출, 비품"
+
+#: users/forms.py
+msgid "Например: ошибка в сумме, оплата внесена дважды"
+msgstr "예: 금액 오류, 중복 입력"
+
+#: integrations/models.py
+msgid "Начало"
+msgstr "시작"
+
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html users/views.py
+msgid "Начислено"
+msgstr "청구액"
+
+#: pages/home/schools/school_list.html
+msgid "Не назначен"
+msgstr "미지정"
+
+#: pages/home/payments/payment_list.html
+msgid "Не оплачено"
+msgstr "미납"
+
+#: pages/authorization/login.html
+msgid "Неверный номер телефона или пароль"
+msgstr "전화번호 또는 비밀번호가 올바르지 않습니다"
+
+#: users/views.py
+msgid "Нельзя удалить договор: по нему есть оплаты. Отметьте договор как отменённый."
+msgstr "납부 내역이 있어 계약을 삭제할 수 없습니다. 해지로 표시하세요."
+
+#: users/views.py
+msgid "Нельзя удалить пользователя: по нему есть выплаты. Отключите доступ вместо удаления."
+msgstr "급여 내역이 있어 사용자를 삭제할 수 없습니다. 대신 접근을 비활성화하세요."
+
+#: users/views.py
+msgid "Нельзя удалить школу: к ней привязаны договоры, выплаты или транзакции."
+msgstr "계약, 급여 또는 거래가 연결되어 있어 학교를 삭제할 수 없습니다."
+
+#: users/views.py
+msgid "Нельзя удалить: есть связанные финансовые записи."
+msgstr "삭제할 수 없습니다: 연결된 재무 기록이 있습니다."
+
+#: pages/home/debts/debt_list.html users/views.py
+msgid "Неоплаченные месяцы"
+msgstr "미납 월"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Неоплаченных месяцев:"
+msgstr "미납 개월:"
+
+#: pages/home/payments/payment_list.html
+msgid "Нет договоров с начислением за этот месяц."
+msgstr "이번 달 청구된 계약이 없습니다."
+
+#: pages/home/contracts/contract_form.html
+msgid "Новый договор"
+msgstr "새 계약"
+
+#: pages/authorization/login.html pages/authorization/profile.html pages/home/users/user_form.html users/forms.py users/models.py
+msgid "Номер телефона"
+msgstr "전화번호"
+
+#: users/models.py
+msgid "Ноябрь"
+msgstr "11월"
+
+#: integrations/models.py
+msgid "Обмен с 1С"
+msgstr "1C 동기화"
+
+#: pages/home/integrations/integration.html
+msgid "Обменов ещё не было."
+msgstr "아직 동기화 기록이 없습니다."
+
+#: integrations/models.py
+msgid "Обмены с 1С"
+msgstr "1C 동기화"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Обновлено"
+msgstr "업데이트"
+
+#: pages/home/debts/debt_list.html
+msgid "Общий долг"
+msgstr "총 미납"
+
+#: pages/home/debts/debt_list.html
+msgid "Общий долг учащихся на текущий момент"
+msgstr "현재 학생 총 미납액"
+
+#: pages/home/partials/finance_overview.html
+msgid "Общий долг учеников"
+msgstr "학생 총 미납액"
+
+#: users/models.py
+msgid "Объект"
+msgstr "객체"
+
+#: integrations/models.py
+msgid "Окончание"
+msgstr "종료"
+
+#: users/models.py
+msgid "Октябрь"
+msgstr "10월"
+
+#: pages/home/partials/finance_overview.html
+msgid "Операционный результат"
+msgstr "영업 이익"
+
+#: users/models.py
+msgid "Описание"
+msgstr "설명"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Оплат пока нет."
+msgstr "아직 납부 내역이 없습니다."
+
+#: users/models.py
+msgid "Оплата"
+msgstr "납부"
+
+#: users/models.py
+#, python-format
+msgid "Оплата %(student)s за %(month)s"
+msgstr "%(student)s 납부 (%(month)s)"
+
+#: pages/home/payments/payment_form.html
+msgid "Оплата для:"
+msgstr "납부 대상:"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "Оплатить"
+msgstr "납부"
+
+#: pages/base.html pages/home/integrations/integration.html users/models.py
+msgid "Оплаты"
+msgstr "납부"
+
+#: pages/home/payments/payment_list.html
+msgid "Оплаты - SchoolPR"
+msgstr "납부 - SchoolPR"
+
+#: pages/home/payments/payment_list.html
+msgid "Оплаты за месяц"
+msgstr "월별 납부"
+
+#: pages/home/partials/finance_overview.html
+msgid "Оплаты минус зарплаты и расходы"
+msgstr "납부액 - 급여 및 지출"
+
+#: integrations/models.py pages/home/director.html pages/home/employee.html pages/home/owner.html
+msgid "Оплаты родителей"
+msgstr "학부모 납부"
+
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
+msgid "Оплачено"
+msgstr "납부 완료"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Оплачено всего"
+msgstr "총 납부액"
+
+#: pages/home/users/user_form.html
+msgid "Оставьте пустым, если не хотите менять."
+msgstr "변경하지 않으려면 비워 두세요."
+
+#: users/forms.py
+msgid "Оставьте пустым, чтобы не менять"
+msgstr "변경하지 않으려면 비워 두세요"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html users/views.py
+msgid "Остаток"
+msgstr "잔액"
+
+#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
+msgid "Отмена"
+msgstr "취소"
+
+#: users/views.py
+msgid "Отменён"
+msgstr "해지"
+
+#: users/models.py
+msgid "Отметка об отмены договора"
+msgstr "계약 해지 여부"
+
+#: integrations/models.py
+msgid "Ошибка"
+msgstr "오류"
+
+#: integrations/models.py
+msgid "Ошибки"
+msgstr "오류"
+
+#: pages/home/integrations/integration.html
+msgid "Ошибок"
+msgstr "오류"
+
+#: pages/home/owner.html
+msgid "Панель владельца - SchoolPR"
+msgstr "소유자 대시보드 - SchoolPR"
+
+#: pages/home/director.html
+msgid "Панель директора - SchoolPR"
+msgstr "교장 대시보드 - SchoolPR"
+
+#: pages/home/director.html
+msgid "Панель управления операциями школы. Вот краткая сводка:"
+msgstr "학교 운영 대시보드입니다. 요약:"
+
+#: pages/authorization/login.html pages/home/users/user_form.html users/forms.py
+msgid "Пароль"
+msgstr "비밀번호"
+
+#: pages/home/contracts/contract_list.html users/views.py
+msgid "Паспорт"
+msgstr "여권"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Паспорт / ИНПС"
+msgstr "여권 / 개인식별번호"
+
+#: users/models.py
+msgid "Перечисление на счёт"
+msgstr "계좌 이체"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/views.py
+msgid "Питание"
+msgstr "급식"
+
+#: users/models.py
+msgid "Платформа"
+msgstr "플랫폼"
+
+#: pages/home/contracts/contract_detail.html users/views.py
+msgid "Платёж в месяц"
+msgstr "월 납부액"
+
+#: pages/home/contracts/contract_detail.html
+msgid "По договору нет начислений."
+msgstr "이 계약에는 청구 내역이 없습니다."
+
+#: pages/home/debts/debt_list.html
+msgid "По месяцам"
+msgstr "월별"
+
+#: pages/home/partials/finance_overview.html
+msgid "По школам"
+msgstr "학교별"
+
+#: pages/home/integrations/integration.html
+msgid "Подключение"
+msgstr "연결"
+
+#: pages/home/schools/school_confirm_delete.html pages/home/users/user_confirm_delete.html
+msgid "Подтвердить удаление"
+msgstr "삭제 확인"
+
+#: pages/home/schools/school_confirm_delete.html pages/home/users/user_confirm_delete.html
+msgid "Подтверждение удаления - SchoolPR"
+msgstr "삭제 확인 - SchoolPR"
+
+#: pages/home/users/user_list.html
+msgid "Поиск по имени, тел. или школе..."
+msgstr "이름, 전화번호, 학교로 검색..."
+
+#: pages/home/contracts/contract_list.html
+msgid "Поиск по номеру, ФИО ученика..."
+msgstr "번호, 학생 이름으로 검색..."
+
+#: pages/home/contracts/contract_list.html
+msgid "Поиск по номеру, ФИО, телефону..."
+msgstr "번호, 이름, 전화번호로 검색..."
+
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Показать"
+msgstr "보기"
+
+#: pages/home/owner.html
+msgid "Пользователей"
+msgstr "사용자"
+
+#: pages/base.html pages/home/users/user_list.html
+msgid "Пользователи"
+msgstr "사용자"
+
+#: pages/home/users/user_list.html
+msgid "Пользователи не найдены."
+msgstr "사용자가 없습니다."
+
+#: users/models.py
+msgid "Пользователь"
+msgstr "사용자"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Предстоит"
+msgstr "예정"
+
+#: pages/home/director.html pages/home/employee.html pages/home/home.html pages/home/investor.html
+#, python-format
+msgid "Привет, %(name)s!"
+msgstr "안녕하세요, %(name)s님!"
+
+#: pages/home/users/user_form.html
+msgid "Применить"
+msgstr "적용"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+msgid "Примечание"
+msgstr "비고"
+
+#: users/models.py
+msgid "Примечание / Описание / От кого"
+msgstr "비고 / 설명 / 보낸 사람"
+
+#: pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html
+msgid "Примечание / От кого"
+msgstr "비고 / 보낸 사람"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Принял"
+msgstr "접수자"
+
+#: pages/home/integrations/integration.html
+msgid "Приняты на платформе и ещё не проведены в 1С:"
+msgstr "플랫폼에서 접수되었으나 아직 1C에 반영되지 않음:"
+
+#: pages/home/transactions/transaction_list.html users/models.py
+msgid "Приход / Инвестиция"
+msgstr "수입 / 투자"
+
+#: users/forms.py users/models.py users/views.py
+msgid "Причина сторно"
+msgstr "취소 사유"
+
+#: integrations/models.py
+msgid "Пробный запуск"
+msgstr "테스트 실행"
+
+#: integrations/views.py
+msgid "Пробный запуск (только проверить, ничего не сохранять)"
+msgstr "테스트 실행 (확인만, 저장 안 함)"
+
+#: integrations/views.py
+msgid "Пробный запуск, ничего не сохранено."
+msgstr "테스트 실행: 아무것도 저장되지 않았습니다."
+
+#: pages/home/investor.html
+msgid "Просмотр выплат"
+msgstr "납부 보기"
+
+#: pages/home/investor.html
+msgid "Просмотр договоров"
+msgstr "계약 보기"
+
+#: pages/home/debts/debt_list.html users/views.py
+msgid "Просрочено месяцев"
+msgstr "연체 개월"
+
+#: pages/authorization/profile.html
+msgid "Профиль - SchoolPR"
+msgstr "프로필 - SchoolPR"
+
+#: integrations/models.py
+msgid "Прочие приходы и расходы"
+msgstr "기타 수입 및 지출"
+
+#: pages/home/partials/finance_overview.html
+msgid "Прошлый месяц:"
+msgstr "지난달:"
+
+#: pages/home/employee.html
+msgid "Рабочая панель - SchoolPR"
+msgstr "작업 패널 - SchoolPR"
+
+#: pages/base.html pages/home/owner.html
+msgid "Разделы"
+msgstr "메뉴"
+
+#: users/models.py
+msgid "Расход / Непредвиденные траты"
+msgstr "지출 / 예상치 못한 비용"
+
+#: pages/home/transactions/transaction_list.html
+msgid "Расход / Траты"
+msgstr "지출"
+
+#: pages/home/payments/payment_form.html
+msgid "Регистрация оплаты"
+msgstr "납부 등록"
+
+#: pages/home/payments/payment_form.html
+msgid "Регистрация оплаты - SchoolPR"
+msgstr "납부 등록 - SchoolPR"
+
+#: pages/home/payouts/payout_form.html
+msgid "Редактировать выплату"
+msgstr "급여 수정"
+
+#: pages/home/contracts/contract_form.html
+msgid "Редактировать договор"
+msgstr "계약 수정"
+
+#: pages/home/users/user_form.html
+msgid "Редактировать пользователя"
+msgstr "사용자 수정"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Редактировать транзакцию"
+msgstr "거래 수정"
+
+#: pages/home/schools/school_form.html
+msgid "Редактировать школу"
+msgstr "학교 수정"
+
+#: pages/home/partials/finance_overview.html
+msgid "Результат"
+msgstr "결과"
+
+#: pages/home/partials/finance_overview.html
+msgid "Результат месяца"
+msgstr "월 결과"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Родители"
+msgstr "학부모"
+
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/views.py
+msgid "Родитель"
+msgstr "학부모"
+
+#: pages/authorization/profile.html pages/home/users/user_form.html pages/home/users/user_list.html users/models.py
+msgid "Роль"
+msgstr "역할"
+
+#: users/models.py
+msgid "Русский язык"
+msgstr "러시아어"
+
+#: users/forms.py
+msgid "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
+msgstr "해지된 달부터는 청구되지 않습니다. 비워 두면 오늘 날짜가 사용됩니다."
+
+#: pages/home/partials/finance_overview.html
+msgid "С начислением в этом месяце"
+msgstr "이번 달 청구"
+
+#: integrations/models.py
+msgid "С ошибками"
+msgstr "오류 있음"
+
+#: integrations/models.py
+msgid "Связка договоров"
+msgstr "계약 연결"
+
+#: integrations/models.py
+msgid "Связка сотрудников"
+msgstr "직원 연결"
+
+#: integrations/models.py
+msgid "Связка школ"
+msgstr "학교 연결"
+
+#: pages/home/integrations/integration.html
+msgid "Связь записей с 1С"
+msgstr "1C 연결 현황"
+
+#: users/models.py
+msgid "Сентябрь"
+msgstr "9월"
+
+#: users/models.py
+msgid "Серия и номер паспорта"
+msgstr "여권 번호"
+
+#: users/models.py
+msgid "Синхронизировано"
+msgstr "동기화됨"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "Скачать таблицу для Excel"
+msgstr "Excel용 표 다운로드"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Скидка"
+msgstr "할인"
+
+#: pages/home/contracts/contract_list.html users/views.py
+msgid "Скидка %"
+msgstr "할인 %"
+
+#: pages/home/contracts/contract_list.html
+msgid "Скидка сум"
+msgstr "할인 금액"
+
+#: users/models.py
+msgid "Скидка, %"
+msgstr "할인, %"
+
+#: users/models.py users/views.py
+msgid "Скидка, сум"
+msgstr "할인, 숨"
+
+#: pages/authorization/password_change.html
+msgid "Смена пароля"
+msgstr "비밀번호 변경"
+
+#: pages/authorization/password_change.html
+msgid "Смена пароля - SchoolPR"
+msgstr "비밀번호 변경 - SchoolPR"
+
+#: pages/authorization/profile.html
+msgid "Сменить пароль"
+msgstr "비밀번호 변경"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собираемость"
+msgstr "수납률"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собираемость за месяц"
+msgstr "월 수납률"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собрано"
+msgstr "수납액"
+
+#: pages/home/partials/finance_overview.html
+msgid "Собрано оплат"
+msgstr "수납액"
+
+#: users/models.py
+msgid "Создал"
+msgstr "작성자"
+
+#: users/models.py
+msgid "Создание"
+msgstr "생성"
+
+#: integrations/models.py pages/home/integrations/integration.html
+msgid "Создано"
+msgstr "생성"
+
+#: pages/home/contracts/contract_form.html pages/home/contracts/contract_list.html
+msgid "Создать договор"
+msgstr "계약 생성"
+
+#: pages/home/schools/school_form.html
+msgid "Создать школу"
+msgstr "학교 생성"
+
+#: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/models.py users/views.py
+msgid "Сотрудник"
+msgstr "직원"
+
+#: pages/base.html pages/home/schools/school_list.html
+msgid "Сотрудники"
+msgstr "직원"
+
+#: integrations/views.py
+msgid "Сотрудники ↔ физлица 1С"
+msgstr "직원 ↔ 1C 개인"
+
+#: pages/home/director.html
+msgid "Сотрудников в школе"
+msgstr "학교 직원 수"
+
+#: pages/authorization/password_change.html pages/home/contracts/contract_form.html pages/home/payouts/payout_form.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_form.html
+msgid "Сохранить изменения"
+msgstr "변경 사항 저장"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Способ"
+msgstr "방법"
+
+#: users/models.py
+msgid "Способ оплаты"
+msgstr "납부 방법"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Срок"
+msgstr "기간"
+
+#: pages/home/contracts/contract_list.html
+msgid "Срок (мес)"
+msgstr "기간 (개월)"
+
+#: users/models.py users/views.py
+msgid "Срок, мес"
+msgstr "기간, 개월"
+
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/integrations/integration.html
+msgid "Статус"
+msgstr "상태"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/views.py
+msgid "Стоимость"
+msgstr "금액"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Стоимость обучения"
+msgstr "수업료"
+
+#: users/models.py
+msgid "Стоимость питания"
+msgstr "급식비"
+
+#: users/models.py
+msgid "Стоимость учебы"
+msgstr "수업료"
+
+#: integrations/models.py users/models.py
+msgid "Сторнировано"
+msgstr "취소됨"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Сторнировать"
+msgstr "취소"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Сторнировать запись?"
+msgstr "이 기록을 취소하시겠습니까?"
+
+#: pages/home/contracts/contract_detail.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+msgid "Сторно"
+msgstr "취소"
+
+#: pages/home/finance/reverse_confirm.html
+msgid "Сторно записи - SchoolPR"
+msgstr "기록 취소 - SchoolPR"
+
+#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#, python-format
+msgid "Страница %(page)s из %(pages)s"
+msgstr "%(pages)s페이지 중 %(page)s페이지"
+
+#: pages/home/integrations/integration.html
+msgid "Строка"
+msgstr "행"
+
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py users/views.py
+msgid "Сумма"
+msgstr "금액"
+
+#: pages/home/transactions/transaction_form.html
+msgid "Сумма (сум)"
+msgstr "금액 (숨)"
+
+#: pages/home/payouts/payout_form.html
+msgid "Сумма выплат (сум)"
+msgstr "지급액 (숨)"
+
+#: pages/home/debts/debt_list.html users/views.py
+msgid "Сумма долга"
+msgstr "미납액"
+
+#: users/models.py
+msgid "Сумма оплаты"
+msgstr "납부액"
+
+#: users/forms.py
+msgid "Сумма оплаты должна быть больше нуля."
+msgstr "납부액은 0보다 커야 합니다."
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/views.py
+msgid "Телефон"
+msgstr "전화번호"
+
+#: users/models.py
+msgid "Терминал / карта"
+msgstr "카드 단말기"
+
+#: pages/home/transactions/transaction_list.html users/views.py
+msgid "Тип"
+msgstr "유형"
+
+#: pages/home/transactions/transaction_form.html users/models.py
+msgid "Тип операции"
+msgstr "거래 유형"
+
+#: pages/base.html pages/home/investor.html users/models.py
+msgid "Транзакции"
+msgstr "거래"
+
+#: pages/home/transactions/transaction_list.html
+msgid "Транзакции - SchoolPR"
+msgstr "거래 - SchoolPR"
+
+#: pages/home/transactions/transaction_list.html
+msgid "Транзакции не найдены."
+msgstr "거래 내역이 없습니다."
+
+#: pages/home/owner.html
+msgid "Транзакции школ"
+msgstr "학교 거래"
+
+#: pages/home/director.html pages/home/transactions/transaction_list.html
+msgid "Транзакции школы"
+msgstr "학교 거래"
+
+#: users/models.py
+msgid "Транзакция"
+msgstr "거래"
+
+#: users/models.py
+msgid "Удаление"
+msgstr "삭제"
+
+#: pages/home/contracts/contract_confirm_delete.html
+msgid "Удаление договора"
+msgstr "계약 삭제"
+
+#: pages/home/contracts/contract_confirm_delete.html
+msgid "Удаление договора - SchoolPR"
+msgstr "계약 삭제 - SchoolPR"
+
+#: pages/home/contracts/contract_list.html pages/home/schools/school_list.html pages/home/users/user_list.html
+msgid "Удалить"
+msgstr "삭제"
+
+#: pages/home/users/user_confirm_delete.html
+msgid "Удалить пользователя?"
+msgstr "사용자를 삭제하시겠습니까?"
+
+#: pages/home/schools/school_confirm_delete.html
+msgid "Удалить школу?"
+msgstr "학교를 삭제하시겠습니까?"
+
+#: users/models.py
+msgid "Узбекский язык"
+msgstr "우즈베크어"
+
+#: pages/home/director.html pages/home/employee.html pages/home/owner.html
+msgid "Управление договорами"
+msgstr "계약 관리"
+
+#: pages/home/contracts/contract_list.html
+msgid "Управление договорами - SchoolPR"
+msgstr "계약 관리 - SchoolPR"
+
+#: pages/home/owner.html
+msgid "Управление пользователями"
+msgstr "사용자 관리"
+
+#: pages/home/users/user_list.html
+msgid "Управление пользователями - SchoolPR"
+msgstr "사용자 관리 - SchoolPR"
+
+#: pages/home/director.html
+msgid "Управление сотрудниками"
+msgstr "직원 관리"
+
+#: pages/home/owner.html
+msgid "Управление школами"
+msgstr "학교 관리"
+
+#: pages/home/schools/school_list.html
+msgid "Управление школами - SchoolPR"
+msgstr "학교 관리 - SchoolPR"
+
+#: integrations/models.py
+msgid "Успешно"
+msgstr "성공"
+
+#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
+msgid "Ученик"
+msgstr "학생"
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "ФИО родителей"
+msgstr "학부모 성명"
+
+#: pages/home/contracts/contract_list.html users/models.py users/views.py
+msgid "ФИО ученика"
+msgstr "학생 성명"
+
+#: integrations/models.py
+msgid "Файл"
+msgstr "파일"
+
+#: integrations/views.py
+msgid "Файл больше 20 МБ — разбейте выгрузку на части."
+msgstr "파일이 20MB를 초과합니다. 나누어 업로드하세요."
+
+#: users/models.py
+msgid "Февраль"
+msgstr "2월"
+
+#: pages/home/partials/finance_overview.html
+#, python-format
+msgid "Финансы за %(month)s"
+msgstr "%(month)s 재무 현황"
+
+#: pages/home/integrations/integration.html
+msgid "Формат файла и примеры — в docs/1c-integration.md. Повторная загрузка того же файла не создаёт дублей."
+msgstr "파일 형식과 예시는 docs/1c-integration.md에 있습니다. 같은 파일을 다시 올려도 중복되지 않습니다."
+
+#: pages/home/payments/payment_list.html
+msgid "Частично"
+msgstr "일부 납부"
+
+#: integrations/views.py
+msgid "Что загружаем"
+msgstr "업로드 항목"
+
+#: pages/home/owner.html
+msgid "Школ"
+msgstr "학교"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/models.py users/views.py
+msgid "Школа"
+msgstr "학교"
+
+#: pages/home/director.html pages/home/employee.html
+msgid "Школа не указана"
+msgstr "학교 미지정"
+
+#: pages/base.html pages/home/schools/school_list.html
+msgid "Школы"
+msgstr "학교"
+
+#: pages/home/schools/school_list.html
+msgid "Школы не найдены."
+msgstr "학교가 없습니다."
+
+#: integrations/views.py
+msgid "Школы ↔ подразделения 1С"
+msgstr "학교 ↔ 1C 부서"
+
+#: pages/home/contracts/contract_confirm_delete.html pages/home/users/user_confirm_delete.html
+msgid "Это действие необратимо."
+msgstr "이 작업은 되돌릴 수 없습니다."
+
+#: pages/home/schools/school_confirm_delete.html
+msgid "Это действие необратимо. Связанные сотрудники не будут удалены, но потеряют привязку к этой школе."
+msgstr "이 작업은 되돌릴 수 없습니다. 연결된 직원은 삭제되지 않지만 이 학교와의 연결이 해제됩니다."
+
+#: integrations/views.py
+#, python-format
+msgid "Это не JSON: %(error)s"
+msgstr "JSON이 아닙니다: %(error)s"
+
+#: pages/partials/language_switcher.html
+msgid "Язык интерфейса"
+msgstr "인터페이스 언어"
+
+#: users/models.py
+msgid "Январь"
+msgstr "1월"
+
+#: pages/home/integrations/integration.html
+msgid "включено"
+msgstr "사용"
+
+#: pages/home/integrations/integration.html
+msgid "выключено"
+msgstr "사용 안 함"
+
+#: users/views.py
+msgid "да"
+msgstr "예"
+
+#: pages/home/integrations/integration.html
+msgid "доступна всегда"
+msgstr "항상 사용 가능"
+
+#: pages/home/integrations/integration.html pages/home/partials/finance_overview.html
+msgid "из"
+msgstr "/"
+
+#: pages/home/contracts/contract_detail.html pages/home/debts/debt_list.html
+msgid "мес."
+msgstr "개월"
+
+#: pages/home/partials/finance_overview.html
+msgid "млн"
+msgstr "백만"
+
+#: pages/home/integrations/integration.html
+msgid "настроена"
+msgstr "설정됨"
+
+#: pages/home/integrations/integration.html
+msgid "не настроена"
+msgstr "설정 안 됨"
+
+#: users/views.py
+msgid "нет"
+msgstr "아니요"
+
+#: pages/home/integrations/integration.html
+msgid "ошибок"
+msgstr "오류"
+
+#: pages/home/partials/finance_overview.html
+msgid "подробнее"
+msgstr "자세히"
+
+#: pages/home/schools/school_list.html
+msgid "сотрудников"
+msgstr "명"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "сторно"
+msgstr "취소"
+
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
+msgid "сум"
+msgstr "숨"
+
+#: pages/home/contracts/contract_detail.html
+msgid "— договор"
+msgstr "— 계약"
+
+#: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/models.py users/views.py
+msgid "№ договора"
+msgstr "계약 번호"
+
+#: users/models.py
+msgid "№ телефона"
+msgstr "전화번호"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+msgid "← Вернуться на главную"
+msgstr "← 홈으로"
+
+#: pages/home/contracts/contract_detail.html
+msgid "← К списку договоров"
+msgstr "← 계약 목록으로"
+
+#: pages/home/integrations/integration.html
+msgid "← На главную"
+msgstr "← 홈으로"
+
+#: pages/home/contracts/contract_form.html pages/home/payments/payment_form.html
+msgid "← Назад к списку"
+msgstr "← 목록으로"
+
+#: pages/home/contracts/contract_detail.html
+msgid "◐ Частично"
+msgstr "◐ 일부 납부"
+
+#: pages/home/contracts/contract_detail.html
+msgid "✓ Оплачено"
+msgstr "✓ 납부 완료"
+
+#: pages/home/contracts/contract_detail.html
+msgid "✕ Долг"
+msgstr "✕ 미납"

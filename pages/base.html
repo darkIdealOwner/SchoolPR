@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="ru">
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'ru' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -119,6 +119,22 @@
             cursor: pointer;
             font: inherit;
         }
+
+        .lang-form { margin: 0; }
+        .lang-label { display: flex; align-items: center; gap: 0.25rem; padding: 0 0.35rem; }
+        .lang-icon { font-size: 0.95rem; }
+        .lang-select {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.5rem;
+            padding: 0.35rem 0.4rem;
+            font: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .lang-select:hover, .lang-select:focus { color: var(--text); border-color: var(--primary); outline: none; }
+        .lang-select option { background-color: #0f172a; color: var(--text); }
 
         .nav-toggle {
             display: none;
@@ -263,6 +279,8 @@
             }
 
             .nav-logout { color: #f87171; }
+            .nav-user { flex-wrap: wrap; gap: 0.5rem; }
+            .lang-select { font-size: 0.95rem; padding: 0.55rem 0.5rem; }
         }
 
         /* ---------- Телефоны ---------- */
@@ -377,6 +395,7 @@
             table.m-cards tr.reversed-row td::before { text-decoration: none; }
             .pagination { gap: 0.5rem !important; }
         }
+
     </style>
 </head>
 
@@ -385,33 +404,34 @@
         <a href="{% url 'home' %}" class="logo">SchoolPR</a>
         {% if user.is_authenticated %}
         {% with page=request.resolver_match.url_name|default:'' %}
-        <button type="button" class="nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Меню">
+        <button type="button" class="nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="{% translate "Меню" %}">
             <span></span><span></span><span></span>
         </button>
-        <nav id="site-nav" class="site-nav" aria-label="Разделы">
-            <a href="{% url 'home' %}" class="nav-link {% if page == 'home' %}active{% endif %}">Главная</a>
-            <a href="{% url 'contract_list' %}" class="nav-link {% if 'contract' in page %}active{% endif %}">Договоры</a>
-            <a href="{% url 'payment_list' %}" class="nav-link {% if 'payment' in page %}active{% endif %}">Оплаты</a>
-            <a href="{% url 'debt_list' %}" class="nav-link {% if 'debt' in page %}active{% endif %}">Долги</a>
+        <nav id="site-nav" class="site-nav" aria-label="{% translate "Разделы" %}">
+            <a href="{% url 'home' %}" class="nav-link {% if page == 'home' %}active{% endif %}">{% translate "Главная" %}</a>
+            <a href="{% url 'contract_list' %}" class="nav-link {% if 'contract' in page %}active{% endif %}">{% translate "Договоры" %}</a>
+            <a href="{% url 'payment_list' %}" class="nav-link {% if 'payment' in page %}active{% endif %}">{% translate "Оплаты" %}</a>
+            <a href="{% url 'debt_list' %}" class="nav-link {% if 'debt' in page %}active{% endif %}">{% translate "Долги" %}</a>
             {% if user.role != 'EMPLOYEE' %}
-            <a href="{% url 'payout_list' %}" class="nav-link {% if 'payout' in page %}active{% endif %}">Выплаты</a>
-            <a href="{% url 'transaction_list' %}" class="nav-link {% if 'transaction' in page %}active{% endif %}">Транзакции</a>
+            <a href="{% url 'payout_list' %}" class="nav-link {% if 'payout' in page %}active{% endif %}">{% translate "Выплаты" %}</a>
+            <a href="{% url 'transaction_list' %}" class="nav-link {% if 'transaction' in page %}active{% endif %}">{% translate "Транзакции" %}</a>
             {% endif %}
             {% if user.role == 'OWNER' or user.role == 'DIRECTOR' %}
-            <a href="{% url 'user_list' %}" class="nav-link {% if 'user_' in page %}active{% endif %}">{% if user.role == 'DIRECTOR' %}Сотрудники{% else %}Пользователи{% endif %}</a>
+            <a href="{% url 'user_list' %}" class="nav-link {% if 'user_' in page %}active{% endif %}">{% if user.role == 'DIRECTOR' %}{% translate "Сотрудники" %}{% else %}{% translate "Пользователи" %}{% endif %}</a>
             {% endif %}
             {% if user.role == 'OWNER' %}
-            <a href="{% url 'school_list' %}" class="nav-link {% if 'school' in page %}active{% endif %}">Школы</a>
-            <a href="{% url 'integration' %}" class="nav-link {% if page == 'integration' %}active{% endif %}">1С</a>
+            <a href="{% url 'school_list' %}" class="nav-link {% if 'school' in page %}active{% endif %}">{% translate "Школы" %}</a>
+            <a href="{% url 'integration' %}" class="nav-link {% if page == 'integration' %}active{% endif %}">{% translate "1С" %}</a>
             {% endif %}
             <div class="nav-user">
+                {% include 'partials/language_switcher.html' %}
                 <a href="{% url 'profile' %}" class="nav-link nav-profile {% if page == 'profile' or page == 'password_change' %}active{% endif %}">
                     <span class="avatar">{{ user.first_name|first|upper }}</span>
                     <span>{{ user.first_name }}</span>
                 </a>
                 <form action="{% url 'logout' %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="nav-link nav-logout">Выйти</button>
+                    <button type="submit" class="nav-link nav-logout">{% translate "Выйти" %}</button>
                 </form>
             </div>
         </nav>

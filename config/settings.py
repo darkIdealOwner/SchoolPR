@@ -85,6 +85,8 @@ MIDDLEWARE = [
     # Отдаёт CSS/JS/картинки без отдельной настройки веб-сервера (в том числе при DEBUG=False)
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Язык интерфейса: из выбора пользователя (cookie), иначе из настроек браузера
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -102,6 +104,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
+                'django.template.context_processors.i18n',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -160,6 +163,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'ru'
+
+# Тексты интерфейса пишутся по-русски, переводы лежат в locale/<язык>/LC_MESSAGES/django.po
+LANGUAGES = [
+    ('ru', 'Русский'),
+    ('uz', 'O‘zbekcha'),
+    ('en', 'English'),
+    ('ko', '한국어'),
+]
+LOCALE_PATHS = [BASE_DIR / 'locale']
+LANGUAGE_COOKIE_AGE = 60 * 60 * 24 * 365
 
 TIME_ZONE = 'Asia/Tashkent'
 

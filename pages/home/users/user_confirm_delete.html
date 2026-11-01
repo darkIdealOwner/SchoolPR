@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Подтверждение удаления - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Подтверждение удаления - SchoolPR" %}{% endblock %}
 
 {% block content %}
 <div class="card" style="max-width: 400px; margin: 2rem auto; text-align: center;">
-    <h1 style="color: #ef4444;">Удалить пользователя?</h1>
-    <p>Вы уверены, что хотите удалить пользователя <strong>{{ object.first_name }}</strong> (@{{ object.username }})?</p>
-    <p style="color: var(--text-muted); font-size: 0.875rem;">Это действие необратимо.</p>
+    <h1 style="color: #ef4444;">{% translate "Удалить пользователя?" %}</h1>
+    <p>{% blocktranslate with name=object.first_name username=object.username %}Вы уверены, что хотите удалить пользователя <strong>{{ name }}</strong> (@{{ username }})?{% endblocktranslate %}</p>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">{% translate "Это действие необратимо." %}</p>
 
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn-save" style="background-color: #ef4444; border: none; width: 100%; border-radius: 0.5rem; padding: 0.75rem; color: white; font-weight: 600; cursor: pointer; margin-top: 1.5rem;">Подтвердить удаление</button>
-        <a href="{% url 'user_list' %}" style="display: block; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">Отмена</a>
+        <button type="submit" class="btn-save" style="background-color: #ef4444; border: none; width: 100%; border-radius: 0.5rem; padding: 0.75rem; color: white; font-weight: 600; cursor: pointer; margin-top: 1.5rem;">{% translate "Подтвердить удаление" %}</button>
+        <a href="{% url 'user_list' %}" style="display: block; margin-top: 1rem; color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "Отмена" %}</a>
     </form>
 </div>
 {% endblock %}

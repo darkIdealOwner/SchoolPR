@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Интеграция с 1С - SchoolPR{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Интеграция с 1С - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
@@ -30,48 +31,47 @@ code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radiu
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← На главную</a>
-<h1 style="margin: 0.75rem 0 0.25rem 0;">Интеграция с 1С</h1>
+<a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← На главную" %}</a>
+<h1 style="margin: 0.75rem 0 0.25rem 0;">{% translate "Интеграция с 1С" %}</h1>
 <p class="muted" style="font-size: 0.9rem; margin-top: 0;">
-    Деньги ведёт 1С, договоры и ученики — платформа. Документы из 1С здесь только читаются: исправлять их нужно в 1С,
-    изменения придут при следующем обмене.
+    {% translate "Деньги ведёт 1С, договоры и ученики — платформа. Документы из 1С здесь только читаются: исправлять их нужно в 1С, изменения придут при следующем обмене." %}
 </p>
 
 <div class="grid section">
     <div class="panel">
-        <h3>Подключение</h3>
-        <div class="stat-row">Загрузка из 1С по OData:
-            {% if odata_configured %}<span class="ok">настроена</span>{% else %}<span class="off">не настроена</span>{% endif %}
-            <div class="muted">ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD в .env</div>
+        <h3>{% translate "Подключение" %}</h3>
+        <div class="stat-row">{% translate "Загрузка из 1С по OData:" %}
+            {% if odata_configured %}<span class="ok">{% translate "настроена" %}</span>{% else %}<span class="off">{% translate "не настроена" %}</span>{% endif %}
+            <div class="muted">{% translate "ONEC_ODATA_URL, ONEC_USER, ONEC_PASSWORD в .env" %}</div>
         </div>
-        <div class="stat-row">API для 1С:
-            {% if api_configured %}<span class="ok">включено</span>{% else %}<span class="off">выключено</span>{% endif %}
-            <div class="muted">ONEC_API_TOKEN в .env, адреса — <code>/api/1c/…</code></div>
+        <div class="stat-row">{% translate "API для 1С:" %}
+            {% if api_configured %}<span class="ok">{% translate "включено" %}</span>{% else %}<span class="off">{% translate "выключено" %}</span>{% endif %}
+            <div class="muted">{% translate "ONEC_API_TOKEN в .env, адреса —" %} <code>/api/1c/…</code></div>
         </div>
-        <div class="stat-row">Загрузка файлом: <span class="ok">доступна всегда</span></div>
+        <div class="stat-row">{% translate "Загрузка файлом:" %} <span class="ok">{% translate "доступна всегда" %}</span></div>
     </div>
 
     <div class="panel">
-        <h3>Связь записей с 1С</h3>
+        <h3>{% translate "Связь записей с 1С" %}</h3>
         {% for label, s in link_stats %}
         <div class="stat-row">
-            {{ label }}: <strong>{{ s.linked }}</strong> из {{ s.total }}
+            {{ label }}: <strong>{{ s.linked }}</strong> {% translate "из" %} {{ s.total }}
             <div class="bar"><span style="width: {% if s.total %}{% widthratio s.linked s.total 100 %}{% else %}0{% endif %}%;"></span></div>
         </div>
         {% endfor %}
     </div>
 
     <div class="panel">
-        <h3>Оплаты</h3>
-        <div class="stat-row">Загружено из 1С: <strong>{{ payments_from_1c }}</strong></div>
-        <div class="stat-row">Приняты на платформе и ещё не проведены в 1С: <strong>{{ payments_not_in_1c }}</strong>
-            <div class="muted">1С забирает их через <code>GET /api/1c/payments/?unlinked=1</code></div>
+        <h3>{% translate "Оплаты" %}</h3>
+        <div class="stat-row">{% translate "Загружено из 1С:" %} <strong>{{ payments_from_1c }}</strong></div>
+        <div class="stat-row">{% translate "Приняты на платформе и ещё не проведены в 1С:" %} <strong>{{ payments_not_in_1c }}</strong>
+            <div class="muted">{% translate "1С забирает их через" %} <code>GET /api/1c/payments/?unlinked=1</code></div>
         </div>
     </div>
 </div>
 
 <div class="section">
-    <h2>Загрузить файл из 1С</h2>
+    <h2>{% translate "Загрузить файл из 1С" %}</h2>
     <form method="post" enctype="multipart/form-data" class="panel" style="max-width: 560px;">
         {% csrf_token %}
         <div class="form-row">
@@ -86,20 +86,20 @@ code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radiu
         <div class="form-row" style="flex-direction: row; align-items: center; gap: 0.5rem;">
             {{ form.dry_run }} <label for="{{ form.dry_run.id_for_label }}">{{ form.dry_run.label }}</label>
         </div>
-        <button type="submit" class="btn">Загрузить</button>
-        <p class="muted" style="margin-bottom: 0;">Формат файла и примеры — в docs/1c-integration.md. Повторная загрузка того же файла не создаёт дублей.</p>
+        <button type="submit" class="btn">{% translate "Загрузить" %}</button>
+        <p class="muted" style="margin-bottom: 0;">{% translate "Формат файла и примеры — в docs/1c-integration.md. Повторная загрузка того же файла не создаёт дублей." %}</p>
     </form>
 </div>
 
 <div class="section">
-    <h2>Журнал обменов</h2>
+    <h2>{% translate "Журнал обменов" %}</h2>
     <div class="table-wrap">
         <table class="tbl">
             <thead>
                 <tr>
-                    <th>Когда</th><th>Данные</th><th>Канал</th><th>Статус</th>
-                    <th class="num">Всего</th><th class="num">Создано</th><th class="num">Обновлено</th>
-                    <th class="num">Сторно</th><th class="num">Ошибок</th><th>Детали</th>
+                    <th>{% translate "Когда" %}</th><th>{% translate "Данные" %}</th><th>{% translate "Канал" %}</th><th>{% translate "Статус" %}</th>
+                    <th class="num">{% translate "Всего" %}</th><th class="num">{% translate "Создано" %}</th><th class="num">{% translate "Обновлено" %}</th>
+                    <th class="num">{% translate "Сторно" %}</th><th class="num">{% translate "Ошибок" %}</th><th>{% translate "Детали" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -108,7 +108,7 @@ code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radiu
                     <td style="white-space: nowrap;">{{ run.started_at|date:"d.m.Y H:i" }}</td>
                     <td>{{ run.get_entity_display }}</td>
                     <td>{{ run.get_channel_display }}{% if run.triggered_by %} · {{ run.triggered_by.first_name }}{% endif %}</td>
-                    <td class="st-{{ run.status }}">{{ run.get_status_display }}{% if run.dry_run %} <span class="muted">(пробный)</span>{% endif %}</td>
+                    <td class="st-{{ run.status }}">{{ run.get_status_display }}{% if run.dry_run %} <span class="muted">{% translate "(пробный)" %}</span>{% endif %}</td>
                     <td class="num">{{ run.total }}</td>
                     <td class="num">{{ run.created }}</td>
                     <td class="num">{{ run.updated }}</td>
@@ -117,16 +117,16 @@ code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radiu
                     <td>
                         {% if run.errors %}
                         <details>
-                            <summary>{{ run.errors|length }} ошибок</summary>
+                            <summary>{{ run.errors|length }} {% translate "ошибок" %}</summary>
                             <ul>
-                                {% for e in run.errors|slice:":50" %}<li>Строка {{ e.row }}{% if e.external_id %} ({{ e.external_id }}){% endif %}: {{ e.error }}</li>{% endfor %}
+                                {% for e in run.errors|slice:":50" %}<li>{% translate "Строка" %} {{ e.row }}{% if e.external_id %} ({{ e.external_id }}){% endif %}: {{ e.error }}</li>{% endfor %}
                             </ul>
                         </details>
                         {% else %}—{% endif %}
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 2rem;">Обменов ещё не было.</td></tr>
+                <tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Обменов ещё не было." %}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

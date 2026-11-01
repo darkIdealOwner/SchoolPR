@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 from .forms import (
@@ -113,7 +114,7 @@ def _csv_value(value):
     if isinstance(value, (date, datetime)):
         return value.strftime('%d.%m.%Y')
     if isinstance(value, bool):
-        return 'да' if value else 'нет'
+        return _('да') if value else _('нет')
     return str(value)
 
 
@@ -170,7 +171,7 @@ class AuditMixin:
 
 class ProtectedDeleteMixin:
     """Удаление с записью в журнал; если на объект ссылаются денежные записи — показываем сообщение вместо ошибки."""
-    protected_message = "Нельзя удалить: есть связанные финансовые записи."
+    protected_message = gettext_lazy("Нельзя удалить: есть связанные финансовые записи.")
 
     def form_valid(self, form):
         self.object = self.get_object()
@@ -181,7 +182,7 @@ class ProtectedDeleteMixin:
         except ProtectedError:
             messages.error(self.request, self.protected_message)
             return redirect(self.get_success_url())
-        messages.success(self.request, "Запись удалена.")
+        messages.success(self.request, _("Запись удалена."))
         return redirect(self.get_success_url())
 
 class BaseReverseView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
@@ -216,7 +217,7 @@ class BaseReverseView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
         with db_transaction.atomic():
             obj.reverse(self.request.user, reason)
             AuditLog.record(self.request.user, 'REVERSE', obj, {'reason': reason})
-        messages.success(self.request, "Запись сторнирована.")
+        messages.success(self.request, _("Запись сторнирована."))
         return super().form_valid(form)
 
 
@@ -321,7 +322,7 @@ class UserDeleteView(LoginRequiredMixin, OwnerOrDirectorMixin, ProtectedDeleteMi
     model = User
     template_name = 'home/users/user_confirm_delete.html'
     success_url = reverse_lazy('user_list')
-    protected_message = "Нельзя удалить пользователя: по нему есть выплаты. Отключите доступ вместо удаления."
+    protected_message = gettext_lazy("Нельзя удалить пользователя: по нему есть выплаты. Отключите доступ вместо удаления.")
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -356,7 +357,7 @@ class SchoolDeleteView(LoginRequiredMixin, OwnerOnlyMixin, ProtectedDeleteMixin,
     model = School
     template_name = 'home/schools/school_confirm_delete.html' # We'll reuse logic but create a separate template or generic one
     success_url = reverse_lazy('school_list')
-    protected_message = "Нельзя удалить школу: к ней привязаны договоры, выплаты или транзакции."
+    protected_message = gettext_lazy("Нельзя удалить школу: к ней привязаны договоры, выплаты или транзакции.")
 
 # Contract Management CRUD (Owner, Director, Employee or Investor)
 class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
@@ -368,10 +369,10 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
 
     def get_export_rows(self, context):
         personal = self.request.user.can_view_personal_data
-        headers = ['№ договора', 'Школа', 'Дата', 'ФИО ученика', 'Год рождения', 'Класс', 'Срок, мес', 'Направление']
+        headers = [_('№ договора'), _('Школа'), _('Дата'), _('ФИО ученика'), _('Год рождения'), _('Класс'), _('Срок, мес'), _('Направление')]
         if personal:
-            headers += ['ФИО родителей', 'Паспорт', 'ИНПС', 'Адрес', 'Телефон']
-        headers += ['Стоимость', 'Скидка %', 'Скидка, сум', 'Питание', 'Итого в месяц', 'Отменён', 'Дата отмены', 'Примечание']
+            headers += [_('ФИО родителей'), _('Паспорт'), _('ИНПС'), _('Адрес'), _('Телефон')]
+        headers += [_('Стоимость'), _('Скидка %'), _('Скидка, сум'), _('Питание'), _('Итого в месяц'), _('Отменён'), _('Дата отмены'), _('Примечание')]
         rows = []
         for c in self.object_list:
             row = [c.number, c.school.name if c.school else '', c.date, c.student_full_name, c.student_birth_year,
@@ -417,11 +418,11 @@ class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestor
         debt, unpaid = get_debt_details(contract, timezone.localdate())
         last = contract.last_billing_month
         if contract.is_cancelled:
-            status = ('cancelled', 'Отменён')
+            status = ('cancelled', _('Отменён'))
         elif last is not None and last < timezone.localdate().replace(day=1):
-            status = ('finished', 'Завершён')
+            status = ('finished', _('Завершён'))
         else:
-            status = ('active', 'Действует')
+            status = ('active', _('Действует'))
         context.update({
             'schedule': schedule,
             'debt': debt,
@@ -480,7 +481,7 @@ class ContractDeleteView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Pro
     model = Contract
     template_name = 'home/contracts/contract_confirm_delete.html'
     success_url = reverse_lazy('contract_list')
-    protected_message = "Нельзя удалить договор: по нему есть оплаты. Отметьте договор как отменённый."
+    protected_message = gettext_lazy("Нельзя удалить договор: по нему есть оплаты. Отметьте договор как отменённый.")
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -496,7 +497,7 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
     export_filename = 'oplaty'
 
     def get_export_rows(self, context):
-        headers = ['Месяц', '№ договора', 'Школа', 'Ученик', 'Начислено', 'Оплачено', 'Остаток']
+        headers = [_('Месяц'), _('№ договора'), _('Школа'), _('Ученик'), _('Начислено'), _('Оплачено'), _('Остаток')]
         month = format_russian_month(self.selected_month)
         rows = [[month, c.number, c.school.name if c.school else '', c.student_full_name,
                  c.total_amount, c.this_month_paid, c.this_month_balance] for c in context['contracts']]
@@ -533,8 +534,8 @@ class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin,
 
     def get_export_rows(self, context):
         personal = self.request.user.can_view_personal_data
-        headers = ['№ договора', 'Школа', 'Ученик'] + (['Телефон', 'Родитель'] if personal else []) + \
-                  ['Платёж в месяц', 'Просрочено месяцев', 'Неоплаченные месяцы', 'Сумма долга']
+        headers = [_('№ договора'), _('Школа'), _('Ученик')] + ([_('Телефон'), _('Родитель')] if personal else []) + \
+                  [_('Платёж в месяц'), _('Просрочено месяцев'), _('Неоплаченные месяцы'), _('Сумма долга')]
         rows = []
         for c in context['debtors']:
             row = [c.number, c.school.name if c.school else '', c.student_full_name]
@@ -647,7 +648,7 @@ class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin,
     export_filename = 'vyplaty_sotrudnikam'
 
     def get_export_rows(self, context):
-        headers = ['Дата выплаты', 'За месяц', 'Сотрудник', 'Школа', 'Сумма', 'Примечание', 'Сторно', 'Причина сторно']
+        headers = [_('Дата выплаты'), _('За месяц'), _('Сотрудник'), _('Школа'), _('Сумма'), _('Примечание'), _('Сторно'), _('Причина сторно')]
         rows = [[p.payout_date, format_russian_month(p.for_month), p.employee.first_name, p.school.name, p.amount,
                  p.notes, p.is_reversed, p.reversal_reason] for p in self.object_list]
         return headers, rows
@@ -716,7 +717,7 @@ class TransactionListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, Cs
     export_filename = 'tranzakcii'
 
     def get_export_rows(self, context):
-        headers = ['Дата', 'Школа', 'Тип', 'Категория', 'Сумма', 'Примечание', 'Сторно', 'Причина сторно']
+        headers = [_('Дата'), _('Школа'), _('Тип'), _('Категория'), _('Сумма'), _('Примечание'), _('Сторно'), _('Причина сторно')]
         rows = [[t.date, t.school.name, t.get_type_display(), t.category, t.amount, t.notes,
                  t.is_reversed, t.reversal_reason] for t in self.object_list]
         return headers, rows

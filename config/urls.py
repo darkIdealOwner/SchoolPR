@@ -36,6 +36,7 @@ def healthz(request):
 urlpatterns = [
     path('healthz', healthz, name='healthz'),
     path('admin/', admin.site.urls),
+    path('i18n/', include('django.conf.urls.i18n')),  # смена языка: POST /i18n/setlang/
     path('', include('users.urls')),
     path('', include('integrations.urls')),
     path('', RedirectView.as_view(url='/login/')),
