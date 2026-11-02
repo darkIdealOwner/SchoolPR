@@ -422,6 +422,8 @@
             table.m-cards td > div { max-width: none !important; }
             table.m-cards td.m-empty { display: none !important; }
             table.m-cards .m-val { min-width: 0; overflow-wrap: anywhere; }
+            /* Однострочные блоки с многоточием (примечания) в карточке переносятся, а не растягивают экран */
+            table.m-cards .m-val div { white-space: normal !important; max-width: 100% !important; }
             table.m-cards .m-val .btn-action, table.m-cards .m-val .pay-link { display: inline-block; padding: 0.4rem 0.9rem !important; }
             table.m-cards tr.reversed-row td::before { text-decoration: none; }
             .pagination { gap: 0.5rem !important; }
