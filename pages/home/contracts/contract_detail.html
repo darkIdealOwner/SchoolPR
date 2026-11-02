@@ -87,15 +87,23 @@
     <dl class="info-grid">
         <div><dt>{% translate "Год рождения" %}</dt><dd>{{ contract.student_birth_year }}</dd></div>
         <div><dt>{% translate "Стоимость обучения" %}</dt><dd>{{ contract.tuition_fee|money }}</dd></div>
-        <div><dt>{% translate "Скидка" %}</dt><dd>{{ contract.discount_percentage }}% ({{ contract.discount_amount|money }})</dd></div>
+        <div><dt>{% translate "Скидка" %}</dt><dd>{% if contract.discount_percentage %}{{ contract.discount_percentage }}%{% endif %}{% if contract.discount_percentage and contract.discount_fixed %} + {% endif %}{% if contract.discount_fixed %}{{ contract.discount_fixed|money }}{% endif %}{% if not contract.discount_percentage and not contract.discount_fixed %}0%{% endif %} ({{ contract.discount_amount|money }}){% if contract.discount_reason %} · {{ contract.get_discount_reason_display }}{% endif %}</dd></div>
         <div><dt>{% translate "Питание" %}</dt><dd>{{ contract.food_cost|money }}</dd></div>
         {% if user.can_view_personal_data %}
         <div><dt>{% translate "Родители" %}</dt><dd>{{ contract.parents_full_name|default:"—" }}</dd></div>
-        <div><dt>{% translate "Телефон" %}</dt><dd>{{ contract.phone_number|default:"—" }}</dd></div>
+        <div><dt>{% translate "Телефон" %}</dt><dd><span style="white-space: nowrap;">{{ contract.phone_number|phone|default:"—" }}</span>{% if contract.phone_number_2 %}<br><span style="white-space: nowrap;">{{ contract.phone_number_2|phone }}</span>{% endif %}</dd></div>
         <div><dt>{% translate "Адрес" %}</dt><dd>{{ contract.address|default:"—" }}</dd></div>
         <div><dt>{% translate "Паспорт / ИНПС" %}</dt><dd>{{ contract.passport_data|default:"—" }} / {{ contract.inps|default:"—" }}</dd></div>
         {% endif %}
         {% if contract.notes %}<div style="grid-column: 1 / -1;"><dt>{% translate "Примечание" %}</dt><dd>{{ contract.notes }}</dd></div>{% endif %}
+        {% if siblings %}
+        <div style="grid-column: 1 / -1;"><dt>{% translate "Другие дети этого родителя" %}</dt><dd>
+            {% for s in siblings %}<a href="{% url 'contract_detail' s.pk %}" style="color: var(--text);">{{ s.student_full_name }}</a> <span style="color: var(--text-muted);">№ {{ s.number }}</span>{% if not forloop.last %}, {% endif %}{% endfor %}
+        </dd></div>
+        {% endif %}
+        {% if data_warnings %}
+        <div style="grid-column: 1 / -1;"><dt>{% translate "Проверить" %}</dt><dd style="color: #fbbf24;">{{ data_warnings|join:"; " }}</dd></div>
+        {% endif %}
     </dl>
 </div>
 

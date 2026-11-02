@@ -205,11 +205,11 @@
                 <td>{{ c.passport_data }}</td>
                 <td>{{ c.inps }}</td>
                 <td>{{ c.address }}</td>
-                <td>{{ c.phone_number }}</td>
+                <td style="white-space: nowrap;">{{ c.phone_number|phone }}{% if c.phone_number_2 %}<br>{{ c.phone_number_2|phone }}{% endif %}</td>
                 {% endif %}
                 <td>{{ c.get_specialization_display }}</td>
                 <td>{{ c.tuition_fee|money }}</td>
-                <td>{{ c.discount_percentage }}%</td>
+                <td>{{ c.discount_percentage }}%{% if c.discount_reason %}<div style="font-size: 0.7rem; color: var(--text-muted);">{{ c.get_discount_reason_display }}</div>{% endif %}</td>
                 <td>{{ c.discount_amount|money }}</td>
                 <td>{{ c.food_cost|money }}</td>
                 <td style="font-weight: 700; color: var(--accent);">{{ c.total_amount|money }}</td>

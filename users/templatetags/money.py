@@ -28,5 +28,12 @@ def money(value):
 
 
 @register.filter
+def phone(value):
+    """+998500022131 -> «+998 (50)-002-21-31»."""
+    from users.phone import format_phone
+    return format_phone(value) if value else ''
+
+
+@register.filter
 def percent(value):
     return '—' if value is None else f"{value}%"

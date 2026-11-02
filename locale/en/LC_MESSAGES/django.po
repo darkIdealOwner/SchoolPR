@@ -52,6 +52,10 @@ msgstr "* — required columns."
 msgid "/ Тел."
 msgstr "/ Phone"
 
+#: users/excel_import.py
+msgid "14 цифр. Можно оставить пустым — договор будет помечен «неполные данные»."
+msgstr "14 digits. May be left empty — the contract will be marked “incomplete data”."
+
 #: pages/base.html pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py
 msgid "1С"
 msgstr "1C"
@@ -190,6 +194,14 @@ msgstr "Total"
 #: pages/home/partials/finance_overview.html
 msgid "Вся сеть"
 msgstr "Whole network"
+
+#: users/models.py
+msgid "Второй ребёнок в семье"
+msgstr "Second child in the family"
+
+#: users/excel_import.py
+msgid "Второй ребёнок, третий ребёнок, социальный реестр, ребёнок сотрудника, льгота, другое."
+msgstr "Second child, third child, social registry, employee’s child, privilege, other."
 
 #: pages/authorization/login.html
 msgid "Вход"
@@ -459,9 +471,21 @@ msgstr "Debts for month:"
 msgid "Должников:"
 msgstr "Debtors:"
 
+#: users/excel_import.py users/models.py users/views.py
+msgid "Доп. телефон"
+msgstr "Extra phone"
+
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "Доплатить"
 msgstr "Pay the rest"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Другие дети этого родителя"
+msgstr "Other children of this parent"
+
+#: users/models.py
+msgid "Другое"
+msgstr "Other"
 
 #: users/excel_import.py
 msgid "Есть в выгрузке с платформы. Строки с отметкой «да» не загружаются."
@@ -607,6 +631,14 @@ msgstr "Hello, %(name)s!"
 msgid "ИНПС"
 msgstr "PINFL"
 
+#: users/models.py
+msgid "ИНПС не из 14 цифр"
+msgstr "PINFL is not 14 digits"
+
+#: users/forms.py
+msgid "ИНПС — только цифры."
+msgstr "PINFL must contain digits only."
+
 #: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "Из Excel"
 msgstr "From Excel"
@@ -724,6 +756,10 @@ msgstr "Category/Purpose"
 msgid "Класс"
 msgstr "Grade"
 
+#: users/forms.py
+msgid "Класс — от 0 до 11."
+msgstr "Grade must be from 0 to 11."
+
 #: pages/home/integrations/integration.html users/models.py
 msgid "Когда"
 msgstr "When"
@@ -749,6 +785,10 @@ msgid "Логин (username)"
 msgstr "Login (username)"
 
 #: users/models.py
+msgid "Льгота"
+msgstr "Privilege"
+
+#: users/models.py
 msgid "Май"
 msgstr "May"
 
@@ -771,6 +811,14 @@ msgstr "Month:"
 #: pages/home/partials/finance_overview.html pages/home/schools/academic_year_list.html
 msgid "Месяцев"
 msgstr "Months"
+
+#: users/forms.py
+msgid "Можно вместе с процентом. Всего скидка не больше стоимости учёбы."
+msgstr "Can be combined with a percentage. The total discount never exceeds the tuition."
+
+#: users/forms.py
+msgid "Можно оставить пустым — договор будет помечен «неполные данные»."
+msgstr "May be left empty — the contract will be marked “incomplete data”."
 
 #: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
 msgid "Название"
@@ -805,8 +853,8 @@ msgid "Например: \"Инвестиция от Олега\" или \"За�
 msgstr "For example: \"Investment from Oleg\" or \"Replacing a broken lock\""
 
 #: users/excel_import.py
-msgid "Например: +998 90 123 45 67"
-msgstr "For example: +998 90 123 45 67"
+msgid "Например: +998 90 123 45 67. Два номера в одной ячейке разделятся на основной и дополнительный."
+msgstr "For example: +998 90 123 45 67. Two numbers in one cell are split into main and extra."
 
 #: users/excel_import.py
 msgid "Например: 01.09.2026"
@@ -900,6 +948,10 @@ msgstr "Unpaid months"
 msgid "Неоплаченных месяцев:"
 msgstr "Unpaid months:"
 
+#: users/views.py
+msgid "Неполные данные"
+msgstr "Incomplete data"
+
 #: pages/home/payments/payment_list.html
 msgid "Нет договоров с начислением за этот месяц."
 msgstr "No contracts billed for this month."
@@ -963,6 +1015,10 @@ msgstr "Object"
 #: users/excel_import.py
 msgid "Обязательная"
 msgstr "Required"
+
+#: users/forms.py
+msgid "Обязательное поле."
+msgstr "This field is required."
 
 #: integrations/models.py
 msgid "Окончание"
@@ -1251,6 +1307,10 @@ msgstr "Income / Investment"
 msgid "Приход или Расход"
 msgstr "Income or Expense"
 
+#: users/excel_import.py users/models.py users/views.py
+msgid "Причина скидки"
+msgstr "Discount reason"
+
 #: users/forms.py users/models.py users/views.py
 msgid "Причина сторно"
 msgstr "Reversal reason"
@@ -1266,6 +1326,10 @@ msgstr "Dry run (check only, save nothing)"
 #: integrations/views.py
 msgid "Пробный запуск, ничего не сохранено."
 msgstr "Dry run, nothing was saved."
+
+#: pages/home/contracts/contract_detail.html
+msgid "Проверить"
+msgstr "Check"
 
 #: pages/home/import/excel_import.html
 msgid "Проверить файл"
@@ -1323,6 +1387,10 @@ msgstr "Expense / Unexpected costs"
 #: pages/home/transactions/transaction_list.html
 msgid "Расход / Траты"
 msgstr "Expense"
+
+#: users/models.py
+msgid "Ребёнок сотрудника"
+msgstr "Employee’s child"
 
 #: pages/home/payments/payment_form.html
 msgid "Регистрация оплаты"
@@ -1452,9 +1520,25 @@ msgstr "Discount %"
 msgid "Скидка %%"
 msgstr "Discount %%"
 
+#: users/excel_import.py
+msgid "Скидка в сумах в месяц. Можно вместе с процентом."
+msgstr "Monthly discount in UZS. Can be combined with a percentage."
+
+#: users/forms.py
+msgid "Скидка не может быть отрицательной."
+msgstr "The discount cannot be negative."
+
 #: pages/home/contracts/contract_list.html
 msgid "Скидка сум"
 msgstr "Discount UZS"
+
+#: users/excel_import.py users/models.py users/views.py
+msgid "Скидка суммой"
+msgstr "Fixed discount"
+
+#: users/forms.py
+msgid "Скидка — от 0 до 100 %."
+msgstr "The discount must be from 0 to 100%."
 
 #: users/models.py
 msgid "Скидка, %"
@@ -1554,6 +1638,10 @@ msgstr "Save changes"
 #, python-format
 msgid "Сохранить строк: %(count)s"
 msgstr "Save rows: %(count)s"
+
+#: users/models.py
+msgid "Социальный реестр"
+msgstr "Social registry"
 
 #: users/excel_import.py
 msgid "Списки"
@@ -1727,6 +1815,10 @@ msgstr "School transactions"
 #: users/models.py
 msgid "Транзакция"
 msgstr "Transaction"
+
+#: users/models.py
+msgid "Третий ребёнок в семье"
+msgstr "Third child in the family"
 
 #: users/models.py
 msgid "Удаление"
@@ -2017,6 +2109,18 @@ msgstr "cannot read the amount “%(value)s”"
 msgid "не понятно значение «%(value)s»"
 msgstr "cannot read the value “%(value)s”"
 
+#: users/models.py
+msgid "не указан ИНПС"
+msgstr "no PINFL"
+
+#: users/models.py
+msgid "не указан адрес"
+msgstr "no address"
+
+#: users/models.py
+msgid "не указан паспорт"
+msgstr "no passport"
+
 #: users/views.py
 msgid "не указана"
 msgstr "not set"
@@ -2053,6 +2157,10 @@ msgstr "cancelled"
 msgid "ошибок"
 msgstr "errors"
 
+#: users/models.py
+msgid "паспорт не в формате AA1234567"
+msgstr "passport is not in the AA1234567 format"
+
 #: pages/home/partials/finance_overview.html
 msgid "подробнее"
 msgstr "details"
@@ -2064,6 +2172,10 @@ msgstr "with errors"
 #: users/excel_import.py
 msgid "скидка должна быть от 0 до 100"
 msgstr "the discount must be from 0 to 100"
+
+#: users/models.py
+msgid "скидка за брата/сестру, но других детей этого родителя на платформе нет"
+msgstr "sibling discount, but this parent has no other children on the platform"
 
 #: users/excel_import.py
 #, python-format

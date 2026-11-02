@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+{% load i18n static %}
 {% block title %}{% if is_edit %}{% translate "Редактировать договор" %}{% else %}{% translate "Новый договор" %}{% endif %} - SchoolPR{% endblock %}
 
 {% block extra_css %}
@@ -107,11 +107,13 @@
     </form>
 </div>
 
+<script src="{% static 'js/phone-mask.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tuitionField = document.getElementById('id_tuition_fee');
     const discountPctField = document.getElementById('id_discount_percentage');
     const discountAmtField = document.getElementById('id_discount_amount');
+    const discountFixedField = document.getElementById('id_discount_fixed');
     const foodField = document.getElementById('id_food_cost');
     const totalField = document.getElementById('id_total_amount');
 
@@ -126,14 +128,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const discountPct = parseFloat(discountPctField.value) || 0;
         const food = parseFloat(foodField.value) || 0;
 
-        const discountAmt = tuition * (discountPct / 100);
+        const fixed = parseFloat(discountFixedField.value) || 0;
+        const discountAmt = Math.min(tuition, tuition * (discountPct / 100) + fixed);
         const total = (tuition - discountAmt) + food;
 
         discountAmtField.value = discountAmt.toFixed(2);
         totalField.value = total.toFixed(2);
     }
 
-    [tuitionField, discountPctField, foodField].forEach(field => {
+    [tuitionField, discountPctField, discountFixedField, foodField].forEach(field => {
         field.addEventListener('input', calculate);
     });
 

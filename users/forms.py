@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction
@@ -138,8 +140,8 @@ class ContractForm(forms.ModelForm):
         fields = [
             'number', 'school', 'academic_year', 'date', 'billing_start', 'month', 'student_full_name', 'student_birth_year',
             'student_class', 'duration_months', 'parents_full_name', 'passport_data',
-            'inps', 'address', 'phone_number', 'specialization', 'tuition_fee',
-            'discount_percentage', 'discount_amount', 'food_cost', 'total_amount',
+            'inps', 'address', 'phone_number', 'phone_number_2', 'specialization', 'tuition_fee',
+            'discount_percentage', 'discount_fixed', 'discount_reason', 'discount_amount', 'food_cost', 'total_amount',
             'is_cancelled', 'cancelled_at', 'notes'
         ]
         widgets = {
@@ -169,6 +171,61 @@ class ContractForm(forms.ModelForm):
         if user and user.role != 'OWNER':
             if 'school' in self.fields:
                 self.fields.pop('school')
+
+        for name in ('phone_number', 'phone_number_2'):
+            self.fields[name].widget.attrs.update({**PHONE_ATTRS, 'type': 'tel'})
+            if self.instance.pk and not self.is_bound:
+                self.initial[name] = format_phone(getattr(self.instance, name))
+        self.fields['passport_data'].widget.attrs['placeholder'] = 'AA1234567'
+        self.fields['discount_fixed'].required = False
+        self.fields['discount_fixed'].help_text =_("Можно вместе с процентом. Всего скидка не больше стоимости учёбы.")
+        for name in ('passport_data', 'inps', 'address'):
+            self.fields[name].help_text = _("Можно оставить пустым — договор будет помечен «неполные данные».")
+
+    def _clean_phone(self, name, required):
+        value = (self.cleaned_data.get(name) or '').strip()
+        if not value:
+            if required:
+                raise forms.ValidationError(_("Обязательное поле."))
+            return ''
+        phone = normalize_phone(value)
+        if not is_valid_uz_phone(phone):
+            raise forms.ValidationError(_("Введите номер в формате +998 (XX)-XXX-XX-XX."))
+        return phone
+
+    def clean_phone_number(self):
+        return self._clean_phone('phone_number', required=True)
+
+    def clean_phone_number_2(self):
+        return self._clean_phone('phone_number_2', required=False)
+
+    def clean_passport_data(self):
+        return re.sub(r'\s+', '', self.cleaned_data.get('passport_data') or '').upper()
+
+    def clean_inps(self):
+        value = re.sub(r'\s+', '', self.cleaned_data.get('inps') or '')
+        if value and not value.isdigit():
+            raise forms.ValidationError(_("ИНПС — только цифры."))
+        return value
+
+    def clean_student_class(self):
+        value = (self.cleaned_data.get('student_class') or '').strip()
+        match = re.match(r'(\d+)', value)
+        if match and not 0 <= int(match.group(1)) <= 11:
+            raise forms.ValidationError(_("Класс — от 0 до 11."))
+        return value
+
+    def clean_discount_percentage(self):
+        value = self.cleaned_data.get('discount_percentage') or 0
+        if not 0 <= value <= 100:
+            raise forms.ValidationError(_("Скидка — от 0 до 100 %."))
+        return value
+
+    def clean_discount_fixed(self):
+        value = self.cleaned_data.get('discount_fixed') or 0
+        if value < 0:
+            raise forms.ValidationError(_("Скидка не может быть отрицательной."))
+        return value
 
     def clean_number(self):
         number = self.cleaned_data.get('number')

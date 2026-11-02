@@ -399,8 +399,8 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
         headers = [_('№ договора'), _('Школа'), _('Учебный год'), _('Дата'), _('Первый месяц обучения'), _('ФИО ученика'),
                    _('Год рождения'), _('Класс'), _('Срок, мес'), _('Направление')]
         if personal:
-            headers += [_('ФИО родителей'), _('Паспорт'), _('ИНПС'), _('Адрес'), _('Телефон')]
-        headers += [_('Стоимость'), _('Скидка %'), _('Скидка, сум'), _('Питание'), _('Итого в месяц'), _('Отменён'), _('Дата отмены'),
+            headers += [_('ФИО родителей'), _('Паспорт'), _('ИНПС'), _('Адрес'), _('Телефон'), _('Доп. телефон')]
+        headers += [_('Стоимость'), _('Скидка %'), _('Скидка суммой'), _('Причина скидки'), _('Скидка, сум'), _('Питание'), _('Итого в месяц'), _('Отменён'), _('Дата отмены'),
                     _('Начисления по'), _('Примечание')]
         rows = []
         for c in self.object_list:
@@ -408,9 +408,10 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
                    c.first_billing_month.strftime('%m.%Y'), c.student_full_name, c.student_birth_year,
                    c.student_class, c.duration_months, c.specialization]
             if personal:
-                row += [c.parents_full_name, c.passport_data, c.inps, c.address, c.phone_number]
+                row += [c.parents_full_name, c.passport_data, c.inps, c.address, c.phone_number, c.phone_number_2]
             last = c.last_billing_month
-            row += [c.tuition_fee, c.discount_percentage, c.discount_amount, c.food_cost, c.total_amount,
+            row += [c.tuition_fee, c.discount_percentage, c.discount_fixed, c.get_discount_reason_display(),
+                    c.discount_amount, c.food_cost, c.total_amount,
                     c.is_cancelled, c.cancelled_at if c.cancelled_at else (_('не указана') if c.is_cancelled else ''),
                     last.strftime('%m.%Y') if last else '', c.notes]
             rows.append(row)
@@ -429,6 +430,10 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
             queryset = queryset.filter(is_cancelled=True)
         elif status == 'no_cancel_date':
             queryset = queryset.filter(is_cancelled=True, cancelled_at__isnull=True)
+        elif status == 'incomplete':
+            queryset = queryset.filter(
+                Q(passport_data='') | Q(inps='') | Q(address='')
+                | ~Q(passport_data__regex=r'^[A-Z]{2}[0-9]{7}$') | ~Q(inps__regex=r'^[0-9]{14}$'))
         year = self.request.GET.get('year')
         if year and year.isdigit():
             queryset = queryset.filter(academic_year_id=int(year))
@@ -450,6 +455,8 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
             ('', _('Все')), ('active', _('Действующие')), ('cancelled', _('Отменённые')),
             ('no_cancel_date', _('Отменённые без даты')),
         ]
+        if self.request.user.can_view_personal_data:
+            context['status_filters'].append(('incomplete', _('Неполные данные')))
         return context
 
 class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, DetailView):
@@ -469,7 +476,12 @@ class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestor
         schedule = contract_schedule(contract)
         debt, unpaid = get_debt_details(contract, timezone.localdate())
         status = contract.status()
+        siblings = contract.siblings().order_by('number')
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            siblings = siblings.filter(school=self.request.user.school)
         context.update({
+            'siblings': siblings,
+            'data_warnings': contract.data_warnings if self.request.user.can_view_personal_data else [],
             'schedule': schedule,
             'debt': debt,
             'unpaid_count': len(unpaid),

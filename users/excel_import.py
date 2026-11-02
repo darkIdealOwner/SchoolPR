@@ -103,16 +103,23 @@ KINDS = {
                    hint=gettext_lazy("Русский язык или Узбекский язык (можно коротко: рус, узб)")),
             Column('parents_full_name', gettext_lazy('ФИО родителей'), 'parents_full_name', Contract, required=True,
                    aliases=('Родитель', 'ФИО родителя'), width=28),
-            Column('passport_data', gettext_lazy('Паспорт'), 'passport_data', Contract, required=True, text=True,
+            Column('passport_data', gettext_lazy('Паспорт'), 'passport_data', Contract, text=True,
                    hint=gettext_lazy("Серия и номер паспорта родителя, например AA1234567")),
-            Column('inps', gettext_lazy('ИНПС'), 'inps', Contract, required=True, text=True),
-            Column('address', gettext_lazy('Адрес'), 'address', Contract, required=True, width=30),
+            Column('inps', gettext_lazy('ИНПС'), 'inps', Contract, text=True,
+                   hint=gettext_lazy("14 цифр. Можно оставить пустым — договор будет помечен «неполные данные».")),
+            Column('address', gettext_lazy('Адрес'), 'address', Contract, width=30),
             Column('phone_number', gettext_lazy('Телефон'), 'phone_number', Contract, required=True, text=True,
-                   aliases=('Телефон родителей', 'Телефон родителя'), hint=gettext_lazy("Например: +998 90 123 45 67")),
+                   aliases=('Телефон родителей', 'Телефон родителя'),
+                   hint=gettext_lazy("Например: +998 90 123 45 67. Два номера в одной ячейке разделятся на основной и дополнительный.")),
+            Column('phone_number_2', gettext_lazy('Доп. телефон'), 'phone_number_2', Contract, text=True),
             Column('tuition_fee', gettext_lazy('Стоимость'), 'tuition_fee', Contract, required=True,
                    hint=gettext_lazy("Стоимость учёбы в месяц, в сумах")),
             Column('discount_percentage', gettext_lazy('Скидка %'), 'discount_percentage', Contract,
                    hint=gettext_lazy("От 0 до 100. Пусто — без скидки."), width=10),
+            Column('discount_fixed', gettext_lazy('Скидка суммой'), 'discount_fixed', Contract,
+                   hint=gettext_lazy("Скидка в сумах в месяц. Можно вместе с процентом.")),
+            Column('discount_reason', gettext_lazy('Причина скидки'), 'discount_reason', Contract, width=22,
+                   hint=gettext_lazy("Второй ребёнок, третий ребёнок, социальный реестр, ребёнок сотрудника, льгота, другое.")),
             Column('food_cost', gettext_lazy('Питание'), 'food_cost', Contract,
                    hint=gettext_lazy("Стоимость питания в месяц. Пусто — без питания.")),
             Column('cancelled', gettext_lazy('Отменён'), 'is_cancelled', Contract,
@@ -423,6 +430,20 @@ def parse_bool(text):
     return text.strip().casefold() in YES
 
 
+def split_phones(text):
+    """«901234567\n907654321», «911112233, 331112233» → два номера в виде +998XXXXXXXXX."""
+    parts = [p for p in re.split(r'[\n,;/]+', text or '') if p.strip()]
+    if len(parts) <= 1:
+        parts = [text or '']
+    phones = []
+    for part in parts[:2]:
+        normalized = normalize_phone(part)
+        phones.append(normalized if is_valid_uz_phone(normalized) else part.strip())
+    while len(phones) < 2:
+        phones.append('')
+    return phones[0], phones[1]
+
+
 def find_by_name(objects, text, attr='name'):
     wanted = normalize_header(text)
     return [o for o in objects if normalize_header(getattr(o, attr)) == wanted]
@@ -564,6 +585,8 @@ def check_contract(values, ctx, result):
     fee = row.amount('tuition_fee', required=True, allow_zero=True)
     discount = row.integer('discount_percentage')
     food = row.amount('food_cost', allow_zero=True)
+    discount_fixed = row.amount('discount_fixed', allow_zero=True)
+    discount_reason = row.choice('discount_reason', Contract.DISCOUNT_REASON_CHOICES)
     cancelled = parse_bool(row.raw('cancelled'))
     cancelled_at = row.date('cancelled_at')
     billing_start = row.month('billing_start')
@@ -581,9 +604,8 @@ def check_contract(values, ctx, result):
     if cancelled and cancelled_at and start and cancelled_at < start:
         row.error('cancelled_at', _("дата отмены раньше даты договора"))
 
-    phone = row.raw('phone_number')
-    if is_valid_uz_phone(normalize_phone(phone)):
-        phone = normalize_phone(phone)
+    phone, phone_2 = split_phones(row.raw('phone_number'))
+    phone_2 = row.raw('phone_number_2') or phone_2
     data = {
         'number': number or '',
         'date': start.isoformat() if start else '',
@@ -597,6 +619,9 @@ def check_contract(values, ctx, result):
         'inps': row.raw('inps'),
         'address': row.raw('address'),
         'phone_number': phone,
+        'phone_number_2': phone_2,
+        'discount_fixed': discount_fixed or 0,
+        'discount_reason': discount_reason or '',
         'specialization': specialization or '',
         'tuition_fee': fee if fee is not None else '',
         'discount_percentage': discount or 0,
@@ -617,7 +642,7 @@ def check_contract(values, ctx, result):
         row.form_errors(form, extra={'month': 'date'})   # месяц договора берётся из даты
 
     if fee is not None and not result.errors:
-        monthly = fee - fee * Decimal(discount or 0) / 100 + (food or 0)
+        monthly = fee - min(fee, fee * Decimal(discount or 0) / 100 + (discount_fixed or 0)) + (food or 0)
         result.summary = [number, row.raw('student_full_name'), school.name if school else '',
                           _("%(amount)s сум в месяц") % {'amount': format_money(monthly)}]
     if result.errors:

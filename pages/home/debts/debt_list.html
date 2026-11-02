@@ -131,7 +131,7 @@
                 <td>
                     <a href="{% url 'contract_detail' contract.pk %}" style="font-weight: 600; color: var(--text); text-decoration: none;">{{ contract.student_full_name }}</a>
                     {% if contract.is_cancelled %}<span style="color: #ef4444; font-size: 0.75rem; font-weight: 600; margin-left: 0.3rem;">{% translate "отменён" %}{% if contract.cancelled_at %} {{ contract.cancelled_at|date:"d.m.Y" }}{% else %} · {% translate "дата не указана" %}{% endif %}</span>{% endif %}
-                    {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number }}</div>{% endif %}
+                    {% if user.can_view_personal_data %}<div style="font-size: 0.75rem; color: var(--text-muted);">{{ contract.phone_number|phone }}</div>{% endif %}
                 </td>
                 {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
                 <td>{{ contract.get_specialization_display }}</td>

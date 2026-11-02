@@ -52,6 +52,10 @@ msgstr "* — majburiy ustunlar."
 msgid "/ Тел."
 msgstr "/ Tel."
 
+#: users/excel_import.py
+msgid "14 цифр. Можно оставить пустым — договор будет помечен «неполные данные»."
+msgstr "14 ta raqam. Boʻsh qoldirsa boʻladi — shartnoma «toʻliq boʻlmagan maʼlumot» deb belgilanadi."
+
 #: pages/base.html pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/models.py
 msgid "1С"
 msgstr "1C"
@@ -190,6 +194,14 @@ msgstr "Jami"
 #: pages/home/partials/finance_overview.html
 msgid "Вся сеть"
 msgstr "Butun tarmoq"
+
+#: users/models.py
+msgid "Второй ребёнок в семье"
+msgstr "Oiladagi 2-farzand"
+
+#: users/excel_import.py
+msgid "Второй ребёнок, третий ребёнок, социальный реестр, ребёнок сотрудника, льгота, другое."
+msgstr "2-farzand, 3-farzand, ijtimoiy reestr, xodim farzandi, imtiyoz, boshqa."
 
 #: pages/authorization/login.html
 msgid "Вход"
@@ -459,9 +471,21 @@ msgstr "Oy boʻyicha qarzlar:"
 msgid "Должников:"
 msgstr "Qarzdorlar:"
 
+#: users/excel_import.py users/models.py users/views.py
+msgid "Доп. телефон"
+msgstr "Qoʻshimcha telefon"
+
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "Доплатить"
 msgstr "Qoʻshimcha toʻlash"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Другие дети этого родителя"
+msgstr "Shu ota-onaning boshqa farzandlari"
+
+#: users/models.py
+msgid "Другое"
+msgstr "Boshqa"
 
 #: users/excel_import.py
 msgid "Есть в выгрузке с платформы. Строки с отметкой «да» не загружаются."
@@ -607,6 +631,14 @@ msgstr "Assalomu alaykum, %(name)s!"
 msgid "ИНПС"
 msgstr "JShShIR"
 
+#: users/models.py
+msgid "ИНПС не из 14 цифр"
+msgstr "JShShIR 14 ta raqamdan iborat emas"
+
+#: users/forms.py
+msgid "ИНПС — только цифры."
+msgstr "JShShIR — faqat raqamlar."
+
 #: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "Из Excel"
 msgstr "Exceldan"
@@ -724,6 +756,10 @@ msgstr "Toifa/Maqsad"
 msgid "Класс"
 msgstr "Sinf"
 
+#: users/forms.py
+msgid "Класс — от 0 до 11."
+msgstr "Sinf — 0 dan 11 gacha."
+
 #: pages/home/integrations/integration.html users/models.py
 msgid "Когда"
 msgstr "Qachon"
@@ -749,6 +785,10 @@ msgid "Логин (username)"
 msgstr "Login (username)"
 
 #: users/models.py
+msgid "Льгота"
+msgstr "Imtiyoz"
+
+#: users/models.py
 msgid "Май"
 msgstr "May"
 
@@ -771,6 +811,14 @@ msgstr "Oy:"
 #: pages/home/partials/finance_overview.html pages/home/schools/academic_year_list.html
 msgid "Месяцев"
 msgstr "Oylar"
+
+#: users/forms.py
+msgid "Можно вместе с процентом. Всего скидка не больше стоимости учёбы."
+msgstr "Foiz bilan birga ham boʻladi. Jami chegirma oʻqish narxidan oshmaydi."
+
+#: users/forms.py
+msgid "Можно оставить пустым — договор будет помечен «неполные данные»."
+msgstr "Boʻsh qoldirsa boʻladi — shartnoma «toʻliq boʻlmagan maʼlumot» deb belgilanadi."
 
 #: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
 msgid "Название"
@@ -805,8 +853,8 @@ msgid "Например: \"Инвестиция от Олега\" или \"За�
 msgstr "Masalan: \"Olegdan investitsiya\" yoki \"Xonadagi buzilgan qulfni almashtirish\""
 
 #: users/excel_import.py
-msgid "Например: +998 90 123 45 67"
-msgstr "Masalan: +998 90 123 45 67"
+msgid "Например: +998 90 123 45 67. Два номера в одной ячейке разделятся на основной и дополнительный."
+msgstr "Masalan: +998 90 123 45 67. Bitta katakdagi ikki raqam asosiy va qoʻshimchaga ajratiladi."
 
 #: users/excel_import.py
 msgid "Например: 01.09.2026"
@@ -900,6 +948,10 @@ msgstr "Toʻlanmagan oylar"
 msgid "Неоплаченных месяцев:"
 msgstr "Toʻlanmagan oylar:"
 
+#: users/views.py
+msgid "Неполные данные"
+msgstr "Toʻliq boʻlmagan maʼlumot"
+
 #: pages/home/payments/payment_list.html
 msgid "Нет договоров с начислением за этот месяц."
 msgstr "Bu oy uchun hisoblangan shartnomalar yoʻq."
@@ -963,6 +1015,10 @@ msgstr "Obyekt"
 #: users/excel_import.py
 msgid "Обязательная"
 msgstr "Majburiy"
+
+#: users/forms.py
+msgid "Обязательное поле."
+msgstr "Majburiy maydon."
 
 #: integrations/models.py
 msgid "Окончание"
@@ -1251,6 +1307,10 @@ msgstr "Kirim / Investitsiya"
 msgid "Приход или Расход"
 msgstr "Kirim yoki Chiqim"
 
+#: users/excel_import.py users/models.py users/views.py
+msgid "Причина скидки"
+msgstr "Chegirma sababi"
+
 #: users/forms.py users/models.py users/views.py
 msgid "Причина сторно"
 msgstr "Storno sababi"
@@ -1266,6 +1326,10 @@ msgstr "Sinov (faqat tekshirish, hech narsa saqlanmaydi)"
 #: integrations/views.py
 msgid "Пробный запуск, ничего не сохранено."
 msgstr "Sinov ishga tushirish, hech narsa saqlanmadi."
+
+#: pages/home/contracts/contract_detail.html
+msgid "Проверить"
+msgstr "Tekshirish kerak"
 
 #: pages/home/import/excel_import.html
 msgid "Проверить файл"
@@ -1323,6 +1387,10 @@ msgstr "Chiqim / Kutilmagan xarajatlar"
 #: pages/home/transactions/transaction_list.html
 msgid "Расход / Траты"
 msgstr "Chiqim / Xarajatlar"
+
+#: users/models.py
+msgid "Ребёнок сотрудника"
+msgstr "Xodim farzandi"
 
 #: pages/home/payments/payment_form.html
 msgid "Регистрация оплаты"
@@ -1452,9 +1520,25 @@ msgstr "Chegirma %"
 msgid "Скидка %%"
 msgstr "Chegirma %%"
 
+#: users/excel_import.py
+msgid "Скидка в сумах в месяц. Можно вместе с процентом."
+msgstr "Oylik chegirma soʻmda. Foiz bilan birga ham boʻladi."
+
+#: users/forms.py
+msgid "Скидка не может быть отрицательной."
+msgstr "Chegirma manfiy boʻlolmaydi."
+
 #: pages/home/contracts/contract_list.html
 msgid "Скидка сум"
 msgstr "Chegirma soʻm"
+
+#: users/excel_import.py users/models.py users/views.py
+msgid "Скидка суммой"
+msgstr "Chegirma summasi"
+
+#: users/forms.py
+msgid "Скидка — от 0 до 100 %."
+msgstr "Chegirma — 0 dan 100 % gacha."
 
 #: users/models.py
 msgid "Скидка, %"
@@ -1554,6 +1638,10 @@ msgstr "Oʻzgarishlarni saqlash"
 #, python-format
 msgid "Сохранить строк: %(count)s"
 msgstr "Qatorlarni saqlash: %(count)s"
+
+#: users/models.py
+msgid "Социальный реестр"
+msgstr "Ijtimoiy reestr"
 
 #: users/excel_import.py
 msgid "Списки"
@@ -1727,6 +1815,10 @@ msgstr "Maktab tranzaksiyalari"
 #: users/models.py
 msgid "Транзакция"
 msgstr "Tranzaksiya"
+
+#: users/models.py
+msgid "Третий ребёнок в семье"
+msgstr "Oiladagi 3-farzand"
 
 #: users/models.py
 msgid "Удаление"
@@ -2017,6 +2109,18 @@ msgstr "«%(value)s» summasi tushunarsiz"
 msgid "не понятно значение «%(value)s»"
 msgstr "«%(value)s» qiymati tushunarsiz"
 
+#: users/models.py
+msgid "не указан ИНПС"
+msgstr "JShShIR koʻrsatilmagan"
+
+#: users/models.py
+msgid "не указан адрес"
+msgstr "manzil koʻrsatilmagan"
+
+#: users/models.py
+msgid "не указан паспорт"
+msgstr "pasport koʻrsatilmagan"
+
 #: users/views.py
 msgid "не указана"
 msgstr "koʻrsatilmagan"
@@ -2053,6 +2157,10 @@ msgstr "bekor qilingan"
 msgid "ошибок"
 msgstr "xato"
 
+#: users/models.py
+msgid "паспорт не в формате AA1234567"
+msgstr "pasport AA1234567 formatida emas"
+
 #: pages/home/partials/finance_overview.html
 msgid "подробнее"
 msgstr "batafsil"
@@ -2064,6 +2172,10 @@ msgstr "xatoli"
 #: users/excel_import.py
 msgid "скидка должна быть от 0 до 100"
 msgstr "chegirma 0 dan 100 gacha boʻlishi kerak"
+
+#: users/models.py
+msgid "скидка за брата/сестру, но других детей этого родителя на платформе нет"
+msgstr "aka-uka/opa-singil uchun chegirma, lekin platformada bu ota-onaning boshqa farzandlari yoʻq"
 
 #: users/excel_import.py
 #, python-format

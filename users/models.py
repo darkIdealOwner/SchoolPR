@@ -150,6 +150,15 @@ class Contract(ExternalSyncMixin, models.Model):
         ('Узбекский язык', _('Узбекский язык')),
     ]
 
+    DISCOUNT_REASON_CHOICES = [
+        ('SIBLING_2', _('Второй ребёнок в семье')),
+        ('SIBLING_3', _('Третий ребёнок в семье')),
+        ('SOCIAL', _('Социальный реестр')),
+        ('STAFF_CHILD', _('Ребёнок сотрудника')),
+        ('PRIVILEGE', _('Льгота')),
+        ('OTHER', _('Другое')),
+    ]
+
     number = models.CharField(max_length=100, unique=True, verbose_name=_("№ договора"))
     date = models.DateField(default=timezone.now, verbose_name=_("Дата"))
     month = models.CharField(max_length=20, choices=MONTH_CHOICES, default='Январь', verbose_name=_("Месяц"))
@@ -158,13 +167,17 @@ class Contract(ExternalSyncMixin, models.Model):
     student_class = models.CharField(max_length=50, default="", verbose_name=_("Класс"))
     duration_months = models.IntegerField(default=12, verbose_name=_("Срок, мес"))
     parents_full_name = models.CharField(max_length=255, default="", verbose_name=_("ФИО родителей"))
-    passport_data = models.CharField(max_length=100, default="", verbose_name=_("Серия и номер паспорта"))
-    inps = models.CharField(max_length=50, default="", verbose_name=_("ИНПС"))
-    address = models.CharField(max_length=255, default="", verbose_name=_("Адрес"))
+    # Паспорт, ИНПС и адрес в старых таблицах часто не заполнены — договор с неполными данными помечается
+    passport_data = models.CharField(max_length=100, default="", blank=True, db_index=True, verbose_name=_("Серия и номер паспорта"))
+    inps = models.CharField(max_length=50, default="", blank=True, db_index=True, verbose_name=_("ИНПС"))
+    address = models.CharField(max_length=255, default="", blank=True, verbose_name=_("Адрес"))
     phone_number = models.CharField(max_length=20, default="", verbose_name=_("№ телефона"))
+    phone_number_2 = models.CharField(max_length=20, default="", blank=True, verbose_name=_("Доп. телефон"))
     specialization = models.CharField(max_length=50, choices=SPECIALIZATION_CHOICES, default='Русский язык', verbose_name=_("Направление"))
     tuition_fee = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Стоимость учебы"))
     discount_percentage = models.IntegerField(default=0, verbose_name=_("Скидка, %"))
+    discount_fixed = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Скидка суммой"))
+    discount_reason = models.CharField(max_length=20, choices=DISCOUNT_REASON_CHOICES, blank=True, verbose_name=_("Причина скидки"))
     discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Скидка, сум"))
     food_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Стоимость питания"))
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
@@ -184,8 +197,9 @@ class Contract(ExternalSyncMixin, models.Model):
         from decimal import Decimal
         # Calculate discount amount and total amount automatically
         # Ensure we use Decimal for calculations with DecimalFields
+        # Скидка бывает процентом, суммой или и тем и другим; больше стоимости учёбы не бывает
         discount_rate = Decimal(self.discount_percentage) / Decimal(100)
-        self.discount_amount = self.tuition_fee * discount_rate
+        self.discount_amount = min(self.tuition_fee, self.tuition_fee * discount_rate + Decimal(self.discount_fixed or 0))
         self.total_amount = (self.tuition_fee - self.discount_amount) + self.food_cost
         # Дата отмены может быть неизвестна — тогда начисления идут до последнего оплаченного месяца
         if not self.is_cancelled:
@@ -246,6 +260,37 @@ class Contract(ExternalSyncMixin, models.Model):
             if last < self.first_billing_month:
                 return None
         return last
+
+    def siblings(self):
+        """Другие договоры того же родителя: совпадает паспорт или ИНПС."""
+        from django.db.models import Q
+        query = Q()
+        if self.passport_data:
+            query |= Q(passport_data=self.passport_data)
+        if self.inps:
+            query |= Q(inps=self.inps)
+        if not query:
+            return Contract.objects.none()
+        return Contract.objects.filter(query).exclude(pk=self.pk)
+
+    @property
+    def data_warnings(self):
+        """Что стоит проверить в договоре: незаполненные поля, странный ИНПС или паспорт, скидка без братьев/сестёр."""
+        import re
+        warnings = []
+        if not self.passport_data:
+            warnings.append(gettext('не указан паспорт'))
+        elif not re.fullmatch(r'[A-Z]{2}\d{7}', self.passport_data):
+            warnings.append(gettext('паспорт не в формате AA1234567'))
+        if not self.inps:
+            warnings.append(gettext('не указан ИНПС'))
+        elif not re.fullmatch(r'\d{14}', self.inps):
+            warnings.append(gettext('ИНПС не из 14 цифр'))
+        if not self.address:
+            warnings.append(gettext('не указан адрес'))
+        if self.discount_reason in ('SIBLING_2', 'SIBLING_3') and self.pk and not self.siblings().exists():
+            warnings.append(gettext('скидка за брата/сестру, но других детей этого родителя на платформе нет'))
+        return warnings
 
     def status(self, today=None):
         """(код, подпись): active — действует, cancelled — отменён, finished — срок закончился."""
