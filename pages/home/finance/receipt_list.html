@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Нераспознанные поступления" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; white-space: nowrap; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.tabs a { padding: 0.4rem 0.8rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); color: var(--text-muted); text-decoration: none; font-size: 0.8125rem; }
+.tabs a.on { background: rgba(99,102,241,0.18); color: var(--text); border-color: transparent; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+.tbl th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+.btn-resolve { display: inline-block; padding: 0.35rem 0.8rem; background: var(--primary); color: white; border-radius: 0.4rem; text-decoration: none; font-size: 0.8125rem; font-weight: 600; }
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'payment_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← {% translate "Оплаты" %}</a>
+<div class="toolbar" style="margin-top: 0.75rem;">
+    <h1 style="margin: 0;">{% translate "Нераспознанные поступления" %}</h1>
+    <a href="{% url 'receipt_create' %}" class="btn-add">{% translate "Добавить поступление" %}</a>
+</div>
+<p class="muted">{% translate "Деньги пришли, но не ясно, за какой договор (например, в выписке нет номера). Запишите их здесь, а когда выясните — «разберите»: поступление станет оплатой по договору." %}</p>
+
+<div class="tabs">
+    {% for value, label in status_filters %}<a href="?status={{ value }}" class="{% if status == value %}on{% endif %}">{{ label }}</a>{% endfor %}
+</div>
+
+<div class="table-container">
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th>{% translate "Дата" %}</th>
+                {% if user.role == 'OWNER' %}<th>{% translate "Школа" %}</th>{% endif %}
+                <th>{% translate "Сумма" %}</th>
+                <th>{% translate "Счёт" %}</th>
+                <th>{% translate "Плательщик / назначение" %}</th>
+                <th>{% translate "Действия" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in receipts %}
+            <tr{% if r.is_reversed %} class="reversed-row"{% endif %}>
+                <td>{{ r.date|date:"d.m.Y" }}</td>
+                {% if user.role == 'OWNER' %}<td>{{ r.school.name }}</td>{% endif %}
+                <td style="font-weight: 700; white-space: nowrap;">{{ r.amount|money }}</td>
+                <td>{{ r.account.display_name }}</td>
+                <td>{{ r.payer|default:"—" }}{% if r.notes %}<div class="muted" style="font-size: 0.75rem;">{{ r.notes }}</div>{% endif %}</td>
+                <td class="reversal-info">
+                    {% if r.is_reversed %}
+                    <span style="color: #ef4444; font-size: 0.75rem;">{% translate "Сторно" %} · {{ r.reversal_reason }}</span>
+                    {% elif r.is_resolved %}
+                    <a href="{% url 'contract_detail' r.payment.contract_id %}" style="color: #10b981; text-decoration: none; font-size: 0.8125rem;">{% blocktranslate with number=r.payment.contract.number %}→ договор № {{ number }}{% endblocktranslate %}</a>
+                    <div class="muted" style="font-size: 0.7rem;">{{ r.resolved_at|date:"d.m.Y" }}{% if r.resolved_by %} · {{ r.resolved_by.first_name }}{% endif %}</div>
+                    {% else %}
+                    <a href="{% url 'receipt_resolve' r.pk %}" class="btn-resolve">{% translate "Разобрать" %}</a>
+                    {% if user.role != 'EMPLOYEE' %}<a href="{% url 'receipt_reverse' r.pk %}" style="color: #ef4444; text-decoration: none; font-size: 0.75rem; margin-left: 0.5rem;">{% translate "Сторно" %}</a>{% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Таких поступлений нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

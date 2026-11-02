@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.dates import MONTHS, MONTHS_3
 from django.utils.translation import gettext
 
-from .models import Contract, Payment, EmployeePayout, Transaction, Transfer, School, shift_month
+from .models import Contract, Payment, EmployeePayout, Transaction, Transfer, School, UnidentifiedReceipt, shift_month
 
 ZERO = Decimal(0)
 
@@ -67,7 +67,7 @@ def paid_by_month(contract):
     result = defaultdict(Decimal)
     for p in contract.payments.all():
         if not p.is_reversed:
-            result[p.for_month.replace(day=1)] += p.amount
+            result[p.for_month.replace(day=1)] += p.signed_amount
     return result
 
 
@@ -193,7 +193,7 @@ def build_overview(school=None, months=12, today=None):
             debtors.append(contract)
 
     for p in payments.select_related('contract'):
-        cells[(p.contract.school_id, p.payment_date.replace(day=1))]['collected'] += p.amount
+        cells[(p.contract.school_id, p.payment_date.replace(day=1))]['collected'] += p.signed_amount
     for p in payouts:
         cells[(p.school_id, p.payout_date.replace(day=1))]['payouts'] += p.amount
     for t in transactions:
@@ -288,14 +288,18 @@ def account_balances(accounts, until=None):
     starts = {a.pk: a.opening_date for a in accounts}
     ids = list(balances)
 
-    def add(rows, date_attr, sign, account_attr='account_id'):
+    def add(rows, date_attr, sign, account_attr='account_id', amount_attr='amount'):
         for row in rows:
             account_id = getattr(row, account_attr)
             day = getattr(row, date_attr)
             if account_id in balances and starts[account_id] <= day <= until:
-                balances[account_id] += sign * row.amount
+                balances[account_id] += sign * getattr(row, amount_attr)
 
-    add(Payment.active.filter(account_id__in=ids).only('account_id', 'payment_date', 'amount'), 'payment_date', 1)
+    # Возврат родителю — расход со счёта (signed_amount отрицательный)
+    add(Payment.active.filter(account_id__in=ids).only('account_id', 'payment_date', 'amount', 'kind'), 'payment_date', 1,
+        amount_attr='signed_amount')
+    # Неразобранные поступления уже лежат на счёте; разобранные посчитаны как оплаты
+    add(UnidentifiedReceipt.active.filter(account_id__in=ids, payment__isnull=True), 'date', 1)
     add(EmployeePayout.active.filter(account_id__in=ids).only('account_id', 'payout_date', 'amount'), 'payout_date', -1)
     transactions = Transaction.active.filter(account_id__in=ids).only('account_id', 'date', 'amount', 'type')
     add([t for t in transactions if t.type == 'INCOME'], 'date', 1)

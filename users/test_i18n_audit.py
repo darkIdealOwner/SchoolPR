@@ -137,6 +137,9 @@ def _owner_pages(t):
         'category_add': reverse('category_add'),
         'counterparty_list': reverse('counterparty_list'),
         'counterparty_add': reverse('counterparty_add'),
+        'receipt_list': reverse('receipt_list'),
+        'receipt_create': reverse('receipt_create'),
+        'refund_create': reverse('refund_create', args=[c]),
         'profile': reverse('profile'),
         'password_change': reverse('password_change'),
     }
@@ -148,7 +151,7 @@ OWNER_PAGES = ['home', 'contract_list', 'contract_add', 'contract_edit', 'contra
                'user_list', 'user_add', 'user_edit', 'user_delete', 'school_list', 'school_add', 'school_edit',
                'school_delete', 'integration', 'academic_year_list', 'academic_year_add', 'contract_list_cancelled',
                'account_list', 'account_add', 'account_edit', 'transfer_list', 'transfer_create', 'category_list',
-               'category_add', 'counterparty_list', 'counterparty_add',
+               'category_add', 'counterparty_list', 'counterparty_add', 'receipt_list', 'receipt_create', 'refund_create',
                'profile', 'password_change']
 ROLE_PAGES = {
     'director_home': ('director', 'home'),

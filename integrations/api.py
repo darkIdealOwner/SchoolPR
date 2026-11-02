@@ -154,6 +154,7 @@ class PaymentListAPI(OneCAPIView):
             'payment_date': p.payment_date.isoformat(),
             'for_month': p.for_month.strftime('%Y-%m'),
             'amount': _money(p.amount),
+            'kind': p.kind,   # PAYMENT — оплата, REFUND — возврат родителю
             'method': p.method,
             'notes': p.notes,
             'is_reversed': p.is_reversed,

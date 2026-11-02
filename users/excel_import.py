@@ -716,7 +716,8 @@ def check_payment(values, ctx, result):
 
     result.summary = [f"{contract.number} · {contract.student_full_name}", payment_date.strftime('%d.%m.%Y'),
                       format_russian_month(for_month), money(amount), dict(Payment.METHOD_CHOICES)[method]]
-    if Payment.active.filter(contract=contract, for_month=for_month, amount=amount, payment_date=payment_date).exists():
+    if Payment.active.filter(contract=contract, kind=Payment.KIND_PAYMENT, for_month=for_month, amount=amount,
+                             payment_date=payment_date).exists():
         result.status = RowResult.EXISTS
         result.notes.append(_("Такая оплата уже есть — строка пропущена, чтобы не задвоить."))
         return

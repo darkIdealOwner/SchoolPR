@@ -372,7 +372,12 @@ class Contract(ExternalSyncMixin, models.Model):
         """Последний месяц, за который есть действующая оплата (учитывает prefetch оплат)."""
         if self.pk is None:
             return None
-        months = [p.for_month.replace(day=1) for p in self.payments.all() if not p.is_reversed]
+        net = {}
+        for p in self.payments.all():
+            if not p.is_reversed:
+                month = p.for_month.replace(day=1)
+                net[month] = net.get(month, 0) + p.signed_amount
+        months = [month for month, amount in net.items() if amount > 0]
         return max(months) if months else None
 
     @property
@@ -490,7 +495,14 @@ class Payment(FinancialRecord):
         ('BANK', _('Перечисление на счёт')),
     ]
 
+    KIND_PAYMENT, KIND_REFUND = 'PAYMENT', 'REFUND'
+    KIND_CHOICES = [
+        (KIND_PAYMENT, _('Оплата')),
+        (KIND_REFUND, _('Возврат родителю')),
+    ]
+
     contract = models.ForeignKey(Contract, on_delete=models.PROTECT, related_name='payments', verbose_name=_("Договор"))
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES, default=KIND_PAYMENT, verbose_name=_("Вид"))
     for_month = models.DateField(verbose_name=_("За месяц (1-е число)"))
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма оплаты"))
     method = models.CharField(max_length=20, choices=METHOD_CHOICES, default='CASH', verbose_name=_("Способ оплаты"))
@@ -508,6 +520,15 @@ class Payment(FinancialRecord):
         if self.account_id is None and self.contract_id:
             self.account = Account.default_for(self.contract.school, Account.METHOD_TO_KIND.get(self.method, Account.KIND_CASH))
         super().save(*args, **kwargs)
+
+    @property
+    def is_refund(self):
+        return self.kind == self.KIND_REFUND
+
+    @property
+    def signed_amount(self):
+        """Возврат родителю уменьшает «оплачено» — со знаком минус."""
+        return -self.amount if self.is_refund else self.amount
 
     def __str__(self):
         return gettext("Оплата %(student)s за %(month)s") % {
@@ -623,3 +644,42 @@ class AuditLog(models.Model):
             object_repr=str(obj)[:255],
             changes=changes or {},
         )
+
+
+class UnidentifiedReceipt(FinancialRecord):
+    """Поступление, которое пока не к чему привязать (нет номера договора). Потом «разбирается» в оплату."""
+    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='unidentified_receipts', verbose_name=_("Школа"))
+    account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='unidentified_receipts', verbose_name=_("Счёт"))
+    date = models.DateField(default=timezone.now, verbose_name=_("Дата"))
+    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Сумма"))
+    payer = models.CharField(max_length=255, blank=True, verbose_name=_("Плательщик / назначение платежа"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание"))
+    payment = models.OneToOneField(Payment, on_delete=models.PROTECT, null=True, blank=True, related_name='source_receipt',
+                                   verbose_name=_("Оплата"))
+    resolved_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Когда разобрано"))
+    resolved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name=_("Кто разобрал"))
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
+        verbose_name = _("Нераспознанное поступление")
+        verbose_name_plural = _("Нераспознанные поступления")
+
+    def __str__(self):
+        return f"{self.amount} ({self.date}) {self.payer}".strip()
+
+    @property
+    def is_resolved(self):
+        return self.payment_id is not None
+
+    def resolve(self, user, contract, for_month):
+        """Превращает поступление в оплату по договору (на тот же счёт и той же датой)."""
+        method = {Account.KIND_CASH: 'CASH', Account.KIND_CARD: 'CARD'}.get(self.account.kind, 'BANK')
+        payment = Payment.objects.create(
+            contract=contract, for_month=for_month.replace(day=1), amount=self.amount, method=method, account=self.account,
+            payment_date=self.date, notes=self.payer, created_by=user)
+        self.payment = payment
+        self.resolved_at = timezone.now()
+        self.resolved_by = user
+        self.save(update_fields=['payment', 'resolved_at', 'resolved_by', 'updated_at'])
+        return payment

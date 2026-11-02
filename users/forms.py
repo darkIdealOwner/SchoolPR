@@ -1,12 +1,14 @@
 import re
+from datetime import datetime
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import (
     User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction,
-    Account, Category, Counterparty, Transfer,
+    Account, Category, Counterparty, Transfer, UnidentifiedReceipt,
 )
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
+from .templatetags.money import money as format_money
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -495,3 +497,78 @@ class AcademicYearForm(forms.ModelForm):
             if overlap.exists():
                 self.add_error(None, _("Пересекается с учебным годом «%(name)s».") % {'name': overlap.first().name})
         return cleaned
+
+
+class RefundForm(forms.ModelForm):
+    """Возврат родителю: за какой месяц возвращаем и сколько (не больше, чем оплачено за этот месяц)."""
+    for_month = forms.TypedChoiceField(label=_("За какой месяц возврат"), coerce=lambda v: datetime.strptime(v, '%Y-%m').date())
+
+    class Meta:
+        model = Payment
+        fields = ['for_month', 'amount', 'method', 'payment_date', 'notes']
+        widgets = {'payment_date': ISODateInput(), 'notes': forms.Textarea(attrs={'rows': 2})}
+        labels = {'payment_date': _("Дата возврата"), 'amount': _("Сумма возврата"), 'method': _("Как вернули")}
+
+    def __init__(self, *args, **kwargs):
+        self.contract = kwargs.pop('contract')
+        super().__init__(*args, **kwargs)
+        self.paid = {}
+        for p in self.contract.payments.all():
+            if not p.is_reversed:
+                month = p.for_month.replace(day=1)
+                self.paid[month] = self.paid.get(month, 0) + p.signed_amount
+        months = sorted((m for m, amount in self.paid.items() if amount > 0), reverse=True)
+        self.fields['for_month'].choices = [(m.strftime('%Y-%m'), m.strftime('%m.%Y')) for m in months]
+        self.fields['notes'].required = True
+        self.fields['notes'].label = _("Причина возврата")
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'input-field'})
+
+    def clean(self):
+        cleaned = super().clean()
+        month, amount = cleaned.get('for_month'), cleaned.get('amount')
+        if amount is not None and amount <= 0:
+            self.add_error('amount', _("Сумма должна быть больше нуля."))
+        elif month and amount and amount > self.paid.get(month, 0):
+            self.add_error('amount', _("За этот месяц оплачено только %(paid)s.") % {'paid': format_money(self.paid.get(month, 0))})
+        return cleaned
+
+
+class ReceiptForm(forms.ModelForm):
+    class Meta:
+        model = UnidentifiedReceipt
+        fields = ['school', 'account', 'date', 'amount', 'payer', 'notes']
+        widgets = {'date': ISODateInput(), 'notes': forms.Textarea(attrs={'rows': 2})}
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user and user.role != 'OWNER':
+            self.fields.pop('school')
+        setup_account_field(self, user)
+        self.fields['account'].required = True
+        self.fields['account'].help_text = ''
+        self.fields['payer'].help_text = _("Например, текст из выписки: ФИО плательщика, «за сентябрь».")
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'input-field'})
+
+    def clean(self):
+        cleaned = super().clean()
+        check_account_school(self, cleaned)
+        if cleaned.get('amount') is not None and cleaned['amount'] <= 0:
+            self.add_error('amount', _("Сумма должна быть больше нуля."))
+        return cleaned
+
+
+class ResolveReceiptForm(forms.Form):
+    contract = forms.ModelChoiceField(queryset=Contract.objects.none(), label=_("Договор"))
+    for_month = MonthField(label=_("За месяц"))
+
+    def __init__(self, *args, **kwargs):
+        receipt = kwargs.pop('receipt')
+        super().__init__(*args, **kwargs)
+        self.fields['contract'].queryset = Contract.objects.filter(school=receipt.school).order_by('number')
+        self.fields['contract'].label_from_instance = lambda c: f"№ {c.number} — {c.student_full_name}"
+        self.fields['for_month'].initial = receipt.date.replace(day=1)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'input-field'})

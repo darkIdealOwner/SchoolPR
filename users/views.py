@@ -19,10 +19,11 @@ from django.urls import reverse_lazy
 from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
     EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
-    TransferForm, AccountForm, CategoryForm, CounterpartyForm,
+    TransferForm, AccountForm, CategoryForm, CounterpartyForm, RefundForm, ReceiptForm, ResolveReceiptForm,
 )
 from . import excel_import
-from .models import Account, Category, Counterparty, Transfer
+from .templatetags.money import money as format_money
+from .models import Account, Category, Counterparty, Transfer, UnidentifiedReceipt
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
 from .finance import (
     parse_month, contracts_with_active_payments, format_russian_month, get_debt_details,
@@ -594,10 +595,15 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         context['selected_month'] = selected_month
         context['month_str'] = selected_month.strftime('%Y-%m')
 
+        receipts = UnidentifiedReceipt.active.filter(payment__isnull=True)
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            receipts = receipts.filter(school=self.request.user.school)
+        context['open_receipts'] = receipts.count()
+
         for contract in context['contracts']:
             month_payments = [p for p in contract.payments.all() if p.for_month.replace(day=1) == selected_month]
             contract.month_payments = month_payments
-            contract.this_month_paid = sum((p.amount for p in month_payments), Decimal(0))
+            contract.this_month_paid = sum((p.signed_amount for p in month_payments), Decimal(0))
             contract.this_month_balance = contract.total_amount - contract.this_month_paid
 
         return context
@@ -691,7 +697,7 @@ class PaymentCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Audi
         contract = self.get_allowed_contracts().filter(id=contract_id).first() if contract_id else None
         if contract and month_str:
             month_first = parse_month(month_str)
-            paid = sum((p.amount for p in Payment.active.filter(contract=contract, for_month=month_first)), Decimal(0))
+            paid = sum((p.signed_amount for p in Payment.active.filter(contract=contract, for_month=month_first)), Decimal(0))
             initial['amount'] = max(contract.total_amount - paid, Decimal(0))
         return initial
 
@@ -1085,3 +1091,122 @@ class CounterpartyUpdateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, Upd
     template_name = 'home/finance/simple_form.html'
     success_url = reverse_lazy('counterparty_list')
     extra_context = {'title': gettext_lazy('Изменить контрагента'), 'back_url': reverse_lazy('counterparty_list')}
+
+
+
+# Возвраты родителям и нераспознанные поступления
+class RefundCreateView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
+    form_class = RefundForm
+    template_name = 'home/finance/simple_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            qs = contracts_with_active_payments(Contract.objects.all())
+            if request.user.role == 'DIRECTOR':
+                qs = qs.filter(school=request.user.school)
+            self.contract = get_object_or_404(qs, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['contract'] = self.contract
+        kwargs['instance'] = Payment(contract=self.contract, kind=Payment.KIND_REFUND, payment_date=timezone.localdate())
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = _("Возврат родителю: %(student)s, договор № %(number)s") % {
+            'student': self.contract.student_full_name, 'number': self.contract.number}
+        context['back_url'] = reverse_lazy('contract_detail', args=[self.contract.pk])
+        return context
+
+    def form_valid(self, form):
+        refund = form.save(commit=False)
+        refund.created_by = self.request.user
+        refund.save()
+        AuditLog.record(self.request.user, 'CREATE', refund, {'kind': 'REFUND', 'amount': str(refund.amount),
+                                                              'reason': refund.notes})
+        messages.success(self.request, _("Возврат записан."))
+        return redirect('contract_detail', pk=self.contract.pk)
+
+
+class ReceiptListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, SchoolScopedMixin, ListView):
+    template_name = 'home/finance/receipt_list.html'
+    context_object_name = 'receipts'
+    paginate_by = 30
+
+    def scope(self, qs):
+        if self.request.user.role != 'OWNER':
+            return qs.filter(school=self.request.user.school)
+        return qs
+
+    def get_queryset(self):
+        qs = self.scope(UnidentifiedReceipt.objects.select_related('school', 'account', 'payment__contract', 'resolved_by'))
+        status = self.request.GET.get('status', 'open')
+        if status == 'open':
+            qs = qs.filter(payment__isnull=True, is_reversed=False)
+        elif status == 'resolved':
+            qs = qs.filter(payment__isnull=False)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['status'] = self.request.GET.get('status', 'open')
+        context['status_filters'] = [('open', _('Не разобраны')), ('resolved', _('Разобраны')), ('all', _('Все'))]
+        return context
+
+
+class ReceiptCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, AuditMixin, CreateView):
+    model = UnidentifiedReceipt
+    form_class = ReceiptForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('receipt_list')
+    extra_context = {'title': gettext_lazy('Нераспознанное поступление'), 'back_url': reverse_lazy('receipt_list')}
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}
+
+    def form_valid(self, form):
+        form.instance.school = form.cleaned_data['account'].school
+        return super().form_valid(form)
+
+
+class ReceiptResolveView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, FormView):
+    form_class = ResolveReceiptForm
+    template_name = 'home/finance/simple_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            qs = UnidentifiedReceipt.active.filter(payment__isnull=True)
+            if request.user.role != 'OWNER':
+                qs = qs.filter(school=request.user.school)
+            self.receipt = get_object_or_404(qs, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'receipt': self.receipt}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = _("Разобрать поступление: %(amount)s от %(date)s") % {
+            'amount': format_money(self.receipt.amount), 'date': self.receipt.date.strftime('%d.%m.%Y')}
+        context['back_url'] = reverse_lazy('receipt_list')
+        return context
+
+    def form_valid(self, form):
+        with db_transaction.atomic():
+            payment = self.receipt.resolve(self.request.user, form.cleaned_data['contract'], form.cleaned_data['for_month'])
+            AuditLog.record(self.request.user, 'CREATE', payment, {'from_receipt': self.receipt.pk})
+        messages.success(self.request, _("Поступление привязано к договору № %(number)s.") % {'number': payment.contract.number})
+        return redirect('receipt_list')
+
+
+class ReceiptReverseView(BaseReverseView):
+    model = UnidentifiedReceipt
+    success_url = reverse_lazy('receipt_list')
+
+    def get_queryset(self):
+        qs = super().get_queryset().filter(payment__isnull=True)
+        if self.request.user.role == 'DIRECTOR':
+            qs = qs.filter(school=self.request.user.school)
+        return qs

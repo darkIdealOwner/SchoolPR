@@ -13,6 +13,7 @@ from .views import (
     AccountListView, AccountCreateView, AccountUpdateView, TransferListView, TransferCreateView, TransferReverseView,
     CategoryListView, CategoryCreateView, CategoryUpdateView,
     CounterpartyListView, CounterpartyCreateView, CounterpartyUpdateView,
+    RefundCreateView, ReceiptListView, ReceiptCreateView, ReceiptResolveView, ReceiptReverseView,
 )
 
 urlpatterns = [
@@ -57,6 +58,11 @@ urlpatterns = [
     path('transactions/<int:pk>/edit/', TransactionUpdateView.as_view(), name='transaction_edit'),
     path('transactions/<int:pk>/reverse/', TransactionReverseView.as_view(), name='transaction_reverse'),
 
+    path('contracts/<int:pk>/refund/', RefundCreateView.as_view(), name='refund_create'),
+    path('receipts/', ReceiptListView.as_view(), name='receipt_list'),
+    path('receipts/add/', ReceiptCreateView.as_view(), name='receipt_create'),
+    path('receipts/<int:pk>/resolve/', ReceiptResolveView.as_view(), name='receipt_resolve'),
+    path('receipts/<int:pk>/reverse/', ReceiptReverseView.as_view(), name='receipt_reverse'),
     path('accounts/', AccountListView.as_view(), name='account_list'),
     path('accounts/add/', AccountCreateView.as_view(), name='account_add'),
     path('accounts/<int:pk>/edit/', AccountUpdateView.as_view(), name='account_edit'),

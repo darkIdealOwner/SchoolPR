@@ -187,6 +187,19 @@ msgstr "Turi"
 msgid "Владелец"
 msgstr "Egasi"
 
+#: users/views.py
+msgid "Возврат записан."
+msgstr "Qaytarish yozildi."
+
+#: pages/home/contracts/contract_detail.html users/models.py
+msgid "Возврат родителю"
+msgstr "Ota-onaga qaytarish"
+
+#: users/views.py
+#, python-format
+msgid "Возврат родителю: %(student)s, договор № %(number)s"
+msgstr "Ota-onaga qaytarish: %(student)s, shartnoma № %(number)s"
+
 #: pages/authorization/login.html
 msgid "Войти"
 msgstr "Kirish"
@@ -326,9 +339,13 @@ msgstr "Shartnoma maʼlumotlari"
 msgid "Данных пока нет."
 msgstr "Hozircha maʼlumot yoʻq."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/finance/transfer_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Дата"
 msgstr "Sana"
+
+#: users/forms.py
+msgid "Дата возврата"
+msgstr "Qaytarish sanasi"
 
 #: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Дата выплаты"
@@ -366,7 +383,7 @@ msgstr "Storno sanasi"
 msgid "Действие"
 msgstr "Amal"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/transfer_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
 msgid "Действия"
 msgstr "Amallar"
 
@@ -382,9 +399,17 @@ msgstr "Amaldagi"
 msgid "Декабрь"
 msgstr "Dekabr"
 
+#: pages/home/payments/payment_list.html
+msgid "Деньги без номера договора"
+msgstr "Shartnoma raqamisiz pul"
+
 #: pages/home/integrations/integration.html
 msgid "Деньги ведёт 1С, договоры и ученики — платформа. Документы из 1С здесь только читаются: исправлять их нужно в 1С, изменения придут при следующем обмене."
 msgstr "Pullar 1C da, shartnomalar va oʻquvchilar platformada yuritiladi. 1C hujjatlari bu yerda faqat oʻqiladi: ularni 1C da tuzating, oʻzgarishlar keyingi almashinuvda keladi."
+
+#: pages/home/finance/receipt_list.html
+msgid "Деньги пришли, но не ясно, за какой договор (например, в выписке нет номера). Запишите их здесь, а когда выясните — «разберите»: поступление станет оплатой по договору."
+msgstr "Pul keldi, lekin qaysi shartnoma uchunligi nomaʼlum (masalan, koʻchirmada raqam yoʻq). Shu yerga yozing, aniqlangach «ajrating» — tushum shartnoma boʻyicha toʻlovga aylanadi."
 
 #: pages/home/integrations/integration.html
 msgid "Детали"
@@ -409,6 +434,10 @@ msgstr "Qoʻshish"
 #: pages/home/users/user_form.html
 msgid "Добавить пользователя"
 msgstr "Foydalanuvchi qoʻshish"
+
+#: pages/home/finance/receipt_list.html
+msgid "Добавить поступление"
+msgstr "Tushum qoʻshish"
 
 #: pages/home/finance/category_list.html
 msgid "Добавить статью"
@@ -442,7 +471,7 @@ msgstr "Xodim ish maydoniga xush kelibsiz. Maktabingiz boʻyicha qisqa maʼlumot
 msgid "Добро пожаловать в систему."
 msgstr "Tizimga xush kelibsiz."
 
-#: users/models.py
+#: users/forms.py users/models.py
 msgid "Договор"
 msgstr "Shartnoma"
 
@@ -535,11 +564,15 @@ msgstr "Amallar jurnali"
 msgid "Журнал обменов"
 msgstr "Almashinuvlar jurnali"
 
+#: users/forms.py
+msgid "За какой месяц возврат"
+msgstr "Qaysi oy uchun qaytarish"
+
 #: users/excel_import.py
 msgid "За какой месяц оплата, например 09.2026. Пусто — месяц даты оплаты."
 msgstr "Toʻlov qaysi oy uchun, masalan 09.2026. Boʻsh boʻlsa — toʻlov sanasining oyi."
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/excel_import.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/excel_import.py users/forms.py users/views.py
 msgid "За месяц"
 msgstr "Oy uchun"
 
@@ -550,6 +583,11 @@ msgstr "Oy uchun (1-sana)"
 #: pages/home/payouts/payout_form.html
 msgid "За месяц (любое число месяца)"
 msgstr "Oy uchun (oyning istalgan kuni)"
+
+#: users/forms.py
+#, python-format
+msgid "За этот месяц оплачено только %(paid)s."
+msgstr "Bu oy uchun faqat %(paid)s toʻlangan."
 
 #: users/excel_import.py
 msgid "За этот месяц по договору нет начисления — проверьте месяц."
@@ -792,6 +830,10 @@ msgstr "Iyul"
 msgid "Июнь"
 msgstr "Iyun"
 
+#: users/forms.py
+msgid "Как вернули"
+msgstr "Qanday qaytarildi"
+
 #: users/excel_import.py
 msgid "Как заполнять"
 msgstr "Qanday toʻldirish"
@@ -824,6 +866,10 @@ msgstr "Sinf — 0 dan 11 gacha."
 msgid "Когда"
 msgstr "Qachon"
 
+#: users/models.py
+msgid "Когда разобрано"
+msgstr "Qachon ajratildi"
+
 #: users/excel_import.py
 msgid "Колонка"
 msgstr "Ustun"
@@ -843,6 +889,10 @@ msgstr "Eng katta qarzdorlar"
 #: users/models.py
 msgid "Кто внёс"
 msgstr "Kiritgan"
+
+#: users/models.py
+msgid "Кто разобрал"
+msgstr "Kim ajratdi"
 
 #: users/models.py
 msgid "Кто сторнировал"
@@ -944,6 +994,10 @@ msgstr "Masalan, kassadagi naqd pul bankka topshirildi yoki hisobdan pul yechild
 msgid "Например, текст из банковской выписки или «замена замка в кабинете»."
 msgstr "Masalan, bank koʻchirmasidagi matn yoki «xonadagi qulfni almashtirish»."
 
+#: users/forms.py
+msgid "Например, текст из выписки: ФИО плательщика, «за сентябрь»."
+msgstr "Masalan, koʻchirmadagi matn: toʻlovchining F.I.Sh., «sentabr uchun»."
+
 #: users/excel_import.py
 msgid "Например: +998 90 123 45 67. Два номера в одной ячейке разделятся на основной и дополнительный."
 msgstr "Masalan: +998 90 123 45 67. Bitta katakdagi ikki raqam asosiy va qoʻshimchaga ajratiladi."
@@ -992,6 +1046,10 @@ msgstr "Ustun nomlari yozilgan qator topilmadi. Shablonni yuklab olib, toʻldiri
 msgid "Не оплачено"
 msgstr "Toʻlanmagan"
 
+#: users/views.py
+msgid "Не разобраны"
+msgstr "Ajratilmagan"
+
 #: users/excel_import.py
 msgid "Не удалось открыть файл как таблицу Excel (.xlsx)."
 msgstr "Faylni Excel jadvali (.xlsx) sifatida ochib boʻlmadi."
@@ -1035,6 +1093,18 @@ msgstr "Toʻlanmagan oylar:"
 #: users/views.py
 msgid "Неполные данные"
 msgstr "Toʻliq boʻlmagan maʼlumot"
+
+#: users/models.py users/views.py
+msgid "Нераспознанное поступление"
+msgstr "Aniqlanmagan tushum"
+
+#: pages/home/payments/payment_list.html
+msgid "Нераспознанные"
+msgstr "Aniqlanmaganlar"
+
+#: pages/home/finance/receipt_list.html users/models.py
+msgid "Нераспознанные поступления"
+msgstr "Aniqlanmagan tushumlar"
 
 #: pages/home/payments/payment_list.html
 msgid "Нет договоров с начислением за этот месяц."
@@ -1169,7 +1239,7 @@ msgstr "Toʻlov:"
 msgid "Оплатить"
 msgstr "Toʻlash"
 
-#: pages/base.html pages/home/integrations/integration.html users/excel_import.py users/models.py
+#: pages/base.html pages/home/finance/receipt_list.html pages/home/integrations/integration.html users/excel_import.py users/models.py
 msgid "Оплаты"
 msgstr "Toʻlovlar"
 
@@ -1347,6 +1417,14 @@ msgstr "Hisob raqamiga oʻtkazma"
 msgid "Питание"
 msgstr "Ovqatlanish"
 
+#: pages/home/finance/receipt_list.html
+msgid "Плательщик / назначение"
+msgstr "Toʻlovchi / maqsad"
+
+#: users/models.py
+msgid "Плательщик / назначение платежа"
+msgstr "Toʻlovchi / toʻlov maqsadi"
+
 #: users/models.py
 msgid "Платформа"
 msgstr "Platforma"
@@ -1431,6 +1509,11 @@ msgstr "Oxirgi oy birinchisidan oldin."
 msgid "Поставщик"
 msgstr "Yetkazib beruvchi"
 
+#: users/views.py
+#, python-format
+msgid "Поступление привязано к договору № %(number)s."
+msgstr "Tushum № %(number)s shartnomaga bogʻlandi."
+
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
 msgstr "Kutilmoqda"
@@ -1479,6 +1562,10 @@ msgstr "Kirim yoki Chiqim. Modda koʻrsatilgan boʻlsa, toʻldirmasa ham boʻlad
 #: users/models.py
 msgid "Приход или расход"
 msgstr "Kirim yoki chiqim"
+
+#: users/forms.py
+msgid "Причина возврата"
+msgstr "Qaytarish sababi"
 
 #: users/excel_import.py users/models.py users/views.py
 msgid "Причина скидки"
@@ -1568,6 +1655,19 @@ msgstr "Pul oqimi boʻlimi"
 #: pages/base.html pages/home/owner.html
 msgid "Разделы"
 msgstr "Boʻlimlar"
+
+#: users/views.py
+msgid "Разобраны"
+msgstr "Ajratilgan"
+
+#: pages/home/finance/receipt_list.html
+msgid "Разобрать"
+msgstr "Ajratish"
+
+#: users/views.py
+#, python-format
+msgid "Разобрать поступление: %(amount)s от %(date)s"
+msgstr "Tushumni ajratish: %(amount)s, %(date)s"
 
 #: users/models.py
 msgid "Расход"
@@ -1936,7 +2036,7 @@ msgstr "Storno qilish"
 msgid "Сторнировать запись?"
 msgstr "Yozuvni storno qilasizmi?"
 
-#: pages/home/contracts/contract_detail.html pages/home/finance/transfer_list.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/integrations/integration.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сторно"
 msgstr "Storno"
 
@@ -1957,13 +2057,17 @@ msgstr "Qator"
 msgid "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся."
 msgstr "Xatoli qatorlar saqlanmaydi. Ularni faylda tuzatib, qayta yuklash mumkin — yuklangan qatorlar ikkinchi marta qoʻshilmaydi."
 
-#: pages/home/contracts/contract_detail.html pages/home/finance/transfer_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сумма"
 msgstr "Summa"
 
 #: pages/home/transactions/transaction_form.html
 msgid "Сумма (сум)"
 msgstr "Summa (soʻm)"
+
+#: users/forms.py
+msgid "Сумма возврата"
+msgstr "Qaytarish summasi"
 
 #: pages/home/payouts/payout_form.html
 msgid "Сумма выплат (сум)"
@@ -1997,7 +2101,7 @@ msgstr "Hisoblar va qoldiqlar"
 msgid "Счетов пока нет."
 msgstr "Hozircha hisoblar yoʻq."
 
-#: pages/home/finance/account_list.html pages/home/payouts/payout_form.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/payouts/payout_form.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Счёт"
 msgstr "Hisob"
 
@@ -2016,6 +2120,10 @@ msgstr "Bunday toʻlov allaqachon bor — takrorlanmasligi uchun qator oʻtkazib
 #: users/excel_import.py
 msgid "Такая транзакция уже есть — строка пропущена, чтобы не задвоить."
 msgstr "Bunday tranzaksiya allaqachon bor — takrorlanmasligi uchun qator oʻtkazib yuborildi."
+
+#: pages/home/finance/receipt_list.html
+msgid "Таких поступлений нет."
+msgstr "Bunday tushumlar yoʻq."
 
 #: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/excel_import.py users/views.py
 msgid "Телефон"
@@ -2251,7 +2359,7 @@ msgstr ".xlsx shabloni"
 msgid "Школ"
 msgstr "Maktablar"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Школа"
 msgstr "Maktab"
 
@@ -2311,6 +2419,10 @@ msgstr "yuklanadi"
 #: pages/home/integrations/integration.html
 msgid "включено"
 msgstr "yoqilgan"
+
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "возврат"
+msgstr "qaytarish"
 
 #: pages/home/integrations/integration.html
 msgid "выключено"
@@ -2555,6 +2667,11 @@ msgstr "← Bosh sahifaga"
 #: pages/home/contracts/contract_form.html pages/home/payments/payment_form.html
 msgid "← Назад к списку"
 msgstr "← Roʻyxatga qaytish"
+
+#: pages/home/finance/receipt_list.html
+#, python-format
+msgid "→ договор № %(number)s"
+msgstr "→ shartnoma № %(number)s"
 
 #: pages/home/contracts/contract_detail.html
 msgid "◐ Частично"

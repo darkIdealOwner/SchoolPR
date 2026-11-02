@@ -57,6 +57,7 @@
         <input type="month" name="month" value="{{ month_str }}" class="input-field" style="margin: 0; width: auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; padding: 0.5rem;">
         <button type="submit" class="btn-action">{% translate "Показать" %}</button>
         <a href="?month={{ month_str }}&export=csv" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
+        {% if user.role != 'INVESTOR' %}<a href="{% url 'receipt_list' %}" class="btn-excel" title="{% translate "Деньги без номера договора" %}">{% translate "Нераспознанные" %}{% if open_receipts %} ({{ open_receipts }}){% endif %}</a>{% endif %}
         {% if user.role != 'INVESTOR' %}<a href="{% url 'excel_import' 'payments' %}" class="btn-excel" title="{% translate "Загрузить из таблицы Excel" %}">⬆ {% translate "Из Excel" %}</a>{% endif %}
     </form>
 </div>
@@ -102,7 +103,7 @@
                     {% endif %}
                     {% for p in contract.month_payments %}
                     <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; white-space: nowrap;">
-                        {{ p.payment_date|date:"d.m" }} · {{ p.amount|money }} · {{ p.get_method_display }}
+                        {{ p.payment_date|date:"d.m" }} · {% if p.is_refund %}−{{ p.amount|money }} ({% translate "возврат" %}){% else %}{{ p.amount|money }}{% endif %} · {{ p.get_method_display }}
                         {% if p.is_from_1c %}
                         · <span title="{% translate "Документ из 1С: исправляется в 1С" %}" style="font-size: 0.7rem; font-weight: 700; color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); border-radius: 0.25rem; padding: 0.05rem 0.3rem;">{% translate "1С" %}</span>
                         {% elif user.role == 'OWNER' or user.role == 'DIRECTOR' %}
