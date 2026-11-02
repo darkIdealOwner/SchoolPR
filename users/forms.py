@@ -603,3 +603,26 @@ class StaffForm(forms.ModelForm):
         if not is_valid_uz_phone(phone):
             raise forms.ValidationError(_("Введите номер в формате +998 (XX)-XXX-XX-XX."))
         return phone
+
+
+class WorkbookUploadForm(forms.Form):
+    file = forms.FileField(label=_("Книга школы (.xlsx)"),
+                           widget=forms.ClearableFileInput(attrs={'accept': '.xlsx,.xlsm', 'class': 'input-field'}))
+    school = forms.ModelChoiceField(queryset=School.objects.order_by('name'), label=_("Школа"))
+    academic_year = forms.ModelChoiceField(queryset=AcademicYear.objects.all(), label=_("Учебный год"))
+    prefix = forms.CharField(
+        label=_("Префикс номеров договоров"), required=False, max_length=10,
+        help_text=_("Номера договоров едины на всю сеть. Если в другой школе уже есть №1, №2…, задайте префикс, например ZAM-."))
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+        if user.role != 'OWNER':
+            self.fields.pop('school')
+        self.fields['academic_year'].initial = AcademicYear.for_date(timezone.localdate())
+        for name in ('school', 'academic_year', 'prefix'):
+            if name in self.fields:
+                self.fields[name].widget.attrs['class'] = 'input-field'
+
+    def clean_prefix(self):
+        return re.sub(r'\s+', '', self.cleaned_data.get('prefix') or '')

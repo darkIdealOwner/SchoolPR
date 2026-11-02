@@ -140,6 +140,7 @@
 
     <div style="display: flex; gap: 0.75rem; align-items: center;">
         <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}export=csv" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
+        {% if user.role == 'OWNER' or user.role == 'DIRECTOR' %}<a href="{% url 'workbook_import' %}" class="btn-excel" title="{% translate "Загрузить книгу школы целиком: договоры, поступления, расходы" %}">⬆ {% translate "Книга школы" %}</a>{% endif %}
         {% if user.role != 'INVESTOR' %}<a href="{% url 'excel_import' 'contracts' %}" class="btn-excel" title="{% translate "Загрузить из таблицы Excel" %}">⬆ {% translate "Из Excel" %}</a>{% endif %}
         {% if user.role != 'INVESTOR' %}
         <a href="{% url 'contract_add' %}" class="btn-add">{% translate "Создать договор" %}</a>

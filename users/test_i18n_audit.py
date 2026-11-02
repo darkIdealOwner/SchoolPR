@@ -28,6 +28,8 @@ def visible_text(html):
     html = re.sub(r'<!--.*?-->', ' ', html, flags=re.S)
     html = re.sub(r'<option value="ru"[^>]*>\s*Русский\s*</option>', ' ', html)
     html = re.sub(r'\bvalue="[^"]*"', ' ', html)
+    # Названия листов книги школы — это имена в файле пользователя, они не переводятся (только в кавычках)
+    html = re.sub(r'[«“"](Договоры|Поступление ДС|Расходы ДС)[»”"]', ' ', html)
     return html
 
 
@@ -141,6 +143,7 @@ def _owner_pages(t):
         'receipt_list': reverse('receipt_list'),
         'staff_list': reverse('staff_list'),
         'report_pl': reverse('report_pl'),
+        'workbook_import': reverse('workbook_import'),
         'report_cashflow': reverse('report_cashflow'),
         'report_payment_control': reverse('report_payment_control'),
         'report_founders': reverse('report_founders'),
@@ -162,6 +165,7 @@ OWNER_PAGES = ['home', 'contract_list', 'contract_add', 'contract_edit', 'contra
                'category_add', 'counterparty_list', 'counterparty_add', 'receipt_list', 'receipt_create', 'refund_create',
                'staff_list', 'staff_add', 'payout_summary',
                'report_pl', 'report_cashflow', 'report_payment_control', 'report_founders',
+               'workbook_import',
                'profile', 'password_change']
 ROLE_PAGES = {
     'director_home': ('director', 'home'),

@@ -398,6 +398,14 @@ def parse_month(text):
             month = _month_names().get(normalize_header(token).rstrip('.'), month)
     if year and month and 1 <= month <= 12:
         return date(year, month, 1)
+    # «сент.26», «нояб.26», «мая27» — сокращённый месяц и двузначный год, как в книгах школ
+    match = re.fullmatch(r'([^\W\d_]+)\.?\s*(\d{2}|\d{4})', text.strip())
+    if match:
+        prefix = normalize_header(match.group(1))
+        found = {number for name, number in _month_names().items() if len(prefix) >= 3 and name.startswith(prefix)}
+        if len(found) == 1:
+            short_year = int(match.group(2))
+            return date(short_year + 2000 if short_year < 100 else short_year, found.pop(), 1)
     raise RowError(text)
 
 

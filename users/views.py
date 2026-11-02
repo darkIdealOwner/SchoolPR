@@ -20,8 +20,9 @@ from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
     EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
     TransferForm, AccountForm, CategoryForm, CounterpartyForm, RefundForm, ReceiptForm, ResolveReceiptForm, StaffForm,
+    WorkbookUploadForm,
 )
-from . import excel_import, reports
+from . import excel_import, reports, workbook_import
 from .templatetags.money import money as format_money
 from .models import Account, Category, Counterparty, Transfer, UnidentifiedReceipt, Staff
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
@@ -1424,3 +1425,68 @@ class FounderReportView(ReportMixin, TemplateView):
         headers = [_('Учредитель'), _('Вложено'), _('Выплачено'), _('Сальдо')]
         rows = [[r['counterparty'].display_name, r['invested'], r['paid'], r['balance']] for r in context['data']['rows']]
         return self.csv_response('raschety_s_uchreditelyami', headers, rows)
+
+
+# Загрузка книги школы целиком
+class WorkbookImportView(LoginRequiredMixin, OwnerOrDirectorMixin, TemplateView):
+    """Книга школы (.xlsx) → проверка всех листов → сохранение → сверка итогов с книгой."""
+    template_name = 'home/import/workbook_import.html'
+    session_key = 'workbook_import'
+
+    def test_func(self):
+        return super().test_func() and (self.request.user.role == 'OWNER' or self.request.user.school_id)
+
+    def form(self, data=None, files=None):
+        return WorkbookUploadForm(data, files, user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault('form', kwargs.get('form') or self.form())
+        return context
+
+    def post(self, request):
+        action = request.POST.get('action')
+        if action == 'cancel':
+            request.session.pop(self.session_key, None)
+            return redirect('workbook_import')
+        if action == 'confirm':
+            return self.confirm(request)
+        form = self.form(request.POST, request.FILES)
+        if not form.is_valid():
+            return self.render_to_response(self.get_context_data(form=form))
+        school = form.cleaned_data.get('school') or request.user.school
+        year, prefix = form.cleaned_data['academic_year'], form.cleaned_data['prefix']
+        uploaded = form.cleaned_data['file']
+        try:
+            sheets = workbook_import.read_workbook(uploaded)
+        except excel_import.ImportFileError as exc:
+            form.add_error('file', str(exc))
+            return self.render_to_response(self.get_context_data(form=form))
+        plan = workbook_import.build_plan(request.user, school, year, prefix, sheets)
+        token = uuid.uuid4().hex
+        request.session[self.session_key] = {'token': token, 'school': school.pk, 'year': year.pk, 'prefix': prefix,
+                                             'filename': uploaded.name, 'sheets': sheets}
+        counts = plan.counts()
+        sheet_stats = [(_('Договоры'), counts['contracts']), (_('Поступления'), counts['income']), (_('Расходы'), counts['expense'])]
+        return self.render_to_response(self.get_context_data(preview=True, plan=plan, token=token, filename=uploaded.name,
+                                                             sheet_stats=sheet_stats))
+
+    def confirm(self, request):
+        pending = request.session.get(self.session_key)
+        if not pending or pending.get('token') != request.POST.get('token'):
+            messages.error(request, _("Эта загрузка уже сохранена или устарела. Загрузите файл ещё раз."))
+            return redirect('workbook_import')
+        school = get_object_or_404(School, pk=pending['school'])
+        if request.user.role != 'OWNER' and school != request.user.school:
+            raise Http404
+        year = get_object_or_404(AcademicYear, pk=pending['year'])
+        plan = workbook_import.build_plan(request.user, school, year, pending['prefix'], pending['sheets'])
+        try:
+            created = plan.save(pending['filename'])
+        except IntegrityError:
+            messages.error(request, _("Не удалось сохранить: данные изменились во время загрузки. Загрузите файл ещё раз."))
+            return redirect('workbook_import')
+        request.session.pop(self.session_key, None)
+        recon = workbook_import.reconcile(plan)
+        return self.render_to_response(self.get_context_data(
+            result=True, plan=plan, created=created, recon=recon, filename=pending['filename'], school=school, year=year))

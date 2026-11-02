@@ -16,6 +16,7 @@ from .views import (
     RefundCreateView, ReceiptListView, ReceiptCreateView, ReceiptResolveView, ReceiptReverseView,
     StaffListView, StaffCreateView, StaffUpdateView,
     ReportIndexView, ProfitLossReportView, CashFlowReportView, PaymentControlReportView, FounderReportView,
+    WorkbookImportView,
 )
 
 urlpatterns = [
@@ -86,6 +87,7 @@ urlpatterns = [
     path('counterparties/add/', CounterpartyCreateView.as_view(), name='counterparty_add'),
     path('counterparties/<int:pk>/edit/', CounterpartyUpdateView.as_view(), name='counterparty_edit'),
 
+    path('import/workbook/', WorkbookImportView.as_view(), name='workbook_import'),
     path('import/<slug:kind>/', ExcelImportView.as_view(), name='excel_import'),
     path('import/<slug:kind>/template/', ExcelTemplateView.as_view(), name='excel_template'),
 ]

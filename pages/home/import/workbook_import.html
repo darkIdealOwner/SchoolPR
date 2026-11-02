@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Загрузка книги школы" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.panel { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; min-width: 0; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.form-row { margin-bottom: 1rem; }
+.form-row > label { display: block; font-size: 0.875rem; margin-bottom: 0.35rem; }
+.help { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+.err { color: #f87171; font-size: 0.8125rem; margin-top: 0.3rem; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; border: none; border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem; cursor: pointer; text-decoration: none; }
+.btn-add:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-plain { padding: 0.625rem 1.25rem; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text); border-radius: 0.5rem; font-weight: 600; cursor: pointer; font-size: 0.875rem; text-decoration: none; }
+.sheets { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 0.75rem; margin: 1.25rem 0; }
+.sheet h3 { margin: 0 0 0.6rem 0; font-size: 0.95rem; }
+.sheet div { display: flex; justify-content: space-between; font-size: 0.875rem; padding: 0.15rem 0; }
+.c-ok { color: #10b981; font-weight: 700; } .c-err { color: #f87171; font-weight: 700; } .c-ex { color: var(--text-muted); font-weight: 700; }
+h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.tbl th, .tbl td { padding: 0.6rem 0.85rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+.tbl th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); }
+.tbl td.num { text-align: right; white-space: nowrap; }
+.recon-wrap { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+@media (max-width: 640px) { .recon-wrap .tbl th, .recon-wrap .tbl td { padding: 0.5rem 0.55rem; } }
+.problems { margin: 0; padding-left: 1rem; color: #fca5a5; }
+.ok-mark { color: #10b981; font-weight: 700; } .bad-mark { color: #f87171; font-weight: 700; } .note-mark { color: #fbbf24; font-weight: 700; }
+.sticky-actions { position: sticky; bottom: 0; background: var(--bg); padding: 1rem 0; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.banner { padding: 0.9rem 1rem; border-radius: 0.75rem; margin: 1rem 0; font-weight: 600; }
+.banner.ok { background: rgba(16,185,129,0.12); color: #10b981; }
+.banner.warn { background: rgba(245,158,11,0.12); color: #fbbf24; }
+@media (max-width: 640px) { .problems { list-style: none; padding-left: 0; } }
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'contract_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← {% translate "Договоры" %}</a>
+<h1 style="margin: 0.75rem 0 0.25rem 0;">{% translate "Загрузка книги школы" %}</h1>
+
+{% if result %}
+<p class="muted">{% blocktranslate with file=filename school=school.name year=year.name %}Книга «{{ file }}» загружена: {{ school }}, {{ year }}.{% endblocktranslate %}</p>
+<div class="sheets">
+    <div class="panel sheet"><h3>{% translate "Добавлено" %}</h3>
+        <div><span>{% translate "Договоров" %}</span><span class="c-ok">{{ created.contracts|default:0 }}</span></div>
+        <div><span>{% translate "Оплат" %}</span><span class="c-ok">{{ created.payment|default:0 }}</span></div>
+        <div><span>{% translate "Приходов и расходов" %}</span><span class="c-ok">{{ created.transaction|default:0 }}</span></div>
+        <div><span>{% translate "Переводов между счетами" %}</span><span class="c-ok">{{ created.transfer|default:0 }}</span></div>
+        <div><span>{% translate "Нераспознанных поступлений" %}</span><span class="c-ok">{{ created.receipt|default:0 }}</span></div>
+    </div>
+</div>
+
+<h2>{% translate "Сверка с книгой" %}</h2>
+{% if recon.ok %}
+<div class="banner ok">{% translate "Итоги платформы совпадают с книгой." %}</div>
+{% else %}
+<div class="banner warn">{% translate "Есть расхождения — проверьте строки ниже." %}</div>
+{% endif %}
+{% if recon.errors %}<p class="muted">{% blocktranslate with count=recon.errors %}Строк с ошибками, которые не загружены: {{ count }}. Исправьте их в книге и загрузите её ещё раз — уже загруженное не задвоится.{% endblocktranslate %}</p>{% endif %}
+<div class="recon-wrap">
+    <table class="tbl no-cards">
+        <thead><tr><th>{% translate "Проверка" %}</th><th class="num">{% translate "В книге" %}</th><th class="num">{% translate "На платформе" %}</th><th></th></tr></thead>
+        <tbody>
+            {% for c in recon.checks %}
+            <tr>
+                <td>{{ c.label }}{% if c.note %}<div class="muted" style="font-size: 0.75rem;">{{ c.note }}</div>{% endif %}</td>
+                <td class="num">{% if c.money %}{{ c.book|money }}{% else %}{{ c.book }}{% endif %}</td>
+                <td class="num">{% if c.money %}{{ c.platform|money }}{% else %}{{ c.platform }}{% endif %}</td>
+                <td>{% if c.ok %}<span class="ok-mark">✓</span>{% elif c.explained %}<span class="note-mark">≈</span>{% else %}<span class="bad-mark">✗ {% if c.money %}{{ c.diff|money }}{% else %}{{ c.diff }}{% endif %}</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if recon.mismatches %}
+<h2>{% translate "Оплаты по договорам не сходятся" %}</h2>
+<div class="recon-wrap">
+    <table class="tbl no-cards">
+        <thead><tr><th>{% translate "№ договора" %}</th><th class="num">{% translate "В книге" %}</th><th class="num">{% translate "На платформе" %}</th></tr></thead>
+        <tbody>{% for m in recon.mismatches %}<tr><td>{{ m.number }}</td><td class="num">{{ m.book|money }}</td><td class="num">{{ m.platform|money }}</td></tr>{% endfor %}</tbody>
+    </table>
+</div>
+{% endif %}
+<div class="sticky-actions">
+    <a href="{% url 'report_payment_control' %}?year={{ year.pk }}&school={{ school.pk }}" class="btn-add">{% translate "Открыть контроль оплаты" %}</a>
+    <a href="{% url 'report_pl' %}?year={{ year.pk }}&school={{ school.pk }}" class="btn-plain">{% translate "Прибыль и убытки" %}</a>
+</div>
+
+{% elif preview %}
+<p class="muted">{% blocktranslate with file=filename %}Книга «{{ file }}» проверена. Пока ничего не сохранено.{% endblocktranslate %}</p>
+<div class="sheets">
+    {% for title, c in sheet_stats %}
+    <div class="panel sheet"><h3>{{ title }}</h3>
+        <div><span>{% translate "будут загружены" %}</span><span class="c-ok">{{ c.ok }}</span></div>
+        <div><span>{% translate "уже есть на платформе" %}</span><span class="c-ex">{{ c.exists }}</span></div>
+        {% if c.skipped %}<div><span>{% translate "пропущены" %}</span><span class="c-ex">{{ c.skipped }}</span></div>{% endif %}
+        <div><span>{% translate "с ошибками" %}</span><span class="c-err">{{ c.error }}</span></div>
+    </div>
+    {% endfor %}
+</div>
+
+<h2>{% translate "Как разносятся статьи книги" %}</h2>
+<p class="muted">{% translate "Незнакомое название в «Кратком назначении» (имя человека или фирмы) считается учредителем: приход — его вложение, расход — выплата ему." %}</p>
+<div class="table-container">
+    <table class="tbl">
+        <thead><tr><th>{% translate "Лист" %}</th><th>{% translate "Статья в книге" %}</th><th>{% translate "На платформе" %}</th><th class="num">{% translate "Строк" %}</th><th class="num">{% translate "Сумма" %}</th></tr></thead>
+        <tbody>
+            {% for m in plan.mapping_rows %}
+            <tr>
+                <td>{% if m.sheet == 'income' %}{% translate "Поступления" %}{% else %}{% translate "Расходы" %}{% endif %}</td>
+                <td>{{ m.label }}</td><td>{{ m.target }}</td><td class="num">{{ m.rows }}</td><td class="num">{{ m.amount|money }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if plan.new_founders %}<p class="muted">{% translate "Будут добавлены учредители:" %} {{ plan.new_founders|join:", " }}</p>{% endif %}
+
+{% with problems=plan.problems %}
+{% if problems %}
+<h2>{% blocktranslate with count=problems|length %}Строки с ошибками ({{ count }}) — не загрузятся{% endblocktranslate %}</h2>
+<p class="muted">{% translate "Можно исправить их в книге и загрузить её ещё раз: уже загруженные строки повторно не добавятся." %}</p>
+<div class="table-container">
+    <table class="tbl">
+        <thead><tr><th>{% translate "Лист" %}</th><th>{% translate "Строка" %}</th><th>{% translate "Данные" %}</th><th>{% translate "Ошибка" %}</th></tr></thead>
+        <tbody>
+            {% for item in problems %}
+            <tr>
+                <td>{% if item.sheet == 'contracts' %}{% translate "Договоры" %}{% elif item.sheet == 'income' %}{% translate "Поступления" %}{% else %}{% translate "Расходы" %}{% endif %}</td>
+                <td>{{ item.number }}</td>
+                <td>{{ item.summary|join:" · " }}</td>
+                <td><ul class="problems">{% for e in item.errors %}<li>{{ e }}</li>{% endfor %}</ul></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endwith %}
+
+<form method="post" class="sticky-actions">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ token }}">
+    <button type="submit" name="action" value="confirm" class="btn-add">{% translate "Загрузить в платформу" %}</button>
+    <button type="submit" name="action" value="cancel" class="btn-plain">{% translate "Отмена" %}</button>
+</form>
+
+{% else %}
+<p class="muted">{% translate "Загрузите книгу школы целиком — листы «Договоры», «Поступление ДС» и «Расходы ДС». Остальные листы платформа считает сама. Сначала будет проверка, потом сохранение и сверка итогов с книгой." %}</p>
+<form method="post" enctype="multipart/form-data" class="panel" style="max-width: 560px;">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-row">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}
+        {% if field.errors %}<div class="err">{{ field.errors|join:" " }}</div>{% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn-add">{% translate "Проверить книгу" %}</button>
+</form>
+{% endif %}
+{% endblock %}
