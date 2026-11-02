@@ -445,6 +445,7 @@
             <a href="{% url 'contract_list' %}" class="nav-link {% if 'contract' in page %}active{% endif %}">{% translate "Договоры" %}</a>
             <a href="{% url 'payment_list' %}" class="nav-link {% if 'payment' in page %}active{% endif %}">{% translate "Оплаты" %}</a>
             <a href="{% url 'debt_list' %}" class="nav-link {% if 'debt' in page %}active{% endif %}">{% translate "Долги" %}</a>
+            <a href="{% url 'reports' %}" class="nav-link {% if 'report' in page %}active{% endif %}">{% translate "Отчёты" %}</a>
             {% if user.role != 'EMPLOYEE' %}
             <a href="{% url 'payout_list' %}" class="nav-link {% if 'payout' in page %}active{% endif %}">{% translate "Выплаты" %}</a>
             <a href="{% url 'transaction_list' %}" class="nav-link {% if 'transaction' in page %}active{% endif %}">{% translate "Транзакции" %}</a>
@@ -505,6 +506,8 @@
 
         // Таблицы: подписи колонок для карточного вида на телефоне
         document.querySelectorAll('main table').forEach((table) => {
+            // Широкие отчёты (месяцы по столбцам) остаются таблицей с прокруткой
+            if (table.classList.contains('no-cards')) return;
             const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
             if (!heads.length) return;
             table.classList.add('m-cards');

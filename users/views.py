@@ -21,7 +21,7 @@ from .forms import (
     EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
     TransferForm, AccountForm, CategoryForm, CounterpartyForm, RefundForm, ReceiptForm, ResolveReceiptForm, StaffForm,
 )
-from . import excel_import
+from . import excel_import, reports
 from .templatetags.money import money as format_money
 from .models import Account, Category, Counterparty, Transfer, UnidentifiedReceipt, Staff
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
@@ -1281,3 +1281,146 @@ class StaffUpdateView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixi
 
     def get_form_kwargs(self):
         return {**super().get_form_kwargs(), 'user': self.request.user}
+
+
+# Отчёты
+class ReportMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Фильтры отчётов: учебный год и школа (директор и сотрудник видят только свою школу)."""
+    roles = ('OWNER', 'DIRECTOR', 'INVESTOR')
+    report = ''
+
+    def test_func(self):
+        user = self.request.user
+        return user.role in self.roles and (user.role not in ('DIRECTOR', 'EMPLOYEE') or user.school_id)
+
+    def get_filters(self):
+        year_id = self.request.GET.get('year', '')
+        self.year = AcademicYear.objects.filter(pk=year_id).first() if year_id.isdigit() else None
+        self.year = self.year or reports.current_academic_year()
+        user = self.request.user
+        if user.role in ('DIRECTOR', 'EMPLOYEE'):
+            self.school = user.school
+        else:
+            school_id = self.request.GET.get('school', '')
+            self.school = School.objects.filter(pk=school_id).first() if school_id.isdigit() else None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'report': self.report, 'years': AcademicYear.objects.all(), 'year': self.year, 'school': self.school,
+            'schools': School.objects.order_by('name') if self.request.user.role in ('OWNER', 'INVESTOR') else [],
+            'query': self.request.GET.urlencode(),
+        })
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.get_filters()
+        context = self.get_context_data(**kwargs)
+        if request.GET.get('export') == 'csv':
+            return self.export(context)
+        return self.render_to_response(context)
+
+    def csv_response(self, filename, headers, rows):
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        stamp = timezone.localdate().strftime('%Y-%m-%d')
+        response['Content-Disposition'] = f'attachment; filename="{filename}_{stamp}.csv"'
+        response.write('﻿')
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow(headers)
+        for row in rows:
+            writer.writerow([_csv_value(v) for v in row])
+        return response
+
+    def matrix_csv(self, filename, data):
+        headers = [''] + [format_russian_month(m) for m in data['months']] + [_('Итого')]
+        rows = [[r.label] + (r.values + [r.total] if r.style != 'section' else []) for r in data['rows']]
+        return self.csv_response(filename, headers, rows)
+
+
+class ReportIndexView(LoginRequiredMixin, View):
+    def get(self, request):
+        if request.user.role == 'EMPLOYEE':
+            return redirect('report_payment_control')
+        if request.user.role in ('OWNER', 'DIRECTOR', 'INVESTOR'):
+            return redirect('report_pl')
+        raise Http404
+
+
+class ProfitLossReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/matrix.html'
+    report = 'pl'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data'] = reports.profit_and_loss(reports.financial_months(self.year), self.school)
+        context['title'] = _('Прибыль и убытки')
+        context['note'] = _('По дате оплат и расходов. Вложения учредителей, кредиты и покупка основных средств сюда не входят — они в движении денег.')
+        context['month_labels'] = [format_russian_month(m) for m in context['data']['months']]
+        return context
+
+    def export(self, context):
+        return self.matrix_csv('pribyl_i_ubytki', context['data'])
+
+
+class CashFlowReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/matrix.html'
+    report = 'cashflow'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data'] = reports.cash_flow(reports.financial_months(self.year), self.school)
+        context['title'] = _('Движение денег')
+        context['note'] = _('Все поступления и выплаты по разделам. Переводы между своими счетами не меняют общий остаток.')
+        context['month_labels'] = [format_russian_month(m) for m in context['data']['months']]
+        return context
+
+    def export(self, context):
+        return self.matrix_csv('dvizhenie_deneg', context['data'])
+
+
+class PaymentControlReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/payment_control.html'
+    report = 'control'
+    roles = ('OWNER', 'DIRECTOR', 'EMPLOYEE', 'INVESTOR')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        status = self.request.GET.get('status', 'all')
+        context['status'] = status if status in ('all', 'active', 'cancelled') else 'all'
+        context['status_filters'] = [('all', _('Все')), ('active', _('Действующие')), ('cancelled', _('Отменённые'))]
+        context['data'] = reports.payment_control(self.year, self.school, context['status']) if self.year else None
+        return context
+
+    def export(self, context):
+        data = context['data']
+        if data is None:
+            raise Http404
+        headers = [_('№ договора'), _('Ученик'), _('Школа'), _('Статус')]
+        for label in data['labels']:
+            headers += [f"{label}: {_('начислено')}", f"{label}: {_('оплачено')}", f"{label}: {_('остаток')}"]
+        headers += [_('Начислено за год'), _('Оплачено за год'), _('Долг на сегодня')]
+        rows = []
+        for r in data['rows']:
+            c = r['contract']
+            row = [c.number, c.student_full_name, c.school.name if c.school else '', c.status()[1]]
+            for cell in r['cells']:
+                row += [cell['accrued'], cell['paid'], cell['balance']]
+            rows.append(row + [r['accrued'], r['paid'], r['debt_now']])
+        return self.csv_response('kontrol_oplaty', headers, rows)
+
+
+class FounderReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/founders.html'
+    report = 'founders'
+    roles = ('OWNER', 'INVESTOR')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        investor = self.request.user if self.request.user.role == 'INVESTOR' else None
+        context['data'] = reports.founder_settlements(self.school, investor)
+        return context
+
+    def export(self, context):
+        headers = [_('Учредитель'), _('Вложено'), _('Выплачено'), _('Сальдо')]
+        rows = [[r['counterparty'].display_name, r['invested'], r['paid'], r['balance']] for r in context['data']['rows']]
+        return self.csv_response('raschety_s_uchreditelyami', headers, rows)

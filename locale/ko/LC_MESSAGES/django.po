@@ -150,6 +150,10 @@ msgstr "변경 없음"
 msgid "Без школы"
 msgstr "학교 없음"
 
+#: pages/home/reports/payment_control.html
+msgid "В каждой ячейке: оплачено за месяц и под ним начислено. Остаток — нарастающим итогом: переплата переходит на следующие месяцы."
+msgstr "각 칸: 해당 월 납부액과 그 아래 부과액. 잔액은 누계이며 초과 납부는 다음 달로 이월됩니다."
+
 #: pages/home/finance/category_list.html
 msgid "В прибыли и убытках"
 msgstr "손익 포함"
@@ -187,6 +191,14 @@ msgstr "종류"
 msgid "Владелец"
 msgstr "소유자"
 
+#: pages/home/reports/founders.html users/views.py
+msgid "Вложено"
+msgstr "출자액"
+
+#: pages/home/reports/founders.html
+msgid "Вложено — приходы от учредителя, выплачено — расходы в его пользу. Учитываются транзакции, где учредитель указан контрагентом."
+msgstr "출자액 — 설립자로부터의 수입, 지급액 — 설립자에게 지급한 지출. 설립자가 거래처로 지정된 거래만 계산합니다."
+
 #: users/views.py
 msgid "Возврат записан."
 msgstr "환불이 기록되었습니다."
@@ -200,6 +212,10 @@ msgstr "보호자 환불"
 msgid "Возврат родителю: %(student)s, договор № %(number)s"
 msgstr "보호자 환불: %(student)s, 계약 번호 %(number)s"
 
+#: users/reports.py
+msgid "Возвраты родителям"
+msgstr "보호자 환불"
+
 #: pages/authorization/login.html
 msgid "Войти"
 msgstr "로그인"
@@ -207,6 +223,10 @@ msgstr "로그인"
 #: users/views.py
 msgid "Все"
 msgstr "전체"
+
+#: users/views.py
+msgid "Все поступления и выплаты по разделам. Переводы между своими счетами не меняют общий остаток."
+msgstr "모든 입금과 지급을 구분별로 보여 줍니다. 자체 계좌 간 이체는 총잔액을 바꾸지 않습니다."
 
 #: pages/home/contracts/contract_list.html
 msgid "Все учебные годы"
@@ -220,7 +240,7 @@ msgstr "학교가 급여를 지급하는 모든 사람. 플랫폼에 로그인�
 msgid "Всего"
 msgstr "전체"
 
-#: pages/home/partials/finance_overview.html
+#: pages/home/partials/finance_overview.html pages/home/reports/_header.html
 msgid "Вся сеть"
 msgstr "전체 네트워크"
 
@@ -302,6 +322,10 @@ msgstr "직원 급여"
 #: pages/home/payouts/payout_list.html
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "직원 급여 - SchoolPR"
+
+#: pages/home/reports/founders.html users/views.py
+msgid "Выплачено"
+msgstr "지급액"
 
 #: pages/home/payouts/staff_list.html
 msgid "Выплачено всего"
@@ -394,6 +418,10 @@ msgstr "계약 체결일. 예: 01.06.2026"
 #: users/models.py
 msgid "Дата сторно"
 msgstr "취소일"
+
+#: pages/home/reports/_header.html users/views.py
+msgid "Движение денег"
+msgstr "현금 흐름"
 
 #: users/models.py
 msgid "Действие"
@@ -491,7 +519,7 @@ msgstr "직원 작업 공간에 오신 것을 환영합니다. 학교 요약입�
 msgid "Добро пожаловать в систему."
 msgstr "시스템에 오신 것을 환영합니다."
 
-#: users/forms.py users/models.py
+#: pages/home/reports/payment_control.html users/forms.py users/models.py
 msgid "Договор"
 msgstr "계약"
 
@@ -511,6 +539,10 @@ msgstr "계약 번호 %(number)s (%(date)s)"
 #: pages/home/owner.html pages/home/schools/academic_year_list.html
 msgid "Договоров"
 msgstr "계약"
+
+#: pages/home/reports/payment_control.html
+msgid "Договоров этого учебного года нет."
+msgstr "이 학년도의 계약이 없습니다."
 
 #: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html users/excel_import.py
 msgid "Договоры"
@@ -532,7 +564,7 @@ msgstr "1C 문서: 1C에서 수정하세요"
 msgid "Долг"
 msgstr "미납액"
 
-#: pages/home/contracts/contract_detail.html
+#: pages/home/contracts/contract_detail.html pages/home/reports/payment_control.html users/views.py
 msgid "Долг на сегодня"
 msgstr "현재 미납액"
 
@@ -563,6 +595,10 @@ msgstr "추가 전화"
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "Доплатить"
 msgstr "추가 납부"
+
+#: pages/home/reports/matrix.html users/reports.py
+msgid "Доходы"
+msgstr "수입"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Другие дети этого родителя"
@@ -704,13 +740,17 @@ msgstr "“%(sheet)s” 시트를 두 번째 행부터 작성하세요. 필수 �
 msgid "Запустил"
 msgstr "실행자"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Зарплата"
 msgstr "급여"
 
 #: pages/home/payouts/payout_list.html
 msgid "Зарплата по месяцам: выплаты сотрудникам и расходы по статье «Зарплата», внесённые одной суммой."
 msgstr "월별 급여: 직원 지급액과 “급여” 항목으로 한꺼번에 입력한 지출."
+
+#: users/reports.py
+msgid "Зарплата сотрудникам"
+msgstr "직원 급여"
 
 #: pages/home/partials/finance_overview.html
 msgid "Зарплаты"
@@ -754,7 +794,7 @@ msgstr "Excel에서"
 msgid "Из файла «%(file)s» загружено строк: %(saved)s."
 msgstr "“%(file)s” 파일에서 가져온 행: %(saved)s."
 
-#: users/models.py
+#: pages/home/reports/matrix.html users/models.py
 msgid "Изменение"
 msgstr "수정"
 
@@ -798,7 +838,7 @@ msgstr "이름"
 msgid "Инвестиции и прочие поступления"
 msgstr "투자 및 기타 수입"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Инвестиционная деятельность"
 msgstr "투자 활동"
 
@@ -846,7 +886,7 @@ msgstr "출처"
 msgid "Итоги за 12 месяцев"
 msgstr "12개월 합계"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/reports/founders.html pages/home/reports/matrix.html pages/home/reports/payment_control.html users/views.py
 msgid "Итого"
 msgstr "합계"
 
@@ -854,9 +894,22 @@ msgstr "합계"
 msgid "Итого в месяц"
 msgstr "월 합계"
 
+#: users/reports.py
+msgid "Итого доходы"
+msgstr "수입 합계"
+
 #: pages/home/payouts/payout_list.html
 msgid "Итого зарплата"
 msgstr "급여 합계"
+
+#: users/reports.py
+msgid "Итого расходы"
+msgstr "지출 합계"
+
+#: users/reports.py
+#, python-format
+msgid "Итого: %(section)s"
+msgstr "합계: %(section)s"
 
 #: users/models.py
 msgid "Июль"
@@ -918,6 +971,10 @@ msgstr "거래처"
 msgid "Контрагенты"
 msgstr "거래처"
 
+#: pages/home/reports/_header.html pages/home/reports/payment_control.html
+msgid "Контроль оплаты"
+msgstr "납부 관리"
+
 #: pages/home/partials/finance_overview.html
 msgid "Крупнейшие должники"
 msgstr "주요 미납자"
@@ -950,6 +1007,10 @@ msgstr "혜택"
 msgid "Май"
 msgstr "5월"
 
+#: pages/home/reports/matrix.html
+msgid "Маржа"
+msgstr "이익률"
+
 #: users/models.py
 msgid "Март"
 msgstr "3월"
@@ -977,6 +1038,14 @@ msgstr "퍼센트 할인과 함께 쓸 수 있습니다. 전체 할인은 수업
 #: users/forms.py
 msgid "Можно оставить пустым — договор будет помечен «неполные данные»."
 msgstr "비워 둘 수 있으며, 이 경우 계약에 “불완전한 정보” 표시가 붙습니다."
+
+#: pages/home/reports/matrix.html
+msgid "На конец"
+msgstr "기말"
+
+#: pages/home/reports/matrix.html
+msgid "На начало"
+msgstr "기초"
 
 #: pages/home/finance/category_list.html pages/home/finance/counterparty_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
 msgid "Название"
@@ -1066,9 +1135,17 @@ msgstr "시작"
 msgid "Начисления по"
 msgstr "부과 종료 월"
 
-#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/reports/payment_control.html users/views.py
 msgid "Начислено"
 msgstr "청구액"
+
+#: users/views.py
+msgid "Начислено за год"
+msgstr "연간 부과액"
+
+#: users/reports.py
+msgid "Начислено за обучение (справочно)"
+msgstr "수업료 부과액(참고)"
 
 #: pages/home/schools/school_list.html
 msgid "Не назначен"
@@ -1138,7 +1215,7 @@ msgstr "미확인 입금"
 msgid "Нераспознанные"
 msgstr "미확인"
 
-#: pages/home/finance/receipt_list.html users/models.py
+#: pages/home/finance/receipt_list.html users/models.py users/reports.py
 msgid "Нераспознанные поступления"
 msgstr "미확인 입금"
 
@@ -1250,7 +1327,7 @@ msgstr "10월"
 msgid "Операций"
 msgstr "거래 수"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Операционная деятельность"
 msgstr "영업 활동"
 
@@ -1279,6 +1356,10 @@ msgstr "%(student)s 납부 (%(month)s)"
 msgid "Оплата для:"
 msgstr "납부 대상:"
 
+#: users/reports.py
+msgid "Оплата за обучение"
+msgstr "수업료 납부"
+
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "Оплатить"
 msgstr "납부"
@@ -1303,13 +1384,17 @@ msgstr "납부액 - 급여 및 지출"
 msgid "Оплаты родителей"
 msgstr "학부모 납부"
 
-#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/reports/payment_control.html users/views.py
 msgid "Оплачено"
 msgstr "납부 완료"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Оплачено всего"
 msgstr "총 납부액"
+
+#: users/views.py
+msgid "Оплачено за год"
+msgstr "연간 납부액"
 
 #: pages/home/users/user_form.html
 msgid "Оставьте пустым, если не хотите менять."
@@ -1319,9 +1404,22 @@ msgstr "변경하지 않으려면 비워 두세요."
 msgid "Оставьте пустым, чтобы не менять"
 msgstr "변경하지 않으려면 비워 두세요"
 
+#: pages/home/reports/matrix.html
+msgid "Остатки по счетам"
+msgstr "계좌별 잔액"
+
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html users/views.py
 msgid "Остаток"
 msgstr "잔액"
+
+#: users/reports.py
+msgid "Остаток денег на конец месяца"
+msgstr "월말 현금 잔액"
+
+#: pages/home/reports/matrix.html
+#, python-format
+msgid "Остаток на %(day)s"
+msgstr "%(day)s 잔액"
 
 #: pages/home/finance/account_list.html
 #, python-format
@@ -1375,6 +1473,10 @@ msgstr "계약 해지 여부"
 #: users/excel_import.py
 msgid "Отмечена как сторно — не загружается."
 msgstr "취소로 표시되어 가져오지 않습니다."
+
+#: pages/base.html pages/home/reports/_header.html
+msgid "Отчёты"
+msgstr "보고서"
 
 #: integrations/models.py pages/home/import/excel_import.html
 msgid "Ошибка"
@@ -1477,6 +1579,10 @@ msgstr "플랫폼"
 msgid "Платёж в месяц"
 msgstr "월 납부액"
 
+#: users/views.py
+msgid "По дате оплат и расходов. Вложения учредителей, кредиты и покупка основных средств сюда не входят — они в движении денег."
+msgstr "납부일과 지출일 기준. 설립자 출자, 대출, 고정자산 구입은 포함되지 않으며 현금 흐름에 있습니다."
+
 #: pages/home/contracts/contract_detail.html
 msgid "По договору нет начислений."
 msgstr "이 계약에는 청구 내역이 없습니다."
@@ -1521,7 +1627,7 @@ msgstr "번호, 이름, 전화번호로 검색..."
 msgid "Пока никого нет."
 msgstr "아직 없습니다."
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/_header.html
 msgid "Показать"
 msgstr "보기"
 
@@ -1573,6 +1679,14 @@ msgstr "입금이 계약 번호 %(number)s에 연결되었습니다."
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
 msgstr "예정"
+
+#: pages/home/reports/matrix.html users/reports.py
+msgid "Прибыль"
+msgstr "이익"
+
+#: pages/home/reports/_header.html users/views.py
+msgid "Прибыль и убытки"
+msgstr "손익"
 
 #: pages/home/director.html pages/home/employee.html pages/home/home.html pages/home/investor.html
 #, python-format
@@ -1741,6 +1855,10 @@ msgstr "지출 / 예상치 못한 비용"
 msgid "Расход / Траты"
 msgstr "지출"
 
+#: pages/home/reports/matrix.html users/reports.py
+msgid "Расходы"
+msgstr "지출"
+
 #: users/forms.py
 msgid "Расходы по этой статье считаются зарплатой вместе с выплатами сотрудникам."
 msgstr "이 항목의 지출은 직원 지급액과 함께 급여로 계산됩니다."
@@ -1748,6 +1866,10 @@ msgstr "이 항목의 지출은 직원 지급액과 함께 급여로 계산됩�
 #: users/models.py
 msgid "Расчётный счёт"
 msgstr "은행 계좌"
+
+#: pages/home/reports/_header.html pages/home/reports/founders.html
+msgid "Расчёты с учредителями"
+msgstr "설립자 정산"
 
 #: users/models.py
 msgid "Ребёнок сотрудника"
@@ -1832,6 +1954,10 @@ msgstr "오류 있음"
 #: users/forms.py
 msgid "С этой даты считается остаток. Движения раньше неё не учитываются."
 msgstr "이 날짜부터 잔액을 계산합니다. 그 이전 거래는 제외됩니다."
+
+#: pages/home/reports/founders.html users/views.py
+msgid "Сальдо"
+msgstr "잔액"
 
 #: integrations/models.py
 msgid "Связка договоров"
@@ -1933,6 +2059,10 @@ msgstr "비밀번호 변경 - SchoolPR"
 #: pages/authorization/profile.html
 msgid "Сменить пароль"
 msgstr "비밀번호 변경"
+
+#: pages/home/reports/payment_control.html
+msgid "Сначала добавьте учебный год."
+msgstr "먼저 학년도를 추가하세요."
 
 #: pages/home/import/excel_import.html
 #, python-format
@@ -2040,7 +2170,7 @@ msgstr "기간, 개월"
 msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
 msgstr "이전 .xls 형식은 지원하지 않습니다. Excel에서 파일을 열고 “Excel 통합 문서(.xlsx)”로 저장하세요."
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html users/views.py
 msgid "Статус"
 msgstr "상태"
 
@@ -2165,7 +2295,7 @@ msgstr "계좌와 잔액"
 msgid "Счетов пока нет."
 msgstr "아직 계좌가 없습니다."
 
-#: pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/payouts/payout_form.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/payouts/payout_form.html pages/home/reports/matrix.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Счёт"
 msgstr "계좌"
 
@@ -2317,7 +2447,7 @@ msgstr "성공"
 msgid "Учебные годы"
 msgstr "학년도"
 
-#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/reports/_header.html users/excel_import.py users/models.py users/views.py
 msgid "Учебный год"
 msgstr "학년도"
 
@@ -2337,6 +2467,10 @@ msgstr "학생"
 msgid "Учитель, повар, охранник…"
 msgstr "교사, 조리사, 경비…"
 
+#: pages/home/reports/founders.html
+msgid "Учредители ещё не заведены или по ним нет операций."
+msgstr "설립자가 아직 없거나 관련 거래가 없습니다."
+
 #: pages/home/finance/_finance_nav.html pages/home/finance/counterparty_list.html
 msgid "Учредители и контрагенты"
 msgstr "설립자와 거래처"
@@ -2344,6 +2478,10 @@ msgstr "설립자와 거래처"
 #: pages/home/finance/counterparty_list.html
 msgid "Учредители, банк, поставщики. Вложения и выплаты учредителям отмечаются в транзакциях — по ним строятся расчёты с учредителями."
 msgstr "설립자, 은행, 공급업체. 설립자 출자와 지급은 거래에 표시되며, 이를 바탕으로 설립자 정산이 만들어집니다."
+
+#: pages/home/reports/founders.html users/views.py
+msgid "Учредитель"
+msgstr "설립자"
 
 #: users/models.py
 msgid "Учредитель / инвестор"
@@ -2394,7 +2532,7 @@ msgstr "파일이 5MB보다 큽니다. 표를 여러 파일로 나누세요."
 msgid "Февраль"
 msgstr "2월"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Финансовая деятельность"
 msgstr "재무 활동"
 
@@ -2419,6 +2557,10 @@ msgstr "일부 납부"
 msgid "Число в сумах, например 1500000"
 msgstr "숨 단위 숫자, 예: 1500000"
 
+#: users/reports.py
+msgid "Чистый денежный поток"
+msgstr "순현금 흐름"
+
 #: integrations/views.py
 msgid "Что загружаем"
 msgstr "업로드 항목"
@@ -2431,7 +2573,7 @@ msgstr ".xlsx 템플릿"
 msgid "Школ"
 msgstr "학교"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/reports/_header.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Школа"
 msgstr "학교"
 
@@ -2521,6 +2663,10 @@ msgstr "해지일이 계약일보다 이릅니다"
 msgid "договор «%(number)s» не найден"
 msgstr "계약 “%(number)s”을(를) 찾을 수 없습니다"
 
+#: pages/home/reports/payment_control.html
+msgid "долг на этот месяц"
+msgstr "이 달 미납"
+
 #: pages/home/payouts/staff_list.html
 msgid "доступ"
 msgstr "접근"
@@ -2558,6 +2704,10 @@ msgstr "설정됨"
 #, python-format
 msgid "начисления по %(month)s"
 msgstr "%(month)s까지 부과"
+
+#: users/views.py
+msgid "начислено"
+msgstr "부과"
 
 #: users/excel_import.py
 msgid "не заполнено"
@@ -2627,7 +2777,19 @@ msgstr "“%(value)s” 대신 정수를 입력하세요"
 msgid "обучение с %(month)s"
 msgstr "%(month)s부터 수업"
 
-#: pages/home/debts/debt_list.html
+#: pages/home/reports/founders.html
+msgid "операции"
+msgstr "거래 내역"
+
+#: pages/home/reports/payment_control.html users/views.py
+msgid "оплачено"
+msgstr "납부"
+
+#: users/views.py
+msgid "остаток"
+msgstr "잔액"
+
+#: pages/home/debts/debt_list.html pages/home/reports/payment_control.html
 msgid "отменён"
 msgstr "해지됨"
 

@@ -15,6 +15,7 @@ from .views import (
     CounterpartyListView, CounterpartyCreateView, CounterpartyUpdateView,
     RefundCreateView, ReceiptListView, ReceiptCreateView, ReceiptResolveView, ReceiptReverseView,
     StaffListView, StaffCreateView, StaffUpdateView,
+    ReportIndexView, ProfitLossReportView, CashFlowReportView, PaymentControlReportView, FounderReportView,
 )
 
 urlpatterns = [
@@ -60,6 +61,11 @@ urlpatterns = [
     path('transactions/<int:pk>/reverse/', TransactionReverseView.as_view(), name='transaction_reverse'),
 
     path('contracts/<int:pk>/refund/', RefundCreateView.as_view(), name='refund_create'),
+    path('reports/', ReportIndexView.as_view(), name='reports'),
+    path('reports/profit-loss/', ProfitLossReportView.as_view(), name='report_pl'),
+    path('reports/cash-flow/', CashFlowReportView.as_view(), name='report_cashflow'),
+    path('reports/payment-control/', PaymentControlReportView.as_view(), name='report_payment_control'),
+    path('reports/founders/', FounderReportView.as_view(), name='report_founders'),
     path('staff/', StaffListView.as_view(), name='staff_list'),
     path('staff/add/', StaffCreateView.as_view(), name='staff_add'),
     path('staff/<int:pk>/edit/', StaffUpdateView.as_view(), name='staff_edit'),

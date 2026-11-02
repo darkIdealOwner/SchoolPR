@@ -150,6 +150,10 @@ msgstr "Unchanged"
 msgid "Без школы"
 msgstr "No school"
 
+#: pages/home/reports/payment_control.html
+msgid "В каждой ячейке: оплачено за месяц и под ним начислено. Остаток — нарастающим итогом: переплата переходит на следующие месяцы."
+msgstr "Each cell shows the amount paid for the month and, below it, the amount charged. The balance is cumulative: overpayment carries over to the next months."
+
 #: pages/home/finance/category_list.html
 msgid "В прибыли и убытках"
 msgstr "In P&L"
@@ -187,6 +191,14 @@ msgstr "Type"
 msgid "Владелец"
 msgstr "Owner"
 
+#: pages/home/reports/founders.html users/views.py
+msgid "Вложено"
+msgstr "Invested"
+
+#: pages/home/reports/founders.html
+msgid "Вложено — приходы от учредителя, выплачено — расходы в его пользу. Учитываются транзакции, где учредитель указан контрагентом."
+msgstr "Invested — income from the founder; paid — expenses in their favour. Transactions with the founder set as counterparty are counted."
+
 #: users/views.py
 msgid "Возврат записан."
 msgstr "Refund recorded."
@@ -200,6 +212,10 @@ msgstr "Refund to parent"
 msgid "Возврат родителю: %(student)s, договор № %(number)s"
 msgstr "Refund to parent: %(student)s, contract No. %(number)s"
 
+#: users/reports.py
+msgid "Возвраты родителям"
+msgstr "Refunds to parents"
+
 #: pages/authorization/login.html
 msgid "Войти"
 msgstr "Sign in"
@@ -207,6 +223,10 @@ msgstr "Sign in"
 #: users/views.py
 msgid "Все"
 msgstr "All"
+
+#: users/views.py
+msgid "Все поступления и выплаты по разделам. Переводы между своими счетами не меняют общий остаток."
+msgstr "All receipts and payments by section. Transfers between own accounts do not change the total balance."
 
 #: pages/home/contracts/contract_list.html
 msgid "Все учебные годы"
@@ -220,7 +240,7 @@ msgstr "Everyone the school pays a salary to. They do not need to sign in; for e
 msgid "Всего"
 msgstr "Total"
 
-#: pages/home/partials/finance_overview.html
+#: pages/home/partials/finance_overview.html pages/home/reports/_header.html
 msgid "Вся сеть"
 msgstr "Whole network"
 
@@ -302,6 +322,10 @@ msgstr "Staff payouts"
 #: pages/home/payouts/payout_list.html
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "Staff payouts - SchoolPR"
+
+#: pages/home/reports/founders.html users/views.py
+msgid "Выплачено"
+msgstr "Paid out"
 
 #: pages/home/payouts/staff_list.html
 msgid "Выплачено всего"
@@ -394,6 +418,10 @@ msgstr "Date the contract was signed. For example: 01.06.2026"
 #: users/models.py
 msgid "Дата сторно"
 msgstr "Reversal date"
+
+#: pages/home/reports/_header.html users/views.py
+msgid "Движение денег"
+msgstr "Cash flow"
 
 #: users/models.py
 msgid "Действие"
@@ -491,7 +519,7 @@ msgstr "Welcome to the staff workspace. Here is a short summary of your school:"
 msgid "Добро пожаловать в систему."
 msgstr "Welcome to the system."
 
-#: users/forms.py users/models.py
+#: pages/home/reports/payment_control.html users/forms.py users/models.py
 msgid "Договор"
 msgstr "Contract"
 
@@ -511,6 +539,10 @@ msgstr "Contract No. %(number)s of %(date)s"
 #: pages/home/owner.html pages/home/schools/academic_year_list.html
 msgid "Договоров"
 msgstr "Contracts"
+
+#: pages/home/reports/payment_control.html
+msgid "Договоров этого учебного года нет."
+msgstr "No contracts for this academic year."
 
 #: pages/base.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html users/excel_import.py
 msgid "Договоры"
@@ -532,7 +564,7 @@ msgstr "Document from 1C: edit it in 1C"
 msgid "Долг"
 msgstr "Debt"
 
-#: pages/home/contracts/contract_detail.html
+#: pages/home/contracts/contract_detail.html pages/home/reports/payment_control.html users/views.py
 msgid "Долг на сегодня"
 msgstr "Debt to date"
 
@@ -563,6 +595,10 @@ msgstr "Extra phone"
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "Доплатить"
 msgstr "Pay the rest"
+
+#: pages/home/reports/matrix.html users/reports.py
+msgid "Доходы"
+msgstr "Income"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Другие дети этого родителя"
@@ -704,13 +740,17 @@ msgstr "Fill in the “%(sheet)s” sheet starting from the second row. Required
 msgid "Запустил"
 msgstr "Started by"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Зарплата"
 msgstr "Salary"
 
 #: pages/home/payouts/payout_list.html
 msgid "Зарплата по месяцам: выплаты сотрудникам и расходы по статье «Зарплата», внесённые одной суммой."
 msgstr "Salary by month: employee payouts plus expenses under the “Salaries” item entered as one sum."
+
+#: users/reports.py
+msgid "Зарплата сотрудникам"
+msgstr "Employee salaries"
 
 #: pages/home/partials/finance_overview.html
 msgid "Зарплаты"
@@ -754,7 +794,7 @@ msgstr "From Excel"
 msgid "Из файла «%(file)s» загружено строк: %(saved)s."
 msgstr "Rows imported from “%(file)s”: %(saved)s."
 
-#: users/models.py
+#: pages/home/reports/matrix.html users/models.py
 msgid "Изменение"
 msgstr "Update"
 
@@ -798,7 +838,7 @@ msgstr "Name"
 msgid "Инвестиции и прочие поступления"
 msgstr "Investments and other income"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Инвестиционная деятельность"
 msgstr "Investing activities"
 
@@ -846,7 +886,7 @@ msgstr "Source"
 msgid "Итоги за 12 месяцев"
 msgstr "12-month totals"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/reports/founders.html pages/home/reports/matrix.html pages/home/reports/payment_control.html users/views.py
 msgid "Итого"
 msgstr "Total"
 
@@ -854,9 +894,22 @@ msgstr "Total"
 msgid "Итого в месяц"
 msgstr "Monthly total"
 
+#: users/reports.py
+msgid "Итого доходы"
+msgstr "Total income"
+
 #: pages/home/payouts/payout_list.html
 msgid "Итого зарплата"
 msgstr "Total salary"
+
+#: users/reports.py
+msgid "Итого расходы"
+msgstr "Total expenses"
+
+#: users/reports.py
+#, python-format
+msgid "Итого: %(section)s"
+msgstr "Total: %(section)s"
 
 #: users/models.py
 msgid "Июль"
@@ -918,6 +971,10 @@ msgstr "Counterparty"
 msgid "Контрагенты"
 msgstr "Counterparties"
 
+#: pages/home/reports/_header.html pages/home/reports/payment_control.html
+msgid "Контроль оплаты"
+msgstr "Payment control"
+
 #: pages/home/partials/finance_overview.html
 msgid "Крупнейшие должники"
 msgstr "Top debtors"
@@ -950,6 +1007,10 @@ msgstr "Privilege"
 msgid "Май"
 msgstr "May"
 
+#: pages/home/reports/matrix.html
+msgid "Маржа"
+msgstr "Margin"
+
 #: users/models.py
 msgid "Март"
 msgstr "March"
@@ -977,6 +1038,14 @@ msgstr "Can be combined with a percentage. The total discount never exceeds the 
 #: users/forms.py
 msgid "Можно оставить пустым — договор будет помечен «неполные данные»."
 msgstr "May be left empty — the contract will be marked “incomplete data”."
+
+#: pages/home/reports/matrix.html
+msgid "На конец"
+msgstr "Closing"
+
+#: pages/home/reports/matrix.html
+msgid "На начало"
+msgstr "Opening"
 
 #: pages/home/finance/category_list.html pages/home/finance/counterparty_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
 msgid "Название"
@@ -1066,9 +1135,17 @@ msgstr "Started"
 msgid "Начисления по"
 msgstr "Charged until"
 
-#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/reports/payment_control.html users/views.py
 msgid "Начислено"
 msgstr "Billed"
+
+#: users/views.py
+msgid "Начислено за год"
+msgstr "Charged for the year"
+
+#: users/reports.py
+msgid "Начислено за обучение (справочно)"
+msgstr "Tuition charged (for reference)"
 
 #: pages/home/schools/school_list.html
 msgid "Не назначен"
@@ -1138,7 +1215,7 @@ msgstr "Unidentified receipt"
 msgid "Нераспознанные"
 msgstr "Unidentified"
 
-#: pages/home/finance/receipt_list.html users/models.py
+#: pages/home/finance/receipt_list.html users/models.py users/reports.py
 msgid "Нераспознанные поступления"
 msgstr "Unidentified receipts"
 
@@ -1250,7 +1327,7 @@ msgstr "October"
 msgid "Операций"
 msgstr "Operations"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Операционная деятельность"
 msgstr "Operating activities"
 
@@ -1279,6 +1356,10 @@ msgstr "Payment by %(student)s for %(month)s"
 msgid "Оплата для:"
 msgstr "Payment for:"
 
+#: users/reports.py
+msgid "Оплата за обучение"
+msgstr "Tuition payments"
+
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
 msgid "Оплатить"
 msgstr "Pay"
@@ -1303,13 +1384,17 @@ msgstr "Payments minus salaries and expenses"
 msgid "Оплаты родителей"
 msgstr "Parent payments"
 
-#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/reports/payment_control.html users/views.py
 msgid "Оплачено"
 msgstr "Paid"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Оплачено всего"
 msgstr "Total paid"
+
+#: users/views.py
+msgid "Оплачено за год"
+msgstr "Paid for the year"
 
 #: pages/home/users/user_form.html
 msgid "Оставьте пустым, если не хотите менять."
@@ -1319,9 +1404,22 @@ msgstr "Leave blank to keep the current one."
 msgid "Оставьте пустым, чтобы не менять"
 msgstr "Leave blank to keep unchanged"
 
+#: pages/home/reports/matrix.html
+msgid "Остатки по счетам"
+msgstr "Account balances"
+
 #: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html users/views.py
 msgid "Остаток"
 msgstr "Balance"
+
+#: users/reports.py
+msgid "Остаток денег на конец месяца"
+msgstr "Cash at end of month"
+
+#: pages/home/reports/matrix.html
+#, python-format
+msgid "Остаток на %(day)s"
+msgstr "Balance on %(day)s"
 
 #: pages/home/finance/account_list.html
 #, python-format
@@ -1375,6 +1473,10 @@ msgstr "Contract cancelled"
 #: users/excel_import.py
 msgid "Отмечена как сторно — не загружается."
 msgstr "Marked as reversed — not imported."
+
+#: pages/base.html pages/home/reports/_header.html
+msgid "Отчёты"
+msgstr "Reports"
 
 #: integrations/models.py pages/home/import/excel_import.html
 msgid "Ошибка"
@@ -1477,6 +1579,10 @@ msgstr "Platform"
 msgid "Платёж в месяц"
 msgstr "Monthly payment"
 
+#: users/views.py
+msgid "По дате оплат и расходов. Вложения учредителей, кредиты и покупка основных средств сюда не входят — они в движении денег."
+msgstr "By payment and expense dates. Founder contributions, loans and fixed-asset purchases are not included — they are in the cash flow."
+
 #: pages/home/contracts/contract_detail.html
 msgid "По договору нет начислений."
 msgstr "Nothing is billed under this contract."
@@ -1521,7 +1627,7 @@ msgstr "Search by number, name, phone..."
 msgid "Пока никого нет."
 msgstr "Nobody yet."
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/_header.html
 msgid "Показать"
 msgstr "Show"
 
@@ -1573,6 +1679,14 @@ msgstr "The receipt is linked to contract No. %(number)s."
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
 msgstr "Upcoming"
+
+#: pages/home/reports/matrix.html users/reports.py
+msgid "Прибыль"
+msgstr "Profit"
+
+#: pages/home/reports/_header.html users/views.py
+msgid "Прибыль и убытки"
+msgstr "Profit and loss"
 
 #: pages/home/director.html pages/home/employee.html pages/home/home.html pages/home/investor.html
 #, python-format
@@ -1741,6 +1855,10 @@ msgstr "Expense / Unexpected costs"
 msgid "Расход / Траты"
 msgstr "Expense"
 
+#: pages/home/reports/matrix.html users/reports.py
+msgid "Расходы"
+msgstr "Expenses"
+
 #: users/forms.py
 msgid "Расходы по этой статье считаются зарплатой вместе с выплатами сотрудникам."
 msgstr "Expenses under this item count as salary together with employee payouts."
@@ -1748,6 +1866,10 @@ msgstr "Expenses under this item count as salary together with employee payouts.
 #: users/models.py
 msgid "Расчётный счёт"
 msgstr "Bank account"
+
+#: pages/home/reports/_header.html pages/home/reports/founders.html
+msgid "Расчёты с учредителями"
+msgstr "Founder settlements"
 
 #: users/models.py
 msgid "Ребёнок сотрудника"
@@ -1832,6 +1954,10 @@ msgstr "With errors"
 #: users/forms.py
 msgid "С этой даты считается остаток. Движения раньше неё не учитываются."
 msgstr "The balance is counted from this date. Movements before it are ignored."
+
+#: pages/home/reports/founders.html users/views.py
+msgid "Сальдо"
+msgstr "Balance"
 
 #: integrations/models.py
 msgid "Связка договоров"
@@ -1933,6 +2059,10 @@ msgstr "Change password - SchoolPR"
 #: pages/authorization/profile.html
 msgid "Сменить пароль"
 msgstr "Change password"
+
+#: pages/home/reports/payment_control.html
+msgid "Сначала добавьте учебный год."
+msgstr "Add an academic year first."
 
 #: pages/home/import/excel_import.html
 #, python-format
@@ -2040,7 +2170,7 @@ msgstr "Term, months"
 msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
 msgstr "The old .xls format is not supported. Open the file in Excel and save it as “Excel Workbook (.xlsx)”."
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html users/views.py
 msgid "Статус"
 msgstr "Status"
 
@@ -2165,7 +2295,7 @@ msgstr "Accounts and balances"
 msgid "Счетов пока нет."
 msgstr "No accounts yet."
 
-#: pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/payouts/payout_form.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/payouts/payout_form.html pages/home/reports/matrix.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Счёт"
 msgstr "Account"
 
@@ -2317,7 +2447,7 @@ msgstr "Succeeded"
 msgid "Учебные годы"
 msgstr "Academic years"
 
-#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/reports/_header.html users/excel_import.py users/models.py users/views.py
 msgid "Учебный год"
 msgstr "Academic year"
 
@@ -2337,6 +2467,10 @@ msgstr "Student"
 msgid "Учитель, повар, охранник…"
 msgstr "Teacher, cook, guard…"
 
+#: pages/home/reports/founders.html
+msgid "Учредители ещё не заведены или по ним нет операций."
+msgstr "No founders yet, or no operations with them."
+
 #: pages/home/finance/_finance_nav.html pages/home/finance/counterparty_list.html
 msgid "Учредители и контрагенты"
 msgstr "Founders and counterparties"
@@ -2344,6 +2478,10 @@ msgstr "Founders and counterparties"
 #: pages/home/finance/counterparty_list.html
 msgid "Учредители, банк, поставщики. Вложения и выплаты учредителям отмечаются в транзакциях — по ним строятся расчёты с учредителями."
 msgstr "Founders, the bank, suppliers. Founder contributions and payouts are marked in transactions — founder settlements are built from them."
+
+#: pages/home/reports/founders.html users/views.py
+msgid "Учредитель"
+msgstr "Founder"
 
 #: users/models.py
 msgid "Учредитель / инвестор"
@@ -2394,7 +2532,7 @@ msgstr "The file is larger than 5 MB. Split the table into several files."
 msgid "Февраль"
 msgstr "February"
 
-#: users/models.py
+#: users/models.py users/reports.py
 msgid "Финансовая деятельность"
 msgstr "Financing activities"
 
@@ -2419,6 +2557,10 @@ msgstr "Partly paid"
 msgid "Число в сумах, например 1500000"
 msgstr "Amount in UZS, e.g. 1500000"
 
+#: users/reports.py
+msgid "Чистый денежный поток"
+msgstr "Net cash flow"
+
 #: integrations/views.py
 msgid "Что загружаем"
 msgstr "What to upload"
@@ -2431,7 +2573,7 @@ msgstr ".xlsx template"
 msgid "Школ"
 msgstr "Schools"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/reports/_header.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Школа"
 msgstr "School"
 
@@ -2521,6 +2663,10 @@ msgstr "the cancellation date is before the contract date"
 msgid "договор «%(number)s» не найден"
 msgstr "contract “%(number)s” not found"
 
+#: pages/home/reports/payment_control.html
+msgid "долг на этот месяц"
+msgstr "debt for this month"
+
 #: pages/home/payouts/staff_list.html
 msgid "доступ"
 msgstr "access"
@@ -2558,6 +2704,10 @@ msgstr "configured"
 #, python-format
 msgid "начисления по %(month)s"
 msgstr "charged until %(month)s"
+
+#: users/views.py
+msgid "начислено"
+msgstr "charged"
 
 #: users/excel_import.py
 msgid "не заполнено"
@@ -2627,7 +2777,19 @@ msgstr "a whole number is needed, not “%(value)s”"
 msgid "обучение с %(month)s"
 msgstr "studies from %(month)s"
 
-#: pages/home/debts/debt_list.html
+#: pages/home/reports/founders.html
+msgid "операции"
+msgstr "operations"
+
+#: pages/home/reports/payment_control.html users/views.py
+msgid "оплачено"
+msgstr "paid"
+
+#: users/views.py
+msgid "остаток"
+msgstr "balance"
+
+#: pages/home/debts/debt_list.html pages/home/reports/payment_control.html
 msgid "отменён"
 msgstr "cancelled"
 

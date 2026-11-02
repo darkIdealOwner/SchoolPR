@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{{ title }} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
+.kpi { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.85rem 1rem; min-width: 0; }
+.kpi span { color: var(--text-muted); font-size: 0.75rem; }
+.kpi strong { display: block; font-size: 1.25rem; margin-top: 0.2rem; }
+.muted { color: var(--text-muted); font-size: 0.8125rem; }
+.acc { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.acc th, .acc td { padding: 0.6rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right; }
+.acc th:first-child, .acc td:first-child { text-align: left; }
+.acc th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
+h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
+{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{{ title }}</h1>
+{% include 'home/reports/_header.html' %}
+<p class="muted" style="margin-top: -0.5rem;">{{ note }}</p>
+
+{% if report == 'pl' %}
+<div class="kpis">
+    <div class="kpi"><span>{% translate "Доходы" %}</span><strong>{{ data.income|money }}</strong></div>
+    <div class="kpi"><span>{% translate "Расходы" %}</span><strong>{{ data.expense|money }}</strong></div>
+    <div class="kpi"><span>{% translate "Прибыль" %}</span><strong style="color: {% if data.profit < 0 %}#f87171{% else %}#10b981{% endif %};">{{ data.profit|money }}</strong></div>
+    <div class="kpi"><span>{% translate "Маржа" %}</span><strong>{% if data.margin is not None %}{{ data.margin|floatformat:1 }}%{% else %}—{% endif %}</strong></div>
+</div>
+{% else %}
+<div class="kpis">
+    <div class="kpi"><span>{% blocktranslate with day=data.opening_day|date:"d.m.Y" %}Остаток на {{ day }}{% endblocktranslate %}</span><strong>{{ data.opening|money }}</strong></div>
+    <div class="kpi"><span>{% blocktranslate with day=data.closing_day|date:"d.m.Y" %}Остаток на {{ day }}{% endblocktranslate %}</span><strong>{{ data.closing|money }}</strong></div>
+</div>
+{% endif %}
+
+<div class="report-wrap">
+    <table class="rep no-cards">
+        <thead>
+            <tr><th></th>{% for label in month_labels %}<th>{{ label }}</th>{% endfor %}<th>{% translate "Итого" %}</th></tr>
+        </thead>
+        <tbody>
+            {% for row in data.rows %}
+            {% if row.style == 'section' %}
+            <tr class="section"><td>{{ row.label }}</td>{% for label in month_labels %}<td></td>{% endfor %}<td></td></tr>
+            {% else %}
+            <tr class="{{ row.style }}">
+                <td>{% if row.negative %}− {% endif %}{{ row.label }}</td>
+                {% for value in row.values %}<td class="{% if not value %}zero{% elif row.style == 'total' and value < 0 %}neg{% elif row.style == 'total' %}pos{% endif %}">{% if value %}{{ value|money }}{% else %}—{% endif %}</td>{% endfor %}
+                <td class="sum {% if row.style == 'total' and row.total < 0 %}neg{% endif %}">{% if row.style == 'info' and report == 'cashflow' %}—{% else %}{{ row.total|money }}{% endif %}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if report == 'cashflow' %}
+<h2>{% translate "Остатки по счетам" %}</h2>
+<div class="report-wrap">
+    <table class="acc no-cards">
+        <thead><tr><th>{% translate "Счёт" %}</th><th>{% translate "На начало" %}</th><th>{% translate "Изменение" %}</th><th>{% translate "На конец" %}</th></tr></thead>
+        <tbody>
+            {% for a in data.accounts %}
+            <tr>
+                <td>{{ a.account.display_name }}{% if not school %} <span class="muted">· {{ a.account.school.name }}</span>{% endif %}</td>
+                <td>{{ a.opening|money }}</td>
+                <td style="color: {% if a.change < 0 %}#f87171{% else %}#10b981{% endif %};">{{ a.change|money }}</td>
+                <td style="font-weight: 700;">{{ a.closing|money }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

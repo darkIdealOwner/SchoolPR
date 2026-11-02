@@ -1,0 +1,57 @@
+{% load i18n %}
+<nav class="rep-nav" aria-label="{% translate "Отчёты" %}">
+    {% if user.role != 'EMPLOYEE' %}
+    <a href="{% url 'report_pl' %}?{{ query }}" class="{% if report == 'pl' %}on{% endif %}">{% translate "Прибыль и убытки" %}</a>
+    <a href="{% url 'report_cashflow' %}?{{ query }}" class="{% if report == 'cashflow' %}on{% endif %}">{% translate "Движение денег" %}</a>
+    {% endif %}
+    <a href="{% url 'report_payment_control' %}?{{ query }}" class="{% if report == 'control' %}on{% endif %}">{% translate "Контроль оплаты" %}</a>
+    {% if user.role == 'OWNER' or user.role == 'INVESTOR' %}
+    <a href="{% url 'report_founders' %}?{{ query }}" class="{% if report == 'founders' %}on{% endif %}">{% translate "Расчёты с учредителями" %}</a>
+    {% endif %}
+</nav>
+
+<form method="get" class="rep-filters">
+    {% if report != 'founders' %}
+    <label>{% translate "Учебный год" %}
+        <select name="year" class="input-field" onchange="this.form.submit()">
+            {% for y in years %}<option value="{{ y.pk }}" {% if year and y.pk == year.pk %}selected{% endif %}>{{ y.name }}</option>{% endfor %}
+        </select>
+    </label>
+    {% endif %}
+    {% if schools %}
+    <label>{% translate "Школа" %}
+        <select name="school" class="input-field" onchange="this.form.submit()">
+            <option value="">{% translate "Вся сеть" %}</option>
+            {% for s in schools %}<option value="{{ s.pk }}" {% if school and s.pk == school.pk %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+        </select>
+    </label>
+    {% endif %}
+    {% block extra_filters %}{% endblock %}
+    {% for key, value in request.GET.items %}{% if key != 'year' and key != 'school' and key != 'export' and key != 'status' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+    <noscript><button type="submit" class="btn-excel">{% translate "Показать" %}</button></noscript>
+    <a href="?{% if query %}{{ query }}&{% endif %}export=csv" class="btn-excel rep-export">⬇ Excel</a>
+</form>
+
+<style>
+.rep-nav { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.rep-nav a { padding: 0.45rem 0.85rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); color: var(--text-muted); text-decoration: none; font-size: 0.8125rem; }
+.rep-nav a.on { background: rgba(99,102,241,0.18); color: var(--text); border-color: transparent; }
+.rep-filters { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1.25rem; }
+.rep-filters label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.75rem; color: var(--text-muted); min-width: 0; }
+.rep-filters select { width: auto; max-width: 100%; margin: 0; }
+.rep-export { margin-left: auto; }
+.report-wrap { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.rep { border-collapse: separate; border-spacing: 0; font-size: 0.8125rem; width: 100%; }
+.rep th, .rep td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); white-space: nowrap; text-align: right; }
+.rep th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em; background: var(--card-bg); position: sticky; top: 0; }
+.rep th:first-child, .rep td:first-child { text-align: left; position: sticky; left: 0; background: var(--card-bg); z-index: 1; max-width: 16rem; white-space: normal; min-width: 11rem; }
+.rep tr.section td { font-weight: 700; color: var(--text); padding-top: 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.rep tr.subtotal td { font-weight: 600; border-top: 1px solid rgba(255,255,255,0.12); }
+.rep tr.total td { font-weight: 700; font-size: 0.875rem; border-top: 2px solid rgba(255,255,255,0.18); }
+.rep tr.info td { color: var(--text-muted); font-style: italic; }
+.rep td.neg { color: #f87171; }
+.rep td.pos { color: #10b981; }
+.rep td.zero { color: rgba(255,255,255,0.25); }
+.rep td.sum { font-weight: 600; }
+@media (max-width: 640px) { .rep-export { margin-left: 0; } .rep th:first-child, .rep td:first-child { min-width: 8.5rem; max-width: 9rem; } }
+</style>

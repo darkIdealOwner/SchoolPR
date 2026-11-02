@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Расчёты с учредителями" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.muted { color: var(--text-muted); font-size: 0.8125rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }
+.tbl th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); }
+.tbl td.num, .tbl th.num { text-align: right; white-space: nowrap; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; margin-bottom: 1.25rem; }
+details { margin-bottom: 0.75rem; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.75rem 1rem; }
+details summary { cursor: pointer; font-weight: 600; }
+.ops { width: 100%; border-collapse: collapse; font-size: 0.8125rem; margin-top: 0.6rem; }
+.ops td { padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.in { color: #10b981; } .out { color: #f87171; }
+{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{% translate "Расчёты с учредителями" %}</h1>
+{% include 'home/reports/_header.html' %}
+<p class="muted" style="margin-top: -0.5rem;">{% translate "Вложено — приходы от учредителя, выплачено — расходы в его пользу. Учитываются транзакции, где учредитель указан контрагентом." %}</p>
+
+<div class="table-container">
+    <table class="tbl">
+        <thead><tr><th>{% translate "Учредитель" %}</th><th class="num">{% translate "Вложено" %}</th><th class="num">{% translate "Выплачено" %}</th><th class="num">{% translate "Сальдо" %}</th></tr></thead>
+        <tbody>
+            {% for r in data.rows %}
+            <tr>
+                <td style="font-weight: 600;">{{ r.counterparty.display_name }}</td>
+                <td class="num">{{ r.invested|money }}</td>
+                <td class="num">{{ r.paid|money }}</td>
+                <td class="num" style="font-weight: 700;">{{ r.balance|money }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Учредители ещё не заведены или по ним нет операций." %}</td></tr>
+            {% endfor %}
+            {% if data.rows|length > 1 %}
+            <tr style="font-weight: 700;"><td>{% translate "Итого" %}</td><td class="num">{{ data.totals.invested|money }}</td><td class="num">{{ data.totals.paid|money }}</td><td class="num">{{ data.totals.balance|money }}</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% for r in data.rows %}{% if r.operations %}
+<details>
+    <summary>{{ r.counterparty.display_name }} · {% translate "операции" %}</summary>
+    <table class="ops no-cards">
+        {% for t in r.operations %}
+        <tr>
+            <td style="white-space: nowrap;">{{ t.date|date:"d.m.Y" }}</td>
+            <td>{{ t.category.display_name }}{% if not school %} <span class="muted">· {{ t.school.name }}</span>{% endif %}</td>
+            <td class="{% if t.type == 'INCOME' %}in{% else %}out{% endif %}" style="text-align: right; white-space: nowrap;">{% if t.type == 'INCOME' %}+{% else %}−{% endif %}{{ t.amount|money }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</details>
+{% endif %}{% endfor %}
+{% endblock %}
