@@ -79,7 +79,7 @@ class BalanceTests(MoneyBase):
         reversed_payment = Payment.objects.create(contract=self.contract, for_month=date(2026, 9, 1), amount=Decimal(777),
                                                   payment_date=date(2026, 9, 6), method='CASH')
         reversed_payment.reverse(None, 'ошибка')
-        EmployeePayout.objects.create(employee=self.employee, school=self.school, for_month=date(2026, 9, 1),
+        EmployeePayout.objects.create(employee=self.employee.staff_profile, school=self.school, for_month=date(2026, 9, 1),
                                       amount=Decimal(200), payout_date=date(2026, 9, 10))
         Transaction.objects.create(school=self.school, category=self.rent, amount=Decimal(100), date=date(2026, 9, 11))
         Transaction.objects.create(school=self.school, category=self.founders_in, amount=Decimal(50), date=date(2026, 9, 12))

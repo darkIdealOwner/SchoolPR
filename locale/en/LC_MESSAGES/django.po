@@ -212,6 +212,10 @@ msgstr "All"
 msgid "Все учебные годы"
 msgstr "All academic years"
 
+#: pages/home/payouts/staff_list.html
+msgid "Все, кому школа платит зарплату. Входить на платформу им не нужно; у сотрудников с доступом карточка создаётся сама."
+msgstr "Everyone the school pays a salary to. They do not need to sign in; for employees with access the card is created automatically."
+
 #: pages/home/integrations/integration.html
 msgid "Всего"
 msgstr "Total"
@@ -239,6 +243,10 @@ msgstr "Sign in"
 #: users/models.py
 msgid "Входит в прибыль и убытки"
 msgstr "Included in profit and loss"
+
+#: pages/home/payouts/staff_list.html
+msgid "Входит на платформу"
+msgstr "Signs in to the platform"
 
 #: pages/home/contracts/contract_confirm_delete.html
 #, python-format
@@ -271,6 +279,10 @@ msgstr "Sign out"
 msgid "Выйти из системы"
 msgstr "Sign out"
 
+#: pages/home/payouts/payout_list.html
+msgid "Выплат пока нет."
+msgstr "No payouts yet."
+
 #: users/models.py
 msgid "Выплата сотруднику"
 msgstr "Staff payout"
@@ -283,13 +295,17 @@ msgstr "Payouts"
 msgid "Выплаты не зафиксированы."
 msgstr "No payouts recorded."
 
-#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py
+#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html users/excel_import.py users/models.py
 msgid "Выплаты сотрудникам"
 msgstr "Staff payouts"
 
 #: pages/home/payouts/payout_list.html
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "Staff payouts - SchoolPR"
+
+#: pages/home/payouts/staff_list.html
+msgid "Выплачено всего"
+msgstr "Paid in total"
 
 #: integrations/models.py
 msgid "Выполняется"
@@ -439,6 +455,10 @@ msgstr "Add user"
 msgid "Добавить поступление"
 msgstr "Add receipt"
 
+#: pages/home/payouts/staff_list.html
+msgid "Добавить сотрудника"
+msgstr "Add employee"
+
 #: pages/home/finance/category_list.html
 msgid "Добавить статью"
 msgstr "Add item"
@@ -531,6 +551,10 @@ msgstr "Debts for month:"
 #: pages/home/partials/finance_overview.html
 msgid "Должников:"
 msgstr "Debtors:"
+
+#: pages/home/payouts/staff_list.html users/models.py
+msgid "Должность"
+msgstr "Position"
 
 #: users/excel_import.py users/models.py users/views.py
 msgid "Доп. телефон"
@@ -684,6 +708,10 @@ msgstr "Started by"
 msgid "Зарплата"
 msgstr "Salary"
 
+#: pages/home/payouts/payout_list.html
+msgid "Зарплата по месяцам: выплаты сотрудникам и расходы по статье «Зарплата», внесённые одной суммой."
+msgstr "Salary by month: employee payouts plus expenses under the “Salaries” item entered as one sum."
+
 #: pages/home/partials/finance_overview.html
 msgid "Зарплаты"
 msgstr "Salaries"
@@ -734,7 +762,7 @@ msgstr "Update"
 msgid "Изменения"
 msgstr "Changes"
 
-#: pages/home/contracts/contract_list.html pages/home/finance/account_list.html pages/home/finance/category_list.html pages/home/finance/counterparty_list.html pages/home/payouts/payout_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/finance/account_list.html pages/home/finance/category_list.html pages/home/finance/counterparty_list.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
 msgid "Изменить"
 msgstr "Edit"
 
@@ -745,6 +773,10 @@ msgstr "Edit contract"
 #: users/views.py
 msgid "Изменить контрагента"
 msgstr "Edit counterparty"
+
+#: users/views.py
+msgid "Изменить сотрудника"
+msgstr "Edit employee"
 
 #: users/views.py
 msgid "Изменить статью"
@@ -821,6 +853,10 @@ msgstr "Total"
 #: users/views.py
 msgid "Итого в месяц"
 msgstr "Monthly total"
+
+#: pages/home/payouts/payout_list.html
+msgid "Итого зарплата"
+msgstr "Total salary"
 
 #: users/models.py
 msgid "Июль"
@@ -922,7 +958,7 @@ msgstr "March"
 msgid "Меню"
 msgstr "Menu"
 
-#: pages/home/contracts/contract_detail.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/models.py users/views.py
 msgid "Месяц"
 msgstr "Month"
 
@@ -1131,6 +1167,10 @@ msgid "Новый перевод"
 msgstr "New transfer"
 
 #: users/views.py
+msgid "Новый сотрудник"
+msgstr "New employee"
+
+#: users/views.py
 msgid "Новый счёт"
 msgstr "New account"
 
@@ -1193,6 +1233,10 @@ msgstr "Required"
 #: users/forms.py
 msgid "Обязательное поле."
 msgstr "This field is required."
+
+#: pages/home/payouts/payout_list.html
+msgid "Одной суммой"
+msgstr "As one sum"
 
 #: integrations/models.py
 msgid "Окончание"
@@ -1441,6 +1485,10 @@ msgstr "Nothing is billed under this contract."
 msgid "По месяцам"
 msgstr "By month"
 
+#: pages/home/payouts/payout_list.html
+msgid "По сотрудникам"
+msgstr "By employee"
+
 #: pages/home/partials/finance_overview.html
 msgid "По школам"
 msgstr "By school"
@@ -1494,6 +1542,10 @@ msgid "Пользователь"
 msgstr "User"
 
 #: users/models.py
+msgid "Пользователь платформы"
+msgstr "Platform user"
+
+#: users/models.py
 msgid "Порядок"
 msgstr "Order"
 
@@ -1504,6 +1556,10 @@ msgstr "Last month"
 #: users/forms.py
 msgid "Последний месяц раньше первого."
 msgstr "The last month is before the first."
+
+#: pages/home/payouts/staff_list.html
+msgid "Последняя выплата"
+msgstr "Last payout"
 
 #: users/models.py
 msgid "Поставщик"
@@ -1639,6 +1695,10 @@ msgstr "Empty — taken from the contract date."
 #: users/models.py
 msgid "Пусто — по виду счёта: «Касса», «Расчётный счёт», «Терминал»."
 msgstr "Empty — by account type: “Cash desk”, “Bank account”, “Terminal”."
+
+#: users/models.py
+msgid "Работает"
+msgstr "Employed"
 
 #: pages/home/employee.html
 msgid "Рабочая панель - SchoolPR"
@@ -1919,7 +1979,7 @@ msgstr "Create school"
 msgid "Сотрудник"
 msgstr "Employee"
 
-#: pages/base.html pages/home/schools/school_list.html
+#: pages/base.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/schools/school_list.html users/models.py
 msgid "Сотрудники"
 msgstr "Staff"
 
@@ -1930,6 +1990,10 @@ msgstr "Staff ↔ 1C individuals"
 #: pages/home/director.html
 msgid "Сотрудников в школе"
 msgstr "Staff in school"
+
+#: pages/home/payouts/staff_list.html
+msgid "Сотрудников пока нет."
+msgstr "No employees yet."
 
 #: pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
 msgid "Сохранить"
@@ -2125,13 +2189,13 @@ msgstr "This transaction already exists — row skipped to avoid a duplicate."
 msgid "Таких поступлений нет."
 msgstr "No such receipts."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/excel_import.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/staff_list.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Телефон"
 msgstr "Phone"
 
 #: users/excel_import.py
-msgid "Телефон сотрудника (надёжнее) или имя, как на платформе."
-msgstr "Employee’s phone (more reliable) or name as on the platform."
+msgid "Телефон сотрудника (надёжнее) или ФИО, как в справочнике сотрудников."
+msgstr "Employee’s phone (more reliable) or full name as in the staff list."
 
 #: users/models.py
 msgid "Терминал"
@@ -2269,6 +2333,10 @@ msgstr "No academic years yet."
 msgid "Ученик"
 msgstr "Student"
 
+#: users/forms.py
+msgid "Учитель, повар, охранник…"
+msgstr "Teacher, cook, guard…"
+
 #: pages/home/finance/_finance_nav.html pages/home/finance/counterparty_list.html
 msgid "Учредители и контрагенты"
 msgstr "Founders and counterparties"
@@ -2288,6 +2356,10 @@ msgstr "A founder, bank or supplier from the list. Optional."
 #: users/forms.py
 msgid "Учредитель, банк, поставщик — если деньги от них или им."
 msgstr "A founder, bank or supplier — if the money comes from or goes to them."
+
+#: pages/home/payouts/staff_list.html users/models.py
+msgid "ФИО"
+msgstr "Full name"
 
 #: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО родителей"
@@ -2359,7 +2431,7 @@ msgstr ".xlsx template"
 msgid "Школ"
 msgstr "Schools"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Школа"
 msgstr "School"
 
@@ -2448,6 +2520,10 @@ msgstr "the cancellation date is before the contract date"
 #, python-format
 msgid "договор «%(number)s» не найден"
 msgstr "contract “%(number)s” not found"
+
+#: pages/home/payouts/staff_list.html
+msgid "доступ"
+msgstr "access"
 
 #: pages/home/integrations/integration.html
 msgid "доступна всегда"
@@ -2634,6 +2710,10 @@ msgstr "enter the type or the item"
 #, python-format
 msgid "учебный год «%(name)s» не найден на платформе"
 msgstr "academic year “%(name)s” not found on the platform"
+
+#: pages/home/payouts/payout_list.html
+msgid "чел."
+msgstr "people"
 
 #: users/excel_import.py
 #, python-format

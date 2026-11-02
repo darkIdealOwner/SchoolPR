@@ -212,6 +212,10 @@ msgstr "Hammasi"
 msgid "Все учебные годы"
 msgstr "Barcha oʻquv yillari"
 
+#: pages/home/payouts/staff_list.html
+msgid "Все, кому школа платит зарплату. Входить на платформу им не нужно; у сотрудников с доступом карточка создаётся сама."
+msgstr "Maktab ish haqi toʻlaydigan barcha xodimlar. Ularga platformaga kirish shart emas; kirish huquqi bor xodimlarning kartasi oʻzi yaratiladi."
+
 #: pages/home/integrations/integration.html
 msgid "Всего"
 msgstr "Jami"
@@ -239,6 +243,10 @@ msgstr "Tizimga kirish"
 #: users/models.py
 msgid "Входит в прибыль и убытки"
 msgstr "Foyda va zarar hisobotiga kiradi"
+
+#: pages/home/payouts/staff_list.html
+msgid "Входит на платформу"
+msgstr "Platformaga kiradi"
 
 #: pages/home/contracts/contract_confirm_delete.html
 #, python-format
@@ -271,6 +279,10 @@ msgstr "Chiqish"
 msgid "Выйти из системы"
 msgstr "Tizimdan chiqish"
 
+#: pages/home/payouts/payout_list.html
+msgid "Выплат пока нет."
+msgstr "Hozircha toʻlovlar yoʻq."
+
 #: users/models.py
 msgid "Выплата сотруднику"
 msgstr "Xodimga toʻlov"
@@ -283,13 +295,17 @@ msgstr "Toʻlovlar"
 msgid "Выплаты не зафиксированы."
 msgstr "Toʻlovlar qayd etilmagan."
 
-#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py
+#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html users/excel_import.py users/models.py
 msgid "Выплаты сотрудникам"
 msgstr "Xodimlarga toʻlovlar"
 
 #: pages/home/payouts/payout_list.html
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "Xodimlarga toʻlovlar - SchoolPR"
+
+#: pages/home/payouts/staff_list.html
+msgid "Выплачено всего"
+msgstr "Jami toʻlangan"
 
 #: integrations/models.py
 msgid "Выполняется"
@@ -439,6 +455,10 @@ msgstr "Foydalanuvchi qoʻshish"
 msgid "Добавить поступление"
 msgstr "Tushum qoʻshish"
 
+#: pages/home/payouts/staff_list.html
+msgid "Добавить сотрудника"
+msgstr "Xodim qoʻshish"
+
 #: pages/home/finance/category_list.html
 msgid "Добавить статью"
 msgstr "Moddani qoʻshish"
@@ -531,6 +551,10 @@ msgstr "Oy boʻyicha qarzlar:"
 #: pages/home/partials/finance_overview.html
 msgid "Должников:"
 msgstr "Qarzdorlar:"
+
+#: pages/home/payouts/staff_list.html users/models.py
+msgid "Должность"
+msgstr "Lavozim"
 
 #: users/excel_import.py users/models.py users/views.py
 msgid "Доп. телефон"
@@ -684,6 +708,10 @@ msgstr "Ishga tushirgan"
 msgid "Зарплата"
 msgstr "Ish haqi"
 
+#: pages/home/payouts/payout_list.html
+msgid "Зарплата по месяцам: выплаты сотрудникам и расходы по статье «Зарплата», внесённые одной суммой."
+msgstr "Oylar boʻyicha ish haqi: xodimlarga toʻlovlar va bitta summa bilan kiritilgan «Ish haqi» moddasidagi xarajatlar."
+
 #: pages/home/partials/finance_overview.html
 msgid "Зарплаты"
 msgstr "Ish haqi"
@@ -734,7 +762,7 @@ msgstr "Oʻzgartirish"
 msgid "Изменения"
 msgstr "Oʻzgarishlar"
 
-#: pages/home/contracts/contract_list.html pages/home/finance/account_list.html pages/home/finance/category_list.html pages/home/finance/counterparty_list.html pages/home/payouts/payout_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/finance/account_list.html pages/home/finance/category_list.html pages/home/finance/counterparty_list.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
 msgid "Изменить"
 msgstr "Oʻzgartirish"
 
@@ -745,6 +773,10 @@ msgstr "Shartnomani oʻzgartirish"
 #: users/views.py
 msgid "Изменить контрагента"
 msgstr "Kontragentni tahrirlash"
+
+#: users/views.py
+msgid "Изменить сотрудника"
+msgstr "Xodimni tahrirlash"
 
 #: users/views.py
 msgid "Изменить статью"
@@ -821,6 +853,10 @@ msgstr "Jami"
 #: users/views.py
 msgid "Итого в месяц"
 msgstr "Oyiga jami"
+
+#: pages/home/payouts/payout_list.html
+msgid "Итого зарплата"
+msgstr "Jami ish haqi"
 
 #: users/models.py
 msgid "Июль"
@@ -922,7 +958,7 @@ msgstr "Mart"
 msgid "Меню"
 msgstr "Menyu"
 
-#: pages/home/contracts/contract_detail.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/models.py users/views.py
 msgid "Месяц"
 msgstr "Oy"
 
@@ -1131,6 +1167,10 @@ msgid "Новый перевод"
 msgstr "Yangi oʻtkazma"
 
 #: users/views.py
+msgid "Новый сотрудник"
+msgstr "Yangi xodim"
+
+#: users/views.py
 msgid "Новый счёт"
 msgstr "Yangi hisob"
 
@@ -1193,6 +1233,10 @@ msgstr "Majburiy"
 #: users/forms.py
 msgid "Обязательное поле."
 msgstr "Majburiy maydon."
+
+#: pages/home/payouts/payout_list.html
+msgid "Одной суммой"
+msgstr "Bitta summa"
 
 #: integrations/models.py
 msgid "Окончание"
@@ -1441,6 +1485,10 @@ msgstr "Shartnoma boʻyicha hisoblash yoʻq."
 msgid "По месяцам"
 msgstr "Oylar boʻyicha"
 
+#: pages/home/payouts/payout_list.html
+msgid "По сотрудникам"
+msgstr "Xodimlar boʻyicha"
+
 #: pages/home/partials/finance_overview.html
 msgid "По школам"
 msgstr "Maktablar boʻyicha"
@@ -1494,6 +1542,10 @@ msgid "Пользователь"
 msgstr "Foydalanuvchi"
 
 #: users/models.py
+msgid "Пользователь платформы"
+msgstr "Platforma foydalanuvchisi"
+
+#: users/models.py
 msgid "Порядок"
 msgstr "Tartib"
 
@@ -1504,6 +1556,10 @@ msgstr "Oxirgi oy"
 #: users/forms.py
 msgid "Последний месяц раньше первого."
 msgstr "Oxirgi oy birinchisidan oldin."
+
+#: pages/home/payouts/staff_list.html
+msgid "Последняя выплата"
+msgstr "Oxirgi toʻlov"
 
 #: users/models.py
 msgid "Поставщик"
@@ -1639,6 +1695,10 @@ msgstr "Boʻsh boʻlsa — shartnoma sanasidan aniqlanadi."
 #: users/models.py
 msgid "Пусто — по виду счёта: «Касса», «Расчётный счёт», «Терминал»."
 msgstr "Boʻsh boʻlsa — hisob turi boʻyicha: «Kassa», «Hisob raqami», «Terminal»."
+
+#: users/models.py
+msgid "Работает"
+msgstr "Ishlaydi"
 
 #: pages/home/employee.html
 msgid "Рабочая панель - SchoolPR"
@@ -1919,7 +1979,7 @@ msgstr "Maktab yaratish"
 msgid "Сотрудник"
 msgstr "Xodim"
 
-#: pages/base.html pages/home/schools/school_list.html
+#: pages/base.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/schools/school_list.html users/models.py
 msgid "Сотрудники"
 msgstr "Xodimlar"
 
@@ -1930,6 +1990,10 @@ msgstr "Xodimlar ↔ 1C jismoniy shaxslari"
 #: pages/home/director.html
 msgid "Сотрудников в школе"
 msgstr "Maktabdagi xodimlar"
+
+#: pages/home/payouts/staff_list.html
+msgid "Сотрудников пока нет."
+msgstr "Hozircha xodimlar yoʻq."
 
 #: pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
 msgid "Сохранить"
@@ -2125,13 +2189,13 @@ msgstr "Bunday tranzaksiya allaqachon bor — takrorlanmasligi uchun qator oʻtk
 msgid "Таких поступлений нет."
 msgstr "Bunday tushumlar yoʻq."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/users/user_list.html users/excel_import.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/staff_list.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Телефон"
 msgstr "Telefon"
 
 #: users/excel_import.py
-msgid "Телефон сотрудника (надёжнее) или имя, как на платформе."
-msgstr "Xodimning telefoni (ishonchliroq) yoki platformadagi ismi."
+msgid "Телефон сотрудника (надёжнее) или ФИО, как в справочнике сотрудников."
+msgstr "Xodim telefoni (ishonchliroq) yoki xodimlar roʻyxatidagi F.I.Sh."
 
 #: users/models.py
 msgid "Терминал"
@@ -2269,6 +2333,10 @@ msgstr "Hozircha oʻquv yillari yoʻq."
 msgid "Ученик"
 msgstr "Oʻquvchi"
 
+#: users/forms.py
+msgid "Учитель, повар, охранник…"
+msgstr "Oʻqituvchi, oshpaz, qoʻriqchi…"
+
 #: pages/home/finance/_finance_nav.html pages/home/finance/counterparty_list.html
 msgid "Учредители и контрагенты"
 msgstr "Taʼsischilar va kontragentlar"
@@ -2288,6 +2356,10 @@ msgstr "Maʼlumotnomadagi taʼsischi, bank yoki yetkazib beruvchi. Toʻldirmasa 
 #: users/forms.py
 msgid "Учредитель, банк, поставщик — если деньги от них или им."
 msgstr "Taʼsischi, bank, yetkazib beruvchi — agar pul ulardan yoki ularga boʻlsa."
+
+#: pages/home/payouts/staff_list.html users/models.py
+msgid "ФИО"
+msgstr "F.I.Sh."
 
 #: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО родителей"
@@ -2359,7 +2431,7 @@ msgstr ".xlsx shabloni"
 msgid "Школ"
 msgstr "Maktablar"
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html pages/home/users/user_form.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Школа"
 msgstr "Maktab"
 
@@ -2448,6 +2520,10 @@ msgstr "bekor qilingan sana shartnoma sanasidan oldin"
 #, python-format
 msgid "договор «%(number)s» не найден"
 msgstr "«%(number)s» shartnomasi topilmadi"
+
+#: pages/home/payouts/staff_list.html
+msgid "доступ"
+msgstr "kirish"
 
 #: pages/home/integrations/integration.html
 msgid "доступна всегда"
@@ -2634,6 +2710,10 @@ msgstr "turini yoki moddani koʻrsating"
 #, python-format
 msgid "учебный год «%(name)s» не найден на платформе"
 msgstr "«%(name)s» oʻquv yili platformada topilmadi"
+
+#: pages/home/payouts/payout_list.html
+msgid "чел."
+msgstr "kishi"
 
 #: users/excel_import.py
 #, python-format

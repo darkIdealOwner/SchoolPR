@@ -278,13 +278,13 @@ class DirectorTests(RoleTestBase):
         form_page = self.client.get(reverse('payout_create'))
         self.assertNotContains(form_page, 'Сотрудник Б')
         self.client.post(reverse('payout_create'), {
-            'employee': self.employee_a.pk, 'for_month': '2026-10-01', 'amount': '3000000',
+            'employee': self.employee_a.staff_profile.pk, 'for_month': '2026-10-01', 'amount': '3000000',
             'payout_date': '2026-10-05', 'notes': 'Зарплата'})
         payout = EmployeePayout.objects.get()
         self.assertEqual((payout.school, payout.created_by), (self.school_a, self.director_a))
 
         self.client.post(reverse('payout_edit', args=[payout.pk]), {
-            'employee': self.employee_a.pk, 'for_month': '2026-10-01', 'amount': '3200000',
+            'employee': self.employee_a.staff_profile.pk, 'for_month': '2026-10-01', 'amount': '3200000',
             'payout_date': '2026-10-05', 'notes': 'Зарплата + премия'})
         payout.refresh_from_db()
         self.assertEqual(payout.amount, Decimal(3200000))
@@ -298,7 +298,7 @@ class DirectorTests(RoleTestBase):
 
     def test_cannot_pay_out_to_other_school_employee(self):
         response = self.client.post(reverse('payout_create'), {
-            'employee': self.employee_b.pk, 'for_month': '2026-10-01', 'amount': '100', 'payout_date': '2026-10-05'})
+            'employee': self.employee_b.staff_profile.pk, 'for_month': '2026-10-01', 'amount': '100', 'payout_date': '2026-10-05'})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(EmployeePayout.objects.exists())
 
@@ -489,7 +489,7 @@ class InvestorTests(RoleTestBase):
         self.assertContains(self.client.get(reverse('contract_list') + '?q=A-1'), 'Ученик Альфа')
 
     def test_reads_payouts_and_transactions_without_edit_links(self):
-        payout = EmployeePayout.objects.create(employee=self.employee_a, school=self.school_a,
+        payout = EmployeePayout.objects.create(employee=self.employee_a.staff_profile, school=self.school_a,
                                                for_month=date(2026, 9, 1), amount=Decimal(100))
         tr = Transaction.objects.create(school=self.school_b, type='EXPENSE', amount=Decimal(50),
                                         category=Category.objects.get(name='Аренда'))

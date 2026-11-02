@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from integrations.models import SyncRun
-from users.models import Category, Contract, EmployeePayout, Payment, School, Transaction, User
+from users.models import Category, Contract, Staff, EmployeePayout, Payment, School, Transaction, User
 
 LANG_COOKIE = settings.LANGUAGE_COOKIE_NAME
 LANGS = ['uz', 'en', 'ko']
@@ -43,7 +43,8 @@ def cyrillic_snippets(html):
 class I18nAuditBase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # Пользователи из seed-миграции названы по-русски — это данные, а не интерфейс
+        # Пользователи из seed-миграции (и их карточки сотрудников) названы по-русски — это данные, а не интерфейс
+        Staff.objects.all().delete()
         User.objects.all().delete()
         cls.school = School.objects.create(name='Alpha School', address='Main street 1')
         cls.empty_school = School.objects.create(name='Empty School')
@@ -77,7 +78,7 @@ class I18nAuditBase(TestCase):
         reversed_payment.reverse(cls.director, 'typo')
         Payment.objects.create(contract=cls.contract, for_month=start, amount=Decimal(50000), method='BANK',
                                source='1C', external_id='X-1')
-        cls.payout = EmployeePayout.objects.create(employee=cls.employee, school=cls.school, for_month=start,
+        cls.payout = EmployeePayout.objects.create(employee=cls.employee.staff_profile, school=cls.school, for_month=start,
                                                    amount=Decimal(3000000), notes='salary', created_by=cls.director)
         cls.transaction = Transaction.objects.create(school=cls.school, type='EXPENSE', category=Category.objects.get(name='Аренда'),
                                                      amount=Decimal(800000), notes='October')
@@ -138,6 +139,9 @@ def _owner_pages(t):
         'counterparty_list': reverse('counterparty_list'),
         'counterparty_add': reverse('counterparty_add'),
         'receipt_list': reverse('receipt_list'),
+        'staff_list': reverse('staff_list'),
+        'staff_add': reverse('staff_add'),
+        'payout_summary': reverse('payout_list') + '?mode=summary',
         'receipt_create': reverse('receipt_create'),
         'refund_create': reverse('refund_create', args=[c]),
         'profile': reverse('profile'),
@@ -152,6 +156,7 @@ OWNER_PAGES = ['home', 'contract_list', 'contract_add', 'contract_edit', 'contra
                'school_delete', 'integration', 'academic_year_list', 'academic_year_add', 'contract_list_cancelled',
                'account_list', 'account_add', 'account_edit', 'transfer_list', 'transfer_create', 'category_list',
                'category_add', 'counterparty_list', 'counterparty_add', 'receipt_list', 'receipt_create', 'refund_create',
+               'staff_list', 'staff_add', 'payout_summary',
                'profile', 'password_change']
 ROLE_PAGES = {
     'director_home': ('director', 'home'),

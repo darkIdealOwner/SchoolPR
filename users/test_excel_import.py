@@ -535,7 +535,7 @@ class PayoutImportTests(ImportTestBase):
         self.assertEqual(self.statuses(response), ['ok', 'ok', 'ok', 'error', 'skipped'], self.errors_text(response))
         self.confirm(response, 'payouts')
         self.assertEqual(EmployeePayout.objects.filter(school=self.school_a).count(), 3)
-        self.assertFalse(EmployeePayout.objects.filter(employee=self.employee_b).exists())
+        self.assertFalse(EmployeePayout.objects.filter(employee=self.employee_b.staff_profile).exists())
         self.assertEqual(EmployeePayout.objects.first().created_by, self.director_a)
 
     def test_owner_ambiguous_name_and_default_school(self):
@@ -549,7 +549,7 @@ class PayoutImportTests(ImportTestBase):
         self.assertEqual(EmployeePayout.objects.get().school, self.school_b)
 
     def test_export_of_payouts_round_trip(self):
-        EmployeePayout.objects.create(employee=self.employee_a2, school=self.school_a, for_month=date(2026, 9, 1),
+        EmployeePayout.objects.create(employee=self.employee_a2.staff_profile, school=self.school_a, for_month=date(2026, 9, 1),
                                       amount=Decimal(2500000), payout_date=date(2026, 9, 30))
         self.login(self.director_a)
         exported = self.client.get(reverse('payout_list') + '?export=csv').content

@@ -56,6 +56,14 @@ class User(AbstractUser, ExternalSyncMixin):
     def __str__(self):
         return f"{self.first_name} - {self.get_role_display()}"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.role == 'EMPLOYEE':
+            staff = Staff.for_user(self)
+            if staff.school_id != self.school_id and self.school_id:
+                staff.school = self.school
+                staff.save(update_fields=['school'])
+
     @property
     def masked_phone(self):
         # Format: +998(xx)-***-**-xx
@@ -534,8 +542,40 @@ class Payment(FinancialRecord):
         return gettext("Оплата %(student)s за %(month)s") % {
             'student': self.contract.student_full_name, 'month': self.for_month.strftime('%m/%Y')}
 
+class Staff(ExternalSyncMixin, models.Model):
+    """Сотрудник школы для зарплаты. Входить на платформу ему не обязательно; если входит — связан с пользователем."""
+    school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True, related_name='staff', verbose_name=_("Школа"))
+    full_name = models.CharField(max_length=255, verbose_name=_("ФИО"))
+    position = models.CharField(max_length=100, blank=True, verbose_name=_("Должность"))
+    phone = models.CharField(max_length=20, blank=True, verbose_name=_("Телефон"))
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='staff_profile',
+                                verbose_name=_("Пользователь платформы"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Работает"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание"))
+
+    class Meta:
+        ordering = ['full_name']
+        verbose_name = _("Сотрудник")
+        verbose_name_plural = _("Сотрудники")
+
+    def __str__(self):
+        return f"{self.full_name} · {self.position}" if self.position else self.full_name
+
+    @property
+    def phones(self):
+        phones = [p for p in (self.phone, self.user.phone_number if self.user_id else '') if p]
+        return list(dict.fromkeys(phones))
+
+    @classmethod
+    def for_user(cls, user):
+        """Карточка сотрудника для пользователя-сотрудника (создаётся при первой необходимости)."""
+        staff, _created = cls.objects.get_or_create(user=user, defaults={
+            'school': user.school, 'full_name': user.first_name or user.username, 'phone': user.phone_number})
+        return staff
+
+
 class EmployeePayout(FinancialRecord):
-    employee = models.ForeignKey(User, on_delete=models.PROTECT, limit_choices_to={'role': 'EMPLOYEE'}, related_name='employee_payouts', verbose_name=_("Сотрудник"))
+    employee = models.ForeignKey(Staff, on_delete=models.PROTECT, related_name='payouts', verbose_name=_("Сотрудник"))
     school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='employee_payouts', verbose_name=_("Школа"))
     for_month = models.DateField(verbose_name=_("За месяц (1-е число)"))
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
@@ -551,7 +591,7 @@ class EmployeePayout(FinancialRecord):
 
     def __str__(self):
         return gettext("%(employee)s - %(amount)s за %(month)s") % {
-            'employee': self.employee.first_name, 'amount': self.amount, 'month': self.for_month.strftime('%m/%Y')}
+            'employee': self.employee.full_name, 'amount': self.amount, 'month': self.for_month.strftime('%m/%Y')}
 
     def save(self, *args, **kwargs):
         if self.account_id is None:

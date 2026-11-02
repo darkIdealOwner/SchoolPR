@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Сотрудники" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; white-space: nowrap; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.tbl th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+.off td { opacity: 0.5; }
+.badge-user { font-size: 0.7rem; color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); border-radius: 0.25rem; padding: 0.05rem 0.3rem; margin-left: 0.3rem; }
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'payout_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← {% translate "Выплаты сотрудникам" %}</a>
+<div class="toolbar" style="margin-top: 0.75rem;">
+    <h1 style="margin: 0;">{% translate "Сотрудники" %}</h1>
+    <a href="{% url 'staff_add' %}" class="btn-add">{% translate "Добавить сотрудника" %}</a>
+</div>
+<p class="muted">{% translate "Все, кому школа платит зарплату. Входить на платформу им не нужно; у сотрудников с доступом карточка создаётся сама." %}</p>
+
+<div class="table-container">
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th>{% translate "ФИО" %}</th>
+                {% if user.role == 'OWNER' %}<th>{% translate "Школа" %}</th>{% endif %}
+                <th>{% translate "Должность" %}</th>
+                <th>{% translate "Телефон" %}</th>
+                <th>{% translate "Выплачено всего" %}</th>
+                <th>{% translate "Последняя выплата" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in staff_list %}
+            <tr class="{% if not s.is_active %}off{% endif %}">
+                <td style="font-weight: 600;">{{ s.full_name }}{% if s.user %}<span class="badge-user" title="{% translate "Входит на платформу" %}">{% translate "доступ" %}</span>{% endif %}</td>
+                {% if user.role == 'OWNER' %}<td>{{ s.school.name|default:"—" }}</td>{% endif %}
+                <td>{{ s.position|default:"—" }}</td>
+                <td style="white-space: nowrap;">{% if s.phones %}{{ s.phones.0|phone }}{% else %}—{% endif %}</td>
+                <td style="white-space: nowrap;">{{ s.paid_total|default:0|money }}</td>
+                <td>{{ s.last_payout|date:"d.m.Y"|default:"—" }}</td>
+                <td><a href="{% url 'staff_edit' s.pk %}" style="color: var(--text-muted); text-decoration: none;">{% translate "Изменить" %}</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Сотрудников пока нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

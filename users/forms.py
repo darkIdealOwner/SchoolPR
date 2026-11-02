@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import (
     User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction,
-    Account, Category, Counterparty, Transfer, UnidentifiedReceipt,
+    Account, Category, Counterparty, Transfer, UnidentifiedReceipt, Staff,
 )
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
 from .templatetags.money import money as format_money
@@ -298,12 +298,16 @@ class EmployeePayoutForm(forms.ModelForm):
             if 'school' in self.fields:
                 self.fields.pop('school')
                 
-        # Filter employee choices to those in user's school and only role EMPLOYEE
+        # Сотрудники из справочника: директору — только своей школы
         if user:
-            employee_qs = User.objects.filter(role='EMPLOYEE')
+            staff_qs = Staff.objects.filter(is_active=True).select_related('school')
             if user.role != 'OWNER':
-                employee_qs = employee_qs.filter(school=user.school)
-            self.fields['employee'].queryset = employee_qs
+                staff_qs = staff_qs.filter(school=user.school)
+            elif self.instance.pk:
+                staff_qs = staff_qs | Staff.objects.filter(pk=self.instance.employee_id)
+            self.fields['employee'].queryset = staff_qs
+            if user.role == 'OWNER':
+                self.fields['employee'].label_from_instance = lambda s: f"{s} ({s.school.name if s.school else '—'})"
         setup_account_field(self, user)
 
     def clean(self):
@@ -572,3 +576,30 @@ class ResolveReceiptForm(forms.Form):
         self.fields['for_month'].initial = receipt.date.replace(day=1)
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'input-field'})
+
+
+class StaffForm(forms.ModelForm):
+    class Meta:
+        model = Staff
+        fields = ['school', 'full_name', 'position', 'phone', 'is_active', 'notes']
+        widgets = {'notes': forms.Textarea(attrs={'rows': 2})}
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user and user.role != 'OWNER':
+            self.fields.pop('school')
+        self.fields['phone'].widget.attrs.update({**PHONE_ATTRS, 'type': 'tel'})
+        self.fields['position'].widget.attrs['placeholder'] = _('Учитель, повар, охранник…')
+        for name, field in self.fields.items():
+            if name != 'is_active':
+                field.widget.attrs.setdefault('class', 'input-field')
+
+    def clean_phone(self):
+        value = (self.cleaned_data.get('phone') or '').strip()
+        if not value:
+            return ''
+        phone = normalize_phone(value)
+        if not is_valid_uz_phone(phone):
+            raise forms.ValidationError(_("Введите номер в формате +998 (XX)-XXX-XX-XX."))
+        return phone

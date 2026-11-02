@@ -19,11 +19,11 @@ from django.urls import reverse_lazy
 from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
     EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
-    TransferForm, AccountForm, CategoryForm, CounterpartyForm, RefundForm, ReceiptForm, ResolveReceiptForm,
+    TransferForm, AccountForm, CategoryForm, CounterpartyForm, RefundForm, ReceiptForm, ResolveReceiptForm, StaffForm,
 )
 from . import excel_import
 from .templatetags.money import money as format_money
-from .models import Account, Category, Counterparty, Transfer, UnidentifiedReceipt
+from .models import Account, Category, Counterparty, Transfer, UnidentifiedReceipt, Staff
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
 from .finance import (
     parse_month, contracts_with_active_payments, format_russian_month, get_debt_details,
@@ -733,7 +733,7 @@ class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin,
 
     def get_export_rows(self, context):
         headers = [_('Дата выплаты'), _('За месяц'), _('Сотрудник'), _('Школа'), _('Сумма'), _('Примечание'), _('Сторно'), _('Причина сторно')]
-        rows = [[p.payout_date, format_russian_month(p.for_month), p.employee.first_name, p.school.name, p.amount,
+        rows = [[p.payout_date, format_russian_month(p.for_month), p.employee.full_name, p.school.name, p.amount,
                  p.notes, p.is_reversed, p.reversal_reason] for p in self.object_list]
         return headers, rows
 
@@ -742,6 +742,34 @@ class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin,
         if self.request.user.role == 'DIRECTOR':
             queryset = queryset.filter(school=self.request.user.school)
         return queryset.order_by('-payout_date', '-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mode'] = 'summary' if self.request.GET.get('mode') == 'summary' else 'list'
+        if context['mode'] == 'summary':
+            context['summary'] = self.salary_summary()
+        return context
+
+    def salary_summary(self):
+        """Зарплата одной суммой по месяцам: выплаты сотрудникам + расходы по статьям «зарплата»."""
+        payouts = EmployeePayout.active.all()
+        salary = Transaction.active.filter(category__is_salary=True)
+        if self.request.user.role == 'DIRECTOR':
+            payouts = payouts.filter(school=self.request.user.school)
+            salary = salary.filter(school=self.request.user.school)
+        rows = defaultdict(lambda: {'payouts': Decimal(0), 'lump': Decimal(0), 'people': set()})
+        for p in payouts.only('for_month', 'amount', 'employee_id'):
+            row = rows[p.for_month.replace(day=1)]
+            row['payouts'] += p.amount
+            row['people'].add(p.employee_id)
+        for t in salary.only('date', 'amount'):
+            rows[t.date.replace(day=1)]['lump'] += t.amount
+        result = []
+        for month in sorted(rows, reverse=True):
+            row = rows[month]
+            result.append({'month': month, 'label': format_russian_month(month), 'payouts': row['payouts'],
+                           'people': len(row['people']), 'lump': row['lump'], 'total': row['payouts'] + row['lump']})
+        return result
 
 class EmployeePayoutCreateView(LoginRequiredMixin, OwnerOrDirectorMixin, AuditMixin, CreateView):
     model = EmployeePayout
@@ -1210,3 +1238,46 @@ class ReceiptReverseView(BaseReverseView):
         if self.request.user.role == 'DIRECTOR':
             qs = qs.filter(school=self.request.user.school)
         return qs
+
+
+
+# Справочник сотрудников (для зарплаты; входить на платформу им не обязательно)
+class StaffListView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixin, ListView):
+    template_name = 'home/payouts/staff_list.html'
+    context_object_name = 'staff_list'
+
+    def get_queryset(self):
+        qs = self.scope(Staff.objects.select_related('school', 'user'))
+        return qs.annotate(paid_total=models.Sum('payouts__amount', filter=models.Q(payouts__is_reversed=False)),
+                           last_payout=models.Max('payouts__payout_date', filter=models.Q(payouts__is_reversed=False))) \
+            .order_by('-is_active', 'full_name')
+
+
+class StaffCreateView(LoginRequiredMixin, OwnerOrDirectorMixin, AuditMixin, CreateView):
+    model = Staff
+    form_class = StaffForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('staff_list')
+    extra_context = {'title': gettext_lazy('Новый сотрудник'), 'back_url': reverse_lazy('staff_list')}
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}
+
+    def form_valid(self, form):
+        if self.request.user.role != 'OWNER':
+            form.instance.school = self.request.user.school
+        return super().form_valid(form)
+
+
+class StaffUpdateView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixin, AuditMixin, UpdateView):
+    model = Staff
+    form_class = StaffForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('staff_list')
+    extra_context = {'title': gettext_lazy('Изменить сотрудника'), 'back_url': reverse_lazy('staff_list')}
+
+    def get_queryset(self):
+        return self.scope(Staff.objects.all())
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}

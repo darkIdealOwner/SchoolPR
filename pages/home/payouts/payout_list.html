@@ -5,6 +5,9 @@
 {% block title %}{% translate "Выплаты сотрудникам - SchoolPR" %}{% endblock %}
 
 {% block extra_css %}
+.mode-tabs-pay { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: -1rem 0 1rem 0; }
+.mode-tabs-pay a { padding: 0.4rem 0.8rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); color: var(--text-muted); text-decoration: none; font-size: 0.8125rem; }
+.mode-tabs-pay a.on { background: rgba(99,102,241,0.18); color: var(--text); border-color: transparent; }
 .toolbar {
     display: flex;
     justify-content: space-between;
@@ -98,7 +101,8 @@
 {% block content %}
 <div class="toolbar">
     <h1 style="margin: 0;">{% translate "Выплаты сотрудникам" %}</h1>
-    <div style="display: flex; gap: 0.75rem; align-items: center;">
+    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        {% if user.role != 'INVESTOR' %}<a href="{% url 'staff_list' %}" class="btn-excel">{% translate "Сотрудники" %}</a>{% endif %}
         <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}export=csv" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
         {% if user.role != 'INVESTOR' %}<a href="{% url 'excel_import' 'payouts' %}" class="btn-excel" title="{% translate "Загрузить из таблицы Excel" %}">⬆ {% translate "Из Excel" %}</a>{% endif %}
         {% if user.role != 'INVESTOR' %}
@@ -107,6 +111,38 @@
     </div>
 </div>
 
+<div class="mode-tabs-pay">
+    <a href="?" class="{% if mode == 'list' %}on{% endif %}">{% translate "По сотрудникам" %}</a>
+    <a href="?mode=summary" class="{% if mode == 'summary' %}on{% endif %}">{% translate "Одной суммой" %}</a>
+</div>
+
+{% if mode == 'summary' %}
+<p style="color: var(--text-muted); font-size: 0.875rem;">{% translate "Зарплата по месяцам: выплаты сотрудникам и расходы по статье «Зарплата», внесённые одной суммой." %}</p>
+<div class="table-container">
+    <table class="user-table" style="min-width: 0;">
+        <thead>
+            <tr>
+                <th>{% translate "Месяц" %}</th>
+                <th>{% translate "Выплаты сотрудникам" %}</th>
+                <th>{% translate "Одной суммой" %}</th>
+                <th>{% translate "Итого зарплата" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in summary %}
+            <tr>
+                <td style="font-weight: 600;">{{ row.label }}</td>
+                <td>{{ row.payouts|money }}{% if row.people %} <span style="color: var(--text-muted); font-size: 0.75rem;">· {{ row.people }} {% translate "чел." %}</span>{% endif %}</td>
+                <td>{{ row.lump|money }}</td>
+                <td style="font-weight: 700;">{{ row.total|money }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Выплат пока нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
 <div class="table-container">
     <table class="user-table">
         <thead>
@@ -123,7 +159,7 @@
         <tbody>
             {% for p in payouts_list %}
             <tr{% if p.is_reversed %} class="reversed-row"{% endif %}>
-                <td style="font-weight: 600;">{{ p.employee.first_name }}</td>
+                <td style="font-weight: 600;">{{ p.employee.full_name }}{% if p.employee.position %}<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400;">{{ p.employee.position }}</div>{% endif %}</td>
                 <td>{{ p.school.name }}</td>
                 <td>{{ p.for_month|date:"YEAR_MONTH_FORMAT" }}</td>
                 <td style="font-weight: 700; color: #10b981;">{{ p.amount|money }} {% translate "сум" %}</td>
@@ -175,4 +211,5 @@
 <div style="margin-top: 2rem;">
     <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>
 </div>
+{% endif %}
 {% endblock %}

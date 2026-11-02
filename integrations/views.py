@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.views.generic import FormView
 
-from users.models import Contract, Payment, School, User
+from users.models import Contract, Payment, School, User, Staff
 
 from .importers import run_import
 from .models import SyncRun
@@ -52,7 +52,7 @@ class IntegrationView(LoginRequiredMixin, UserPassesTestMixin, FormView):
             'api_configured': bool(settings.ONEC_API_TOKEN),
             'link_stats': [
                 (_('Школы ↔ подразделения 1С'), linked(School.objects.all())),
-                (_('Сотрудники ↔ физлица 1С'), linked(User.objects.filter(role='EMPLOYEE'))),
+                (_('Сотрудники ↔ физлица 1С'), linked(Staff.objects.all())),
                 (_('Договоры ↔ договоры контрагентов 1С'), linked(Contract.objects.all())),
             ],
             'payments_from_1c': Payment.objects.filter(source=Payment.SOURCE_1C).count(),

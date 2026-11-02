@@ -92,11 +92,11 @@ class FinanceTestCase(TestCase):
     def test_employee_payout_creation_and_form_filtering(self):
         # Director form should filter employees to their school
         form = EmployeePayoutForm(user=self.director)
-        self.assertIn(self.employee, form.fields['employee'].queryset)
+        self.assertIn(self.employee.staff_profile, form.fields['employee'].queryset)
         
         # Test creating payout
         payout = EmployeePayout.objects.create(
-            employee=self.employee,
+            employee=self.employee.staff_profile,
             school=self.school,
             for_month="2026-08-01",
             amount=1500000,
@@ -280,7 +280,7 @@ class OverviewTestCase(TestCase):
         Payment.objects.create(contract=self.contract, for_month=date(2026, 10, 1), amount=Decimal(400), payment_date=date(2026, 10, 3))
         reversed_payment = Payment.objects.create(contract=self.contract, for_month=date(2026, 9, 1), amount=Decimal(1000), payment_date=date(2026, 9, 3))
         reversed_payment.reverse(self.user, "ошибка")
-        EmployeePayout.objects.create(employee=User.objects.create_user(username="t_e2", phone_number="+998900000021", password="x", role="EMPLOYEE"),
+        EmployeePayout.objects.create(employee=User.objects.create_user(username="t_e2", phone_number="+998900000021", password="x", role="EMPLOYEE").staff_profile,
                                       school=self.school, for_month=date(2026, 10, 1), amount=Decimal(300), payout_date=date(2026, 10, 5))
         Transaction.objects.create(school=self.school, type='EXPENSE', amount=Decimal(50), date=date(2026, 10, 7))
         Transaction.objects.create(school=self.other, type='INCOME', amount=Decimal(5000), date=date(2026, 10, 8))

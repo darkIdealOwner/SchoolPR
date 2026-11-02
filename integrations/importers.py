@@ -10,9 +10,10 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
 from django.db import transaction as db_transaction
+from django.db.models import Q
 from django.utils import timezone
 
-from users.models import AuditLog, Category, Contract, EmployeePayout, Payment, School, Transaction, User, ExternalSyncMixin
+from users.models import AuditLog, Category, Contract, Staff, EmployeePayout, Payment, School, Transaction, User, ExternalSyncMixin
 
 from .models import SyncRun
 
@@ -103,14 +104,21 @@ def find_school(record):
     )
 
 
+def staff_by_phone(phone):
+    phone = str(phone).strip()
+    return Staff.objects.filter(Q(phone=phone) | Q(user__phone_number=phone)).first()
+
+
 def find_employee(record):
-    qs = User.objects.filter(role='EMPLOYEE')
+    """Сотрудник из справочника сотрудников: по GUID физлица 1С, иначе по телефону."""
     if record.get('employee_external_id'):
-        employee = qs.filter(external_id=record['employee_external_id']).first()
+        guid = record['employee_external_id']
+        # GUID мог быть проставлен раньше пользователю платформы — ищем и через него
+        employee = Staff.objects.filter(Q(external_id=guid) | Q(user__external_id=guid)).first()
         if employee:
             return employee
     if record.get('employee_phone'):
-        employee = qs.filter(phone_number=str(record['employee_phone']).strip()).first()
+        employee = staff_by_phone(record['employee_phone'])
         if employee:
             return employee
     raise RecordError(
@@ -227,7 +235,7 @@ def _apply_document(model, build_fields, record, now):
 LINKS = {
     # entity: (модель, поиск записи платформы по значению, ключ в записи)
     'schools': (School, school_by_name, 'name'),
-    'employees': (User, lambda v: User.objects.filter(role='EMPLOYEE', phone_number=v).first(), 'phone'),
+    'employees': (Staff, staff_by_phone, 'phone'),
     'contracts': (Contract, lambda v: Contract.objects.filter(number=v).first(), 'number'),
 }
 

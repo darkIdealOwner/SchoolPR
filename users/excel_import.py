@@ -26,7 +26,7 @@ from django.utils.translation import gettext as _, gettext_lazy
 
 from .finance import format_russian_month
 from .forms import ContractForm, PaymentForm, EmployeePayoutForm, TransactionForm
-from .models import Account, AcademicYear, AuditLog, Category, Counterparty, Contract, EmployeePayout, Payment, School, Transaction, User
+from .models import Account, AcademicYear, AuditLog, Category, Counterparty, Contract, Staff, EmployeePayout, Payment, School, Transaction, User
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
 from .templatetags.money import money as format_money
 
@@ -153,7 +153,7 @@ KINDS = {
         'filename': 'shablon_vyplaty',
         'columns': [
             Column('employee', gettext_lazy('Сотрудник'), 'employee', EmployeePayout, required=True, width=30,
-                   hint=gettext_lazy("Телефон сотрудника (надёжнее) или имя, как на платформе.")),
+                   hint=gettext_lazy("Телефон сотрудника (надёжнее) или ФИО, как в справочнике сотрудников.")),
             Column('school', gettext_lazy('Школа'), 'school', EmployeePayout, owner_only=True, width=24,
                    hint=gettext_lazy("Только для владельца. Пусто — школа сотрудника.")),
             Column('for_month', gettext_lazy('За месяц'), 'for_month', EmployeePayout, required=True, hint=MONTH_HINT),
@@ -592,7 +592,7 @@ class Context:
         self.user = user
         self.schools = list(School.objects.all())
         contracts = Contract.objects.select_related('school')
-        employees = User.objects.filter(role='EMPLOYEE').select_related('school')
+        employees = Staff.objects.filter(is_active=True).select_related('school', 'user')
         if user.role != 'OWNER':
             contracts = contracts.filter(school=user.school)
             employees = employees.filter(school=user.school)
@@ -743,9 +743,9 @@ def find_employee(row, ctx):
         return None
     phone = normalize_phone(text)
     if is_valid_uz_phone(phone):
-        found = [e for e in ctx.employees if e.phone_number == phone]
+        found = [e for e in ctx.employees if phone in e.phones]
     else:
-        found = find_by_name(ctx.employees, text, 'first_name')
+        found = find_by_name(ctx.employees, text, 'full_name')
         if len(found) > 1:
             row.error('employee', _("несколько сотрудников с именем «%(name)s» — укажите телефон") % {'name': text})
             return None
@@ -774,7 +774,7 @@ def check_payout(values, ctx, result):
     if result.errors:
         return
 
-    result.summary = [employee.first_name, school.name if school else '', format_russian_month(for_month),
+    result.summary = [employee.full_name, school.name if school else '', format_russian_month(for_month),
                       money(amount), payout_date.strftime('%d.%m.%Y')]
     if EmployeePayout.active.filter(employee=employee, for_month=for_month, amount=amount, payout_date=payout_date).exists():
         result.status = RowResult.EXISTS
@@ -936,8 +936,8 @@ def build_template(kind, user):
         'category': lambda: [c.display_name for c in Category.objects.filter(is_active=True)],
         'account': lambda: [str(label) for kind, label in Account.KIND_CHOICES if kind != Account.KIND_OTHER],
         'counterparty': lambda: [c.display_name for c in Counterparty.objects.all()],
-        'employee': lambda: [f"{e.first_name} — {format_phone(e.phone_number)}"
-                             for e in User.objects.filter(role='EMPLOYEE', **({} if user.role == 'OWNER' else {'school': user.school}))],
+        'employee': lambda: [f"{e.full_name} — {format_phone(e.phones[0])}" if e.phones else e.full_name
+                             for e in Staff.objects.filter(is_active=True, **({} if user.role == 'OWNER' else {'school': user.school}))],
         'cancelled': lambda: [_('да')],
         'reversed': lambda: [_('да')],
     }
