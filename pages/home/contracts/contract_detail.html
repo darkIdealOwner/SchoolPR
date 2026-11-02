@@ -46,10 +46,13 @@
     <div>
         <h1>{{ contract.student_full_name }}</h1>
         <div class="meta">
-            {% blocktranslate with number=contract.number date=contract.date|date:"d.m.Y" %}Договор № {{ number }} от {{ date }}{% endblocktranslate %} · {{ contract.school.name|default:_("Без школы") }} · {% blocktranslate with grade=contract.student_class %}{{ grade }} класс{% endblocktranslate %} · {{ contract.get_specialization_display }}
+            {% blocktranslate with number=contract.number date=contract.date|date:"d.m.Y" %}Договор № {{ number }} от {{ date }}{% endblocktranslate %}{% if contract.academic_year %} · {{ contract.academic_year.name }}{% endif %} · {% blocktranslate with month=contract.first_billing_month|date:"m.Y" %}обучение с {{ month }}{% endblocktranslate %} · {{ contract.school.name|default:_("Без школы") }} · {% blocktranslate with grade=contract.student_class %}{{ grade }} класс{% endblocktranslate %} · {{ contract.get_specialization_display }}
         </div>
         <div style="margin-top: 0.6rem;">
             <span class="badge {{ status.0 }}">{{ status.1 }}{% if contract.is_cancelled and contract.cancelled_at %} {{ contract.cancelled_at|date:"d.m.Y" }}{% endif %}</span>
+            {% if contract.cancellation_date_unknown %}
+            <span class="badge cancelled" style="opacity: 0.8;">{% translate "дата отмены не указана" %}{% if contract.last_billing_month %} · {% blocktranslate with month=contract.last_billing_month|date:"m.Y" %}начисления по {{ month }}{% endblocktranslate %}{% else %} · {% translate "без начислений" %}{% endif %}</span>
+            {% endif %}
         </div>
     </div>
     {% if can_edit %}

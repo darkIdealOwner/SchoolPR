@@ -124,6 +124,9 @@ def _owner_pages(t):
         'school_edit': reverse('school_edit', args=[t.school.pk]),
         'school_delete': reverse('school_delete', args=[t.empty_school.pk]),
         'integration': reverse('integration'),
+        'academic_year_list': reverse('academic_year_list'),
+        'academic_year_add': reverse('academic_year_add'),
+        'contract_list_cancelled': reverse('contract_list') + '?status=no_cancel_date',
         'profile': reverse('profile'),
         'password_change': reverse('password_change'),
     }
@@ -133,7 +136,8 @@ OWNER_PAGES = ['home', 'contract_list', 'contract_add', 'contract_edit', 'contra
                'contract_delete', 'payment_list', 'payment_create', 'payment_reverse', 'debt_list', 'debt_list_monthly',
                'payout_list', 'payout_create', 'payout_edit', 'transaction_list', 'transaction_create', 'transaction_edit',
                'user_list', 'user_add', 'user_edit', 'user_delete', 'school_list', 'school_add', 'school_edit',
-               'school_delete', 'integration', 'profile', 'password_change']
+               'school_delete', 'integration', 'academic_year_list', 'academic_year_add', 'contract_list_cancelled',
+               'profile', 'password_change']
 ROLE_PAGES = {
     'director_home': ('director', 'home'),
     'employee_home': ('employee', 'home'),

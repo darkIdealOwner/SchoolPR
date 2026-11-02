@@ -163,11 +163,12 @@ class DebtCalculationTestCase(TestCase):
         contract = self.make_contract(is_cancelled=True, cancelled_at=date(2026, 1, 20))
         self.assertEqual(self.debt(contract, date(2026, 10, 1)), (Decimal(0), []))
 
-    def test_cancel_sets_date_automatically(self):
+    def test_cancel_without_date_keeps_date_empty(self):
+        # Дата отмены неизвестна — не подставляем «сегодня», начисления идут до последнего оплаченного месяца
         contract = self.make_contract()
         contract.is_cancelled = True
         contract.save()
-        self.assertIsNotNone(contract.cancelled_at)
+        self.assertIsNone(contract.cancelled_at)
 
     def test_reversed_payment_is_not_counted(self):
         contract = self.make_contract()
@@ -273,7 +274,8 @@ class OverviewTestCase(TestCase):
         self.user = User.objects.create_user(username="t_ov", phone_number="+998900000020", password="x", role="OWNER")
         # 3 месяца по 1000, оплачен только первый
         self.contract = Contract.objects.create(number="O-1", user=self.user, school=self.school,
-                                                date=date(2026, 8, 5), duration_months=12, tuition_fee=Decimal(1000))
+                                                date=date(2026, 8, 5), billing_start=date(2026, 8, 1),
+                                                duration_months=12, tuition_fee=Decimal(1000))
         Payment.objects.create(contract=self.contract, for_month=date(2026, 8, 1), amount=Decimal(1000), payment_date=date(2026, 8, 10))
         Payment.objects.create(contract=self.contract, for_month=date(2026, 10, 1), amount=Decimal(400), payment_date=date(2026, 10, 3))
         reversed_payment = Payment.objects.create(contract=self.contract, for_month=date(2026, 9, 1), amount=Decimal(1000), payment_date=date(2026, 9, 3))

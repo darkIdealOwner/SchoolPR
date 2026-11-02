@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -98,6 +100,43 @@ class School(ExternalSyncMixin, models.Model):
     def __str__(self):
         return self.name
 
+
+class AcademicYear(models.Model):
+    """Учебный год сети (у всех школ одинаковый): обычно сентябрь–июнь.
+
+    Договор подписывают заранее (летом), а начисления идут с первого месяца учебного года.
+    """
+    name = models.CharField(max_length=20, unique=True, verbose_name=_("Название"))
+    start_month = models.DateField(verbose_name=_("Первый месяц"))
+    end_month = models.DateField(verbose_name=_("Последний месяц"))
+
+    class Meta:
+        ordering = ['-start_month']
+        verbose_name = _("Учебный год")
+        verbose_name_plural = _("Учебные годы")
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.start_month = self.start_month.replace(day=1)
+        self.end_month = self.end_month.replace(day=1)
+        super().save(*args, **kwargs)
+
+    @property
+    def months_count(self):
+        return (self.end_month.year - self.start_month.year) * 12 + self.end_month.month - self.start_month.month + 1
+
+    @classmethod
+    def for_date(cls, day):
+        """Учебный год для договора от этой даты: идущий сейчас или начинающийся в ближайшие 3 месяца.
+
+        Договор от июня относится к году, который начнётся в сентябре.
+        """
+        month = day.replace(day=1)
+        return cls.objects.filter(start_month__lte=shift_month(month, 3), end_month__gte=month).order_by('-start_month').first()
+
+
 class Contract(ExternalSyncMixin, models.Model):
     MONTH_CHOICES = [
         ('Январь', _('Январь')), ('Февраль', _('Февраль')), ('Март', _('Март')),
@@ -129,6 +168,9 @@ class Contract(ExternalSyncMixin, models.Model):
     discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Скидка, сум"))
     food_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Стоимость питания"))
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.PROTECT, null=True, blank=True,
+                                      related_name='contracts', verbose_name=_("Учебный год"))
+    billing_start = models.DateField(null=True, blank=True, verbose_name=_("Первый месяц обучения"))
     is_cancelled = models.BooleanField(default=False, verbose_name=_("Отметка об отмены договора"))
     cancelled_at = models.DateField(null=True, blank=True, verbose_name=_("Дата отмены договора"))
     notes = models.TextField(blank=True, verbose_name=_("Примечание"))
@@ -145,33 +187,75 @@ class Contract(ExternalSyncMixin, models.Model):
         discount_rate = Decimal(self.discount_percentage) / Decimal(100)
         self.discount_amount = self.tuition_fee * discount_rate
         self.total_amount = (self.tuition_fee - self.discount_amount) + self.food_cost
-        if self.is_cancelled and not self.cancelled_at:
-            self.cancelled_at = timezone.localdate()
+        # Дата отмены может быть неизвестна — тогда начисления идут до последнего оплаченного месяца
         if not self.is_cancelled:
             self.cancelled_at = None
+        if isinstance(self.date, datetime):
+            # default=timezone.now даёт дату со временем
+            self.date = timezone.localtime(self.date).date() if timezone.is_aware(self.date) else self.date.date()
+        if self.pk is None and self.academic_year_id is None and self.date:
+            self.academic_year = AcademicYear.for_date(self.date)
+        if self.billing_start:
+            self.billing_start = self.billing_start.replace(day=1)
+        elif self.date:
+            self.billing_start = self.default_billing_start()
         super().save(*args, **kwargs)
+
+    def default_billing_start(self):
+        """Позднее из «начало учебного года» и «месяц договора»: договор от июня → с сентября."""
+        month = self.date.replace(day=1)
+        if self.academic_year:
+            return max(month, self.academic_year.start_month)
+        return month
 
     @property
     def first_billing_month(self):
-        return self.date.replace(day=1)
+        return self.billing_start or self.default_billing_start()
+
+    @property
+    def last_paid_month(self):
+        """Последний месяц, за который есть действующая оплата (учитывает prefetch оплат)."""
+        if self.pk is None:
+            return None
+        months = [p.for_month.replace(day=1) for p in self.payments.all() if not p.is_reversed]
+        return max(months) if months else None
+
+    @property
+    def cancellation_date_unknown(self):
+        return self.is_cancelled and not self.cancelled_at
 
     @property
     def last_billing_month(self):
         """Последний месяц (1-е число), за который начисляется оплата, или None, если начислений нет.
 
-        Начисления идут duration_months месяцев с месяца договора.
-        При отмене договора месяц отмены и следующие уже не начисляются.
+        Начисления идут duration_months месяцев с первого месяца обучения.
+        При отмене договора месяц отмены и следующие уже не начисляются;
+        если дата отмены неизвестна — начисления заканчиваются последним оплаченным месяцем.
         """
         if self.duration_months <= 0:
             return None
         last = shift_month(self.first_billing_month, self.duration_months - 1)
         if self.is_cancelled:
-            if not self.cancelled_at:
-                return None
-            last = min(last, shift_month(self.cancelled_at.replace(day=1), -1))
+            if self.cancelled_at:
+                last = min(last, shift_month(self.cancelled_at.replace(day=1), -1))
+            else:
+                paid = self.last_paid_month
+                if paid is None:
+                    return None
+                last = min(last, paid)
             if last < self.first_billing_month:
                 return None
         return last
+
+    def status(self, today=None):
+        """(код, подпись): active — действует, cancelled — отменён, finished — срок закончился."""
+        month = (today or timezone.localdate()).replace(day=1)
+        if self.is_cancelled:
+            return ('cancelled', gettext('Отменён'))
+        last = self.last_billing_month
+        if last is not None and last < month:
+            return ('finished', gettext('Завершён'))
+        return ('active', gettext('Действует'))
 
     def is_billable_in(self, month_first):
         last = self.last_billing_month

@@ -71,6 +71,12 @@
     background-color: rgba(255, 255, 255, 0.01);
 }
 
+.filters { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: -1rem 0 1.25rem 0; }
+.filters select { width: auto; min-width: 0; max-width: 100%; margin: 0; }
+.st-active { color: #10b981; font-weight: 600; }
+.st-finished { color: var(--text-muted); font-weight: 600; }
+.st-cancelled { color: #ef4444; font-weight: 600; }
+
 .cancelled-icon {
     color: #ef4444;
     font-weight: bold;
@@ -141,6 +147,18 @@
     </div>
 </div>
 
+<form method="get" class="filters">
+    {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+    <select name="status" class="input-field" onchange="this.form.submit()" aria-label="{% translate "Статус" %}">
+        {% for value, label in status_filters %}<option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="year" class="input-field" onchange="this.form.submit()" aria-label="{% translate "Учебный год" %}">
+        <option value="">{% translate "Все учебные годы" %}</option>
+        {% for y in academic_years %}<option value="{{ y.pk }}" {% if request.GET.year == y.pk|stringformat:"s" %}selected{% endif %}>{{ y.name }}</option>{% endfor %}
+    </select>
+    <noscript><button type="submit" class="btn-add">{% translate "Показать" %}</button></noscript>
+</form>
+
 <div class="table-container">
     <table class="user-table">
         <thead>
@@ -148,7 +166,7 @@
                 <th>№</th>
                 <th>{% translate "Школа" %}</th>
                 <th>{% translate "Дата" %}</th>
-                <th>{% translate "Месяц" %}</th>
+                <th>{% translate "Обучение с" %}</th>
                 <th>{% translate "ФИО ученика" %}</th>
                 <th>{% translate "Год рожд." %}</th>
                 <th>{% translate "Класс" %}</th>
@@ -166,7 +184,7 @@
                 <th>{% translate "Скидка сум" %}</th>
                 <th>{% translate "Питание" %}</th>
                 <th>{% translate "Итого" %}</th>
-                <th>{% translate "Отмена" %}</th>
+                <th>{% translate "Статус" %}</th>
                 <th>{% translate "Примечание" %}</th>
                 <th>{% translate "Действия" %}</th>
             </tr>
@@ -177,7 +195,7 @@
                 <td style="font-weight: 600;"><a href="{% url 'contract_detail' c.pk %}" style="color: var(--primary); text-decoration: none;">{{ c.number }}</a></td>
                 <td>{{ c.school.name|default:"—" }}</td>
                 <td>{{ c.date|date:"d.m.Y" }}</td>
-                <td>{{ c.get_month_display }}</td>
+                <td>{{ c.first_billing_month|date:"m.Y" }}</td>
                 <td><a href="{% url 'contract_detail' c.pk %}" style="color: var(--text); text-decoration: none;">{{ c.student_full_name }}</a></td>
                 <td>{{ c.student_birth_year }}</td>
                 <td>{{ c.student_class }}</td>
@@ -196,12 +214,14 @@
                 <td>{{ c.food_cost|money }}</td>
                 <td style="font-weight: 700; color: var(--accent);">{{ c.total_amount|money }}</td>
                 <td style="text-align: center;">
+                    {% with st=c.status %}
+                    <span class="st-{{ st.0 }}">{{ st.1 }}</span>
                     {% if c.is_cancelled %}
-                        <span class="cancelled-icon">✓</span>
-                        <div style="font-size: 0.7rem; color: var(--text-muted);">{{ c.cancelled_at|date:"d.m.Y" }}</div>
-                    {% else %}
-                        <span style="color: rgba(255,255,255,0.1);">○</span>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">
+                            {% if c.cancelled_at %}{{ c.cancelled_at|date:"d.m.Y" }}{% else %}{% translate "дата не указана" %}{% if c.last_billing_month %} · {% blocktranslate with month=c.last_billing_month|date:"m.Y" %}начисления по {{ month }}{% endblocktranslate %}{% endif %}{% endif %}
+                        </div>
                     {% endif %}
+                    {% endwith %}
                 </td>
                 <td title="{{ c.notes }}">
                     <div style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -214,7 +234,7 @@
                     {% else %}
                         <div style="display: flex; gap: 0.75rem;">
                             <a href="{% url 'contract_edit' c.pk %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.75rem;">{% translate "Изменить" %}</a>
-                            <a href="{% url 'contract_delete' c.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">{% translate "Удалить" %}</a>
+                            {% if not c.is_cancelled %}<a href="{% url 'contract_delete' c.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">{% translate "Удалить" %}</a>{% endif %}
                         </div>
                     {% endif %}
                 </td>
@@ -231,13 +251,13 @@
 {% if is_paginated %}
 <div class="pagination">
     {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}" class="page-link">&laquo;</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&year={{ request.GET.year|urlencode }}" class="page-link">&laquo;</a>
     {% endif %}
 
     <span class="page-info">{% blocktranslate with page=page_obj.number pages=page_obj.paginator.num_pages %}Страница {{ page }} из {{ pages }}{% endblocktranslate %}</span>
 
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}" class="page-link">&raquo;</a>
+        <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&year={{ request.GET.year|urlencode }}" class="page-link">&raquo;</a>
     {% endif %}
 </div>
 {% endif %}

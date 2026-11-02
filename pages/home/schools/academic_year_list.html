@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% block title %}{% translate "Учебные годы" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.years { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.years th, .years td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.years th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; white-space: nowrap; }
+.current { color: #10b981; font-size: 0.75rem; font-weight: 600; margin-left: 0.4rem; }
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'school_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← {% translate "Школы" %}</a>
+<div class="toolbar" style="margin-top: 0.75rem;">
+    <h1 style="margin: 0;">{% translate "Учебные годы" %}</h1>
+    <a href="{% url 'academic_year_add' %}" class="btn-add">{% translate "Добавить учебный год" %}</a>
+</div>
+<p class="muted">{% translate "Учебный год один на всю сеть. Договор, подписанный летом, начисляется с первого месяца учебного года." %}</p>
+
+<div class="table-container">
+    <table class="years">
+        <thead>
+            <tr>
+                <th>{% translate "Название" %}</th>
+                <th>{% translate "Первый месяц" %}</th>
+                <th>{% translate "Последний месяц" %}</th>
+                <th>{% translate "Месяцев" %}</th>
+                <th>{% translate "Договоров" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for y in years %}
+            <tr>
+                <td style="font-weight: 600;">{{ y.name }}</td>
+                <td>{{ y.start_month|date:"m.Y" }}</td>
+                <td>{{ y.end_month|date:"m.Y" }}</td>
+                <td>{{ y.months_count }}</td>
+                <td>{{ y.contract_count }}</td>
+                <td><a href="{% url 'academic_year_edit' y.pk %}" style="color: var(--text-muted); text-decoration: none;">{% translate "Изменить" %}</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Учебных годов пока нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

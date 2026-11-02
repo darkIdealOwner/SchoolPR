@@ -9,6 +9,7 @@ from .views import (
     EmployeePayoutListView, EmployeePayoutCreateView, EmployeePayoutUpdateView, EmployeePayoutReverseView,
     TransactionListView, TransactionCreateView, TransactionUpdateView, TransactionReverseView,
     ExcelImportView, ExcelTemplateView,
+    AcademicYearListView, AcademicYearCreateView, AcademicYearUpdateView,
 )
 
 urlpatterns = [
@@ -27,6 +28,9 @@ urlpatterns = [
     path('schools/add/', SchoolCreateView.as_view(), name='school_add'),
     path('schools/<int:pk>/edit/', SchoolUpdateView.as_view(), name='school_edit'),
     path('schools/<int:pk>/delete/', SchoolDeleteView.as_view(), name='school_delete'),
+    path('academic-years/', AcademicYearListView.as_view(), name='academic_year_list'),
+    path('academic-years/add/', AcademicYearCreateView.as_view(), name='academic_year_add'),
+    path('academic-years/<int:pk>/edit/', AcademicYearUpdateView.as_view(), name='academic_year_edit'),
  
     path('contracts/', ContractListView.as_view(), name='contract_list'),
     path('contracts/add/', ContractCreateView.as_view(), name='contract_add'),

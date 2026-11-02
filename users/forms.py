@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, School, Contract, Payment, EmployeePayout, Transaction
+from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 PHONE_ATTRS = {
@@ -19,6 +20,24 @@ class ISODateInput(forms.DateInput):
 
     def __init__(self, attrs=None):
         super().__init__(attrs=attrs, format='%Y-%m-%d')
+
+
+class MonthInput(forms.DateInput):
+    # <input type="month"> отдаёт YYYY-MM
+    input_type = 'month'
+
+    def __init__(self, attrs=None):
+        super().__init__(attrs=attrs, format='%Y-%m')
+
+
+class MonthField(forms.DateField):
+    """Месяц: «2026-09» → 1 сентября 2026."""
+    widget = MonthInput
+    input_formats = ['%Y-%m', '%Y-%m-%d']
+
+    def to_python(self, value):
+        value = super().to_python(value)
+        return value.replace(day=1) if value else value
 
 class PhoneAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -109,10 +128,15 @@ class SchoolForm(forms.ModelForm):
         return instance
 
 class ContractForm(forms.ModelForm):
+    billing_start = MonthField(
+        required=False, label=_("Первый месяц обучения"),
+        help_text=_("С него начисляется оплата. Пусто — первый месяц учебного года или месяц договора, если он позже."),
+    )
+
     class Meta:
         model = Contract
         fields = [
-            'number', 'school', 'date', 'month', 'student_full_name', 'student_birth_year',
+            'number', 'school', 'academic_year', 'date', 'billing_start', 'month', 'student_full_name', 'student_birth_year',
             'student_class', 'duration_months', 'parents_full_name', 'passport_data',
             'inps', 'address', 'phone_number', 'specialization', 'tuition_fee',
             'discount_percentage', 'discount_amount', 'food_cost', 'total_amount',
@@ -136,7 +160,10 @@ class ContractForm(forms.ModelForm):
             self.fields.pop('is_cancelled', None)
             self.fields.pop('cancelled_at', None)
         else:
-            self.fields['cancelled_at'].help_text=_("С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата.")
+            self.fields['cancelled_at'].help_text=_("С месяца отмены оплата больше не начисляется. Если дата неизвестна — оставьте пустым: начисления остановятся на последнем оплаченном месяце.")
+        if not self.instance.pk and not self.is_bound:
+            self.initial.setdefault('academic_year', AcademicYear.for_date(timezone.localdate()))
+        self.fields['academic_year'].help_text = _("Пусто — определится по дате договора.")
 
         # Hide school field for non-OWNER users
         if user and user.role != 'OWNER':
@@ -250,3 +277,29 @@ class ExcelUploadForm(forms.Form):
         label=_("Файл Excel (.xlsx) или CSV"),
         widget=forms.ClearableFileInput(attrs={'accept': '.xlsx,.xlsm,.csv', 'class': 'input-field'}),
     )
+
+
+class AcademicYearForm(forms.ModelForm):
+    start_month = MonthField(label=_("Первый месяц"))
+    end_month = MonthField(label=_("Последний месяц"))
+
+    class Meta:
+        model = AcademicYear
+        fields = ['name', 'start_month', 'end_month']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['placeholder'] = '2027–2028'
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'input-field'})
+
+    def clean(self):
+        cleaned = super().clean()
+        start, end = cleaned.get('start_month'), cleaned.get('end_month')
+        if start and end:
+            if end < start:
+                self.add_error('end_month', _("Последний месяц раньше первого."))
+            overlap = AcademicYear.objects.filter(start_month__lte=end, end_month__gte=start).exclude(pk=self.instance.pk)
+            if overlap.exists():
+                self.add_error(None, _("Пересекается с учебным годом «%(name)s».") % {'name': overlap.first().name})
+        return cleaned

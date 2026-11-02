@@ -103,8 +103,8 @@ msgid "«%(value)s» — нет такого варианта"
 msgstr "«%(value)s» — bunday variant yoʻq"
 
 #: users/excel_import.py
-msgid "«да», если договор уже отменён. Тогда нужна и дата отмены."
-msgstr "Shartnoma bekor qilingan boʻlsa — «ha». Unda bekor qilingan sana ham kerak."
+msgid "«да», если договор уже отменён. Дату отмены можно не указывать — тогда начисления закончатся последним оплаченным месяцем."
+msgstr "Shartnoma bekor qilingan boʻlsa — «ha». Bekor qilingan sanani yozmasa ham boʻladi — unda hisoblash oxirgi toʻlangan oyda tugaydi."
 
 #: pages/home/partials/finance_overview.html
 msgid "· прочее"
@@ -174,6 +174,14 @@ msgstr "Egasi"
 #: pages/authorization/login.html
 msgid "Войти"
 msgstr "Kirish"
+
+#: users/views.py
+msgid "Все"
+msgstr "Hammasi"
+
+#: pages/home/contracts/contract_list.html
+msgid "Все учебные годы"
+msgstr "Barcha oʻquv yillari"
 
 #: pages/home/integrations/integration.html
 msgid "Всего"
@@ -294,10 +302,6 @@ msgstr "Sana"
 msgid "Дата выплаты"
 msgstr "Toʻlov sanasi"
 
-#: users/excel_import.py
-msgid "Дата договора — с её месяца начисляется оплата. Например: 01.09.2026"
-msgstr "Shartnoma sanasi — toʻlov shu oydan hisoblanadi. Masalan: 01.09.2026"
-
 #: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "Toʻlov sanasi"
@@ -314,6 +318,10 @@ msgstr "Shartnoma bekor qilingan sana"
 msgid "Дата отмены не может быть раньше даты договора."
 msgstr "Bekor qilish sanasi shartnoma sanasidan oldin boʻlishi mumkin emas."
 
+#: users/excel_import.py
+msgid "Дата подписания договора. Например: 01.06.2026"
+msgstr "Shartnoma imzolangan sana. Masalan: 01.06.2026"
+
 #: users/models.py
 msgid "Дата сторно"
 msgstr "Storno sanasi"
@@ -326,9 +334,13 @@ msgstr "Amal"
 msgid "Действия"
 msgstr "Amallar"
 
-#: users/views.py
+#: users/models.py
 msgid "Действует"
 msgstr "Amalda"
+
+#: users/views.py
+msgid "Действующие"
+msgstr "Amaldagi"
 
 #: users/models.py
 msgid "Декабрь"
@@ -366,6 +378,10 @@ msgstr "Foydalanuvchi qoʻshish"
 msgid "Добавить транзакцию"
 msgstr "Tranzaksiya qoʻshish"
 
+#: pages/home/schools/academic_year_form.html pages/home/schools/academic_year_list.html
+msgid "Добавить учебный год"
+msgstr "Oʻquv yilini qoʻshish"
+
 #: pages/home/schools/school_form.html pages/home/schools/school_list.html
 msgid "Добавить школу"
 msgstr "Maktab qoʻshish"
@@ -399,7 +415,7 @@ msgstr "Bunday raqamli shartnoma allaqachon mavjud."
 msgid "Договор № %(number)s от %(date)s"
 msgstr "%(date)s sanadagi %(number)s-sonli shartnoma"
 
-#: pages/home/owner.html
+#: pages/home/owner.html pages/home/schools/academic_year_list.html
 msgid "Договоров"
 msgstr "Shartnomalar"
 
@@ -479,7 +495,7 @@ msgstr "Oy uchun (oyning istalgan kuni)"
 msgid "За этот месяц по договору нет начисления — проверьте месяц."
 msgstr "Bu oy uchun shartnoma boʻyicha hisoblash yoʻq — oyni tekshiring."
 
-#: users/views.py
+#: users/models.py
 msgid "Завершён"
 msgstr "Yakunlangan"
 
@@ -608,13 +624,17 @@ msgstr "Oʻzgartirish"
 msgid "Изменения"
 msgstr "Oʻzgarishlar"
 
-#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
 msgid "Изменить"
 msgstr "Oʻzgartirish"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Изменить договор"
 msgstr "Shartnomani oʻzgartirish"
+
+#: pages/home/schools/academic_year_form.html
+msgid "Изменить учебный год"
+msgstr "Oʻquv yilini tahrirlash"
 
 #: pages/home/users/user_form.html pages/home/users/user_list.html
 msgid "Имя"
@@ -740,7 +760,7 @@ msgstr "Mart"
 msgid "Меню"
 msgstr "Menyu"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html users/models.py users/views.py
 msgid "Месяц"
 msgstr "Oy"
 
@@ -748,11 +768,11 @@ msgstr "Oy"
 msgid "Месяц:"
 msgstr "Oy:"
 
-#: pages/home/partials/finance_overview.html
+#: pages/home/partials/finance_overview.html pages/home/schools/academic_year_list.html
 msgid "Месяцев"
 msgstr "Oylar"
 
-#: pages/home/schools/school_list.html
+#: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
 msgid "Название"
 msgstr "Nomi"
 
@@ -800,6 +820,10 @@ msgstr "Masalan: 09.2026 yoki Sentabr 2026"
 msgid "Например: 2015"
 msgstr "Masalan: 2015"
 
+#: users/excel_import.py
+msgid "Например: 2026–2027. Пусто — определится по дате договора."
+msgstr "Masalan: 2026–2027. Boʻsh boʻlsa — shartnoma sanasidan aniqlanadi."
+
 #: pages/home/transactions/transaction_form.html
 msgid "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды"
 msgstr "Masalan: Investitsiyalar, Kutilmagan xarajatlar, Xoʻjalik ehtiyojlari"
@@ -815,6 +839,10 @@ msgstr "Masalan: summada xato, toʻlov ikki marta kiritilgan"
 #: integrations/models.py
 msgid "Начало"
 msgstr "Boshlanishi"
+
+#: users/views.py
+msgid "Начисления по"
+msgstr "Hisoblash oyi (gacha)"
 
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html users/views.py
 msgid "Начислено"
@@ -911,6 +939,10 @@ msgstr "1C bilan almashinuvlar"
 #: integrations/models.py pages/home/integrations/integration.html
 msgid "Обновлено"
 msgstr "Yangilandi"
+
+#: pages/home/contracts/contract_list.html
+msgid "Обучение с"
+msgstr "Oʻqish boshlanishi"
 
 #: pages/home/debts/debt_list.html
 msgid "Общий долг"
@@ -1013,13 +1045,25 @@ msgstr "Qoldiq"
 msgid "От 0 до 100. Пусто — без скидки."
 msgstr "0 dan 100 gacha. Boʻsh boʻlsa — chegirmasiz."
 
-#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
+#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/academic_year_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
 msgid "Отмена"
 msgstr "Bekor qilish"
 
-#: users/excel_import.py users/views.py
+#: users/excel_import.py users/models.py users/views.py
 msgid "Отменён"
 msgstr "Bekor qilingan"
+
+#: users/views.py
+msgid "Отменённые"
+msgstr "Bekor qilinganlar"
+
+#: users/views.py
+msgid "Отменённые без даты"
+msgstr "Sanasiz bekor qilinganlar"
+
+#: users/views.py
+msgid "Отменённый договор не удаляется: он нужен в отчётах."
+msgstr "Bekor qilingan shartnoma oʻchirilmaydi: u hisobotlarda kerak."
 
 #: users/models.py
 msgid "Отметка об отмены договора"
@@ -1065,6 +1109,14 @@ msgstr "Pasport"
 msgid "Паспорт / ИНПС"
 msgstr "Pasport / JShShIR"
 
+#: pages/home/schools/academic_year_list.html users/forms.py users/models.py
+msgid "Первый месяц"
+msgstr "Birinchi oy"
+
+#: users/excel_import.py users/forms.py users/models.py users/views.py
+msgid "Первый месяц обучения"
+msgstr "Oʻqishning birinchi oyi"
+
 #: users/excel_import.py
 msgid "Перед сохранением сайт покажет, что будет загружено и где ошибки."
 msgstr "Saqlashdan oldin sayt nima yuklanishini va xatolar qayerdaligini koʻrsatadi."
@@ -1072,6 +1124,11 @@ msgstr "Saqlashdan oldin sayt nima yuklanishini va xatolar qayerdaligini koʻrsa
 #: pages/home/import/excel_import.html
 msgid "Перенесите данные из своей таблицы, а не вводите их по одному. Перед сохранением сайт покажет, что будет загружено и в каких строках ошибки."
 msgstr "Maʼlumotlarni bittalab kiritmasdan, oʻz jadvalingizdan koʻchiring. Saqlashdan oldin sayt nima yuklanishini va qaysi qatorlarda xato borligini koʻrsatadi."
+
+#: users/forms.py
+#, python-format
+msgid "Пересекается с учебным годом «%(name)s»."
+msgstr "«%(name)s» oʻquv yili bilan kesishadi."
 
 #: users/models.py
 msgid "Перечисление на счёт"
@@ -1125,7 +1182,7 @@ msgstr "Raqam, oʻquvchi F.I.Sh. boʻyicha qidirish..."
 msgid "Поиск по номеру, ФИО, телефону..."
 msgstr "Raqam, F.I.Sh., telefon boʻyicha qidirish..."
 
-#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
 msgid "Показать"
 msgstr "Koʻrsatish"
 
@@ -1144,6 +1201,14 @@ msgstr "Foydalanuvchilar topilmadi."
 #: users/models.py
 msgid "Пользователь"
 msgstr "Foydalanuvchi"
+
+#: pages/home/schools/academic_year_list.html users/forms.py users/models.py
+msgid "Последний месяц"
+msgstr "Oxirgi oy"
+
+#: users/forms.py
+msgid "Последний месяц раньше первого."
+msgstr "Oxirgi oy birinchisidan oldin."
 
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
@@ -1239,6 +1304,10 @@ msgstr "Boshqa kirim va chiqimlar"
 msgid "Прошлый месяц:"
 msgstr "Oʻtgan oy:"
 
+#: users/forms.py
+msgid "Пусто — определится по дате договора."
+msgstr "Boʻsh boʻlsa — shartnoma sanasidan aniqlanadi."
+
 #: pages/home/employee.html
 msgid "Рабочая панель - SchoolPR"
 msgstr "Ish paneli - SchoolPR"
@@ -1312,12 +1381,20 @@ msgid "Русский язык или Узбекский язык (можно к
 msgstr "Rus tili yoki Oʻzbek tili (qisqacha ham boʻladi: rus, oʻzb)"
 
 #: users/forms.py
-msgid "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
-msgstr "Bekor qilingan oydan boshlab toʻlov hisoblanmaydi. Koʻrsatilmasa — bugungi sana."
+msgid "С месяца отмены оплата больше не начисляется. Если дата неизвестна — оставьте пустым: начисления остановятся на последнем оплаченном месяце."
+msgstr "Bekor qilingan oydan boshlab toʻlov hisoblanmaydi. Sana nomaʼlum boʻlsa — boʻsh qoldiring: hisoblash oxirgi toʻlangan oyda toʻxtaydi."
 
 #: pages/home/partials/finance_overview.html
 msgid "С начислением в этом месяце"
 msgstr "Shu oyda hisoblangan"
+
+#: users/excel_import.py
+msgid "С него начисляется оплата, например 09.2026. Пусто — первый месяц учебного года или месяц договора, если он позже."
+msgstr "Toʻlov shu oydan hisoblanadi, masalan 09.2026. Boʻsh boʻlsa — oʻquv yilining birinchi oyi yoki, keyinroq boʻlsa, shartnoma oyi."
+
+#: users/forms.py
+msgid "С него начисляется оплата. Пусто — первый месяц учебного года или месяц договора, если он позже."
+msgstr "Toʻlov shu oydan hisoblanadi. Boʻsh boʻlsa — oʻquv yilining birinchi oyi yoki, keyinroq boʻlsa, shartnoma oyi."
 
 #: integrations/models.py
 msgid "С ошибками"
@@ -1465,6 +1542,10 @@ msgstr "Xodimlar ↔ 1C jismoniy shaxslari"
 msgid "Сотрудников в школе"
 msgstr "Maktabdagi xodimlar"
 
+#: pages/home/schools/academic_year_form.html
+msgid "Сохранить"
+msgstr "Saqlash"
+
 #: pages/authorization/password_change.html pages/home/contracts/contract_form.html pages/home/payouts/payout_form.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_form.html
 msgid "Сохранить изменения"
 msgstr "Oʻzgarishlarni saqlash"
@@ -1502,7 +1583,7 @@ msgstr "Muddat, oy"
 msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
 msgstr "Eski .xls formati qoʻllab-quvvatlanmaydi. Faylni Excelda oching va «Excel kitobi (.xlsx)» sifatida saqlang."
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/import/excel_import.html pages/home/integrations/integration.html
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Статус"
 msgstr "Holat"
 
@@ -1715,6 +1796,22 @@ msgstr "Maktablarni boshqarish - SchoolPR"
 msgid "Успешно"
 msgstr "Muvaffaqiyatli"
 
+#: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
+msgid "Учебные годы"
+msgstr "Oʻquv yillari"
+
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
+msgid "Учебный год"
+msgstr "Oʻquv yili"
+
+#: pages/home/schools/academic_year_list.html
+msgid "Учебный год один на всю сеть. Договор, подписанный летом, начисляется с первого месяца учебного года."
+msgstr "Oʻquv yili butun tarmoq uchun bitta. Yozda imzolangan shartnoma oʻquv yilining birinchi oyidan hisoblanadi."
+
+#: pages/home/schools/academic_year_list.html
+msgid "Учебных годов пока нет."
+msgstr "Hozircha oʻquv yillari yoʻq."
+
 #: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
 msgid "Ученик"
 msgstr "Oʻquvchi"
@@ -1789,7 +1886,7 @@ msgstr "Maktab"
 msgid "Школа не указана"
 msgstr "Maktab koʻrsatilmagan"
 
-#: pages/base.html pages/home/schools/school_list.html
+#: pages/base.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html
 msgid "Школы"
 msgstr "Maktablar"
 
@@ -1830,6 +1927,10 @@ msgstr "Interfeys tili"
 msgid "Январь"
 msgstr "Yanvar"
 
+#: pages/home/contracts/contract_detail.html
+msgid "без начислений"
+msgstr "hisoblashsiz"
+
 #: pages/home/import/excel_import.html
 msgid "будут загружены"
 msgstr "yuklanadi"
@@ -1846,6 +1947,14 @@ msgstr "oʻchirilgan"
 msgid "да"
 msgstr "ha"
 
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html
+msgid "дата не указана"
+msgstr "sana koʻrsatilmagan"
+
+#: pages/home/contracts/contract_detail.html
+msgid "дата отмены не указана"
+msgstr "bekor qilingan sana koʻrsatilmagan"
+
 #: users/excel_import.py
 msgid "дата отмены раньше даты договора"
 msgstr "bekor qilingan sana shartnoma sanasidan oldin"
@@ -1854,10 +1963,6 @@ msgstr "bekor qilingan sana shartnoma sanasidan oldin"
 #, python-format
 msgid "договор «%(number)s» не найден"
 msgstr "«%(number)s» shartnomasi topilmadi"
-
-#: users/excel_import.py
-msgid "договор отменён — укажите дату отмены"
-msgstr "shartnoma bekor qilingan — bekor qilingan sanani kiriting"
 
 #: pages/home/integrations/integration.html
 msgid "доступна всегда"
@@ -1878,6 +1983,11 @@ msgstr "mln"
 #: pages/home/integrations/integration.html
 msgid "настроена"
 msgstr "sozlangan"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html
+#, python-format
+msgid "начисления по %(month)s"
+msgstr "%(month)s gacha hisoblanadi"
 
 #: users/excel_import.py
 msgid "не заполнено"
@@ -1907,6 +2017,10 @@ msgstr "«%(value)s» summasi tushunarsiz"
 msgid "не понятно значение «%(value)s»"
 msgstr "«%(value)s» qiymati tushunarsiz"
 
+#: users/views.py
+msgid "не указана"
+msgstr "koʻrsatilmagan"
+
 #: users/excel_import.py
 #, python-format
 msgid "несколько сотрудников с именем «%(name)s» — укажите телефон"
@@ -1925,6 +2039,15 @@ msgstr "raqam takrorlanmoqda — %(row)s-qatorda bor edi"
 #, python-format
 msgid "нужно целое число, а не «%(value)s»"
 msgstr "«%(value)s» emas, butun son kerak"
+
+#: pages/home/contracts/contract_detail.html
+#, python-format
+msgid "обучение с %(month)s"
+msgstr "oʻqish %(month)s dan"
+
+#: pages/home/debts/debt_list.html
+msgid "отменён"
+msgstr "bekor qilingan"
 
 #: pages/home/integrations/integration.html
 msgid "ошибок"
@@ -1978,6 +2101,11 @@ msgstr "xodimning maktabi koʻrsatilmagan — ustunni toʻldiring"
 #: pages/home/import/excel_import.html
 msgid "уже есть на платформе"
 msgstr "platformada allaqachon bor"
+
+#: users/excel_import.py
+#, python-format
+msgid "учебный год «%(name)s» не найден на платформе"
+msgstr "«%(name)s» oʻquv yili platformada topilmadi"
 
 #: users/excel_import.py
 #, python-format

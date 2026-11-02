@@ -26,7 +26,7 @@ from django.utils.translation import gettext as _, gettext_lazy
 
 from .finance import format_russian_month
 from .forms import ContractForm, PaymentForm, EmployeePayoutForm, TransactionForm
-from .models import AuditLog, Contract, EmployeePayout, Payment, School, Transaction, User
+from .models import AcademicYear, AuditLog, Contract, EmployeePayout, Payment, School, Transaction, User
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
 from .templatetags.money import money as format_money
 
@@ -87,7 +87,11 @@ KINDS = {
                    hint=gettext_lazy("Уникальный номер. Если договор с таким номером уже есть, строка пропускается.")),
             Column('school', gettext_lazy('Школа'), 'school', Contract, required=True, owner_only=True, hint=SCHOOL_HINT, width=24),
             Column('date', gettext_lazy('Дата'), 'date', Contract, required=True, aliases=('Дата договора',),
-                   hint=gettext_lazy("Дата договора — с её месяца начисляется оплата. Например: 01.09.2026")),
+                   hint=gettext_lazy("Дата подписания договора. Например: 01.06.2026")),
+            Column('academic_year', gettext_lazy('Учебный год'), 'academic_year', Contract, width=12,
+                   hint=gettext_lazy("Например: 2026–2027. Пусто — определится по дате договора.")),
+            Column('billing_start', gettext_lazy('Первый месяц обучения'), 'billing_start', Contract, aliases=('Обучение с',),
+                   hint=gettext_lazy("С него начисляется оплата, например 09.2026. Пусто — первый месяц учебного года или месяц договора, если он позже.")),
             Column('student_full_name', gettext_lazy('ФИО ученика'), 'student_full_name', Contract, required=True,
                    aliases=('Ученик',), width=28),
             Column('student_birth_year', gettext_lazy('Год рождения'), 'student_birth_year', Contract, required=True,
@@ -112,7 +116,7 @@ KINDS = {
             Column('food_cost', gettext_lazy('Питание'), 'food_cost', Contract,
                    hint=gettext_lazy("Стоимость питания в месяц. Пусто — без питания.")),
             Column('cancelled', gettext_lazy('Отменён'), 'is_cancelled', Contract,
-                   hint=gettext_lazy("«да», если договор уже отменён. Тогда нужна и дата отмены."), width=10),
+                   hint=gettext_lazy("«да», если договор уже отменён. Дату отмены можно не указывать — тогда начисления закончатся последним оплаченным месяцем."), width=10),
             Column('cancelled_at', gettext_lazy('Дата отмены'), 'cancelled_at', Contract, hint=DATE_HINT),
             Column('notes', gettext_lazy('Примечание'), 'notes', Contract, hint=NOTES_HINT, width=30),
         ],
@@ -412,7 +416,7 @@ def parse_int(text):
     return int(amount)
 
 
-YES = {'да', 'yes', 'y', 'ha', 'xa', 'ҳа', '예', '네', '1', 'true', '+', 'истина', 'x', 'х', 'отменён', 'отменен'}
+YES = {'да', 'отменено', 'bekor qilingan', 'yes', 'y', 'ha', 'xa', 'ҳа', '예', '네', '1', 'true', '+', 'истина', 'x', 'х', 'отменён', 'отменен'}
 
 
 def parse_bool(text):
@@ -535,6 +539,7 @@ class Context:
         self.contract_queryset = contracts
         self.contracts = {c.number.strip(): c for c in contracts}
         self.employees = list(employees)
+        self.academic_years = list(AcademicYear.objects.all())
         self.seen = {}
 
 
@@ -561,12 +566,18 @@ def check_contract(values, ctx, result):
     food = row.amount('food_cost', allow_zero=True)
     cancelled = parse_bool(row.raw('cancelled'))
     cancelled_at = row.date('cancelled_at')
+    billing_start = row.month('billing_start')
+    year = None
+    if row.raw('academic_year'):
+        found = find_by_name(ctx.academic_years, row.raw('academic_year'))
+        if found:
+            year = found[0]
+        else:
+            row.error('academic_year', _("учебный год «%(name)s» не найден на платформе") % {'name': row.raw('academic_year')})
     if duration is not None and duration <= 0:
         row.error('duration_months', _("срок должен быть больше нуля"))
     if discount is not None and not 0 <= discount <= 100:
         row.error('discount_percentage', _("скидка должна быть от 0 до 100"))
-    if cancelled and not cancelled_at and not row.raw('cancelled_at'):
-        row.error('cancelled_at', _("договор отменён — укажите дату отмены"))
     if cancelled and cancelled_at and start and cancelled_at < start:
         row.error('cancelled_at', _("дата отмены раньше даты договора"))
 
@@ -593,6 +604,8 @@ def check_contract(values, ctx, result):
         'food_cost': food or 0,
         'total_amount': 0,
         'notes': row.raw('notes'),
+        'academic_year': year.pk if year else '',
+        'billing_start': billing_start.strftime('%Y-%m') if billing_start else '',
     }
     if ctx.user.role == 'OWNER':
         data['school'] = school.pk if school else ''
@@ -833,6 +846,7 @@ def build_template(kind, user):
         'specialization': lambda: [str(label) for _code, label in Contract.SPECIALIZATION_CHOICES],
         'method': lambda: [str(label) for _code, label in Payment.METHOD_CHOICES],
         'type': lambda: [str(label) for _code, label in Transaction.TYPE_CHOICES],
+        'academic_year': lambda: [y.name for y in AcademicYear.objects.all()],
         'employee': lambda: [f"{e.first_name} — {format_phone(e.phone_number)}"
                              for e in User.objects.filter(role='EMPLOYEE', **({} if user.role == 'OWNER' else {'school': user.school}))],
         'cancelled': lambda: [_('да')],

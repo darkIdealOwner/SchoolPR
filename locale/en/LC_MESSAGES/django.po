@@ -103,8 +103,8 @@ msgid "«%(value)s» — нет такого варианта"
 msgstr "“%(value)s” is not one of the options"
 
 #: users/excel_import.py
-msgid "«да», если договор уже отменён. Тогда нужна и дата отмены."
-msgstr "“yes” if the contract is already cancelled. The cancellation date is then required too."
+msgid "«да», если договор уже отменён. Дату отмены можно не указывать — тогда начисления закончатся последним оплаченным месяцем."
+msgstr "“yes” if the contract is already cancelled. The cancellation date may be left out — charges then end with the last paid month."
 
 #: pages/home/partials/finance_overview.html
 msgid "· прочее"
@@ -174,6 +174,14 @@ msgstr "Owner"
 #: pages/authorization/login.html
 msgid "Войти"
 msgstr "Sign in"
+
+#: users/views.py
+msgid "Все"
+msgstr "All"
+
+#: pages/home/contracts/contract_list.html
+msgid "Все учебные годы"
+msgstr "All academic years"
 
 #: pages/home/integrations/integration.html
 msgid "Всего"
@@ -294,10 +302,6 @@ msgstr "Date"
 msgid "Дата выплаты"
 msgstr "Payout date"
 
-#: users/excel_import.py
-msgid "Дата договора — с её месяца начисляется оплата. Например: 01.09.2026"
-msgstr "Contract date — fees are charged from this month. For example: 01.09.2026"
-
 #: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "Payment date"
@@ -314,6 +318,10 @@ msgstr "Contract cancellation date"
 msgid "Дата отмены не может быть раньше даты договора."
 msgstr "The cancellation date cannot be earlier than the contract date."
 
+#: users/excel_import.py
+msgid "Дата подписания договора. Например: 01.06.2026"
+msgstr "Date the contract was signed. For example: 01.06.2026"
+
 #: users/models.py
 msgid "Дата сторно"
 msgstr "Reversal date"
@@ -326,8 +334,12 @@ msgstr "Action"
 msgid "Действия"
 msgstr "Actions"
 
-#: users/views.py
+#: users/models.py
 msgid "Действует"
+msgstr "Active"
+
+#: users/views.py
+msgid "Действующие"
 msgstr "Active"
 
 #: users/models.py
@@ -366,6 +378,10 @@ msgstr "Add user"
 msgid "Добавить транзакцию"
 msgstr "Add transaction"
 
+#: pages/home/schools/academic_year_form.html pages/home/schools/academic_year_list.html
+msgid "Добавить учебный год"
+msgstr "Add academic year"
+
 #: pages/home/schools/school_form.html pages/home/schools/school_list.html
 msgid "Добавить школу"
 msgstr "Add school"
@@ -399,7 +415,7 @@ msgstr "A contract with this number already exists."
 msgid "Договор № %(number)s от %(date)s"
 msgstr "Contract No. %(number)s of %(date)s"
 
-#: pages/home/owner.html
+#: pages/home/owner.html pages/home/schools/academic_year_list.html
 msgid "Договоров"
 msgstr "Contracts"
 
@@ -479,7 +495,7 @@ msgstr "For month (any day of the month)"
 msgid "За этот месяц по договору нет начисления — проверьте месяц."
 msgstr "Nothing is charged under this contract for that month — check the month."
 
-#: users/views.py
+#: users/models.py
 msgid "Завершён"
 msgstr "Finished"
 
@@ -608,13 +624,17 @@ msgstr "Update"
 msgid "Изменения"
 msgstr "Changes"
 
-#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
 msgid "Изменить"
 msgstr "Edit"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Изменить договор"
 msgstr "Edit contract"
+
+#: pages/home/schools/academic_year_form.html
+msgid "Изменить учебный год"
+msgstr "Edit academic year"
 
 #: pages/home/users/user_form.html pages/home/users/user_list.html
 msgid "Имя"
@@ -740,7 +760,7 @@ msgstr "March"
 msgid "Меню"
 msgstr "Menu"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html users/models.py users/views.py
 msgid "Месяц"
 msgstr "Month"
 
@@ -748,11 +768,11 @@ msgstr "Month"
 msgid "Месяц:"
 msgstr "Month:"
 
-#: pages/home/partials/finance_overview.html
+#: pages/home/partials/finance_overview.html pages/home/schools/academic_year_list.html
 msgid "Месяцев"
 msgstr "Months"
 
-#: pages/home/schools/school_list.html
+#: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
 msgid "Название"
 msgstr "Name"
 
@@ -800,6 +820,10 @@ msgstr "For example: 09.2026 or September 2026"
 msgid "Например: 2015"
 msgstr "For example: 2015"
 
+#: users/excel_import.py
+msgid "Например: 2026–2027. Пусто — определится по дате договора."
+msgstr "For example: 2026–2027. Empty — taken from the contract date."
+
 #: pages/home/transactions/transaction_form.html
 msgid "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды"
 msgstr "For example: Investments, Unexpected expenses, Supplies"
@@ -815,6 +839,10 @@ msgstr "For example: wrong amount, payment entered twice"
 #: integrations/models.py
 msgid "Начало"
 msgstr "Started"
+
+#: users/views.py
+msgid "Начисления по"
+msgstr "Charged until"
 
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html users/views.py
 msgid "Начислено"
@@ -911,6 +939,10 @@ msgstr "1C exchanges"
 #: integrations/models.py pages/home/integrations/integration.html
 msgid "Обновлено"
 msgstr "Updated"
+
+#: pages/home/contracts/contract_list.html
+msgid "Обучение с"
+msgstr "Studies from"
 
 #: pages/home/debts/debt_list.html
 msgid "Общий долг"
@@ -1013,13 +1045,25 @@ msgstr "Balance"
 msgid "От 0 до 100. Пусто — без скидки."
 msgstr "From 0 to 100. Empty — no discount."
 
-#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
+#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/academic_year_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
 msgid "Отмена"
 msgstr "Cancel"
 
-#: users/excel_import.py users/views.py
+#: users/excel_import.py users/models.py users/views.py
 msgid "Отменён"
 msgstr "Cancelled"
+
+#: users/views.py
+msgid "Отменённые"
+msgstr "Cancelled"
+
+#: users/views.py
+msgid "Отменённые без даты"
+msgstr "Cancelled, no date"
+
+#: users/views.py
+msgid "Отменённый договор не удаляется: он нужен в отчётах."
+msgstr "A cancelled contract is not deleted: reports need it."
 
 #: users/models.py
 msgid "Отметка об отмены договора"
@@ -1065,6 +1109,14 @@ msgstr "Passport"
 msgid "Паспорт / ИНПС"
 msgstr "Passport / PINFL"
 
+#: pages/home/schools/academic_year_list.html users/forms.py users/models.py
+msgid "Первый месяц"
+msgstr "First month"
+
+#: users/excel_import.py users/forms.py users/models.py users/views.py
+msgid "Первый месяц обучения"
+msgstr "First month of studies"
+
 #: users/excel_import.py
 msgid "Перед сохранением сайт покажет, что будет загружено и где ошибки."
 msgstr "Before saving, the site shows what will be imported and where the errors are."
@@ -1072,6 +1124,11 @@ msgstr "Before saving, the site shows what will be imported and where the errors
 #: pages/home/import/excel_import.html
 msgid "Перенесите данные из своей таблицы, а не вводите их по одному. Перед сохранением сайт покажет, что будет загружено и в каких строках ошибки."
 msgstr "Move data over from your own table instead of entering it one by one. Before saving, the site shows what will be imported and which rows have errors."
+
+#: users/forms.py
+#, python-format
+msgid "Пересекается с учебным годом «%(name)s»."
+msgstr "Overlaps with academic year “%(name)s”."
 
 #: users/models.py
 msgid "Перечисление на счёт"
@@ -1125,7 +1182,7 @@ msgstr "Search by number or student name..."
 msgid "Поиск по номеру, ФИО, телефону..."
 msgstr "Search by number, name, phone..."
 
-#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
 msgid "Показать"
 msgstr "Show"
 
@@ -1144,6 +1201,14 @@ msgstr "No users found."
 #: users/models.py
 msgid "Пользователь"
 msgstr "User"
+
+#: pages/home/schools/academic_year_list.html users/forms.py users/models.py
+msgid "Последний месяц"
+msgstr "Last month"
+
+#: users/forms.py
+msgid "Последний месяц раньше первого."
+msgstr "The last month is before the first."
 
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
@@ -1239,6 +1304,10 @@ msgstr "Other income and expenses"
 msgid "Прошлый месяц:"
 msgstr "Last month:"
 
+#: users/forms.py
+msgid "Пусто — определится по дате договора."
+msgstr "Empty — taken from the contract date."
+
 #: pages/home/employee.html
 msgid "Рабочая панель - SchoolPR"
 msgstr "Workspace - SchoolPR"
@@ -1312,12 +1381,20 @@ msgid "Русский язык или Узбекский язык (можно к
 msgstr "Russian or Uzbek (short forms work too: rus, uzb)"
 
 #: users/forms.py
-msgid "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
-msgstr "Nothing is billed from the cancellation month onward. If left blank, today’s date is used."
+msgid "С месяца отмены оплата больше не начисляется. Если дата неизвестна — оставьте пустым: начисления остановятся на последнем оплаченном месяце."
+msgstr "Nothing is charged from the cancellation month on. If the date is unknown, leave it empty: charges stop at the last paid month."
 
 #: pages/home/partials/finance_overview.html
 msgid "С начислением в этом месяце"
 msgstr "Billed this month"
+
+#: users/excel_import.py
+msgid "С него начисляется оплата, например 09.2026. Пусто — первый месяц учебного года или месяц договора, если он позже."
+msgstr "Fees are charged from this month, e.g. 09.2026. Empty — the first month of the academic year, or the contract month if later."
+
+#: users/forms.py
+msgid "С него начисляется оплата. Пусто — первый месяц учебного года или месяц договора, если он позже."
+msgstr "Fees are charged from this month. Empty — the first month of the academic year, or the contract month if later."
 
 #: integrations/models.py
 msgid "С ошибками"
@@ -1465,6 +1542,10 @@ msgstr "Staff ↔ 1C individuals"
 msgid "Сотрудников в школе"
 msgstr "Staff in school"
 
+#: pages/home/schools/academic_year_form.html
+msgid "Сохранить"
+msgstr "Save"
+
 #: pages/authorization/password_change.html pages/home/contracts/contract_form.html pages/home/payouts/payout_form.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_form.html
 msgid "Сохранить изменения"
 msgstr "Save changes"
@@ -1502,7 +1583,7 @@ msgstr "Term, months"
 msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
 msgstr "The old .xls format is not supported. Open the file in Excel and save it as “Excel Workbook (.xlsx)”."
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/import/excel_import.html pages/home/integrations/integration.html
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Статус"
 msgstr "Status"
 
@@ -1715,6 +1796,22 @@ msgstr "School management - SchoolPR"
 msgid "Успешно"
 msgstr "Succeeded"
 
+#: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
+msgid "Учебные годы"
+msgstr "Academic years"
+
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
+msgid "Учебный год"
+msgstr "Academic year"
+
+#: pages/home/schools/academic_year_list.html
+msgid "Учебный год один на всю сеть. Договор, подписанный летом, начисляется с первого месяца учебного года."
+msgstr "The academic year is shared by the whole network. A contract signed in summer is charged from the first month of the academic year."
+
+#: pages/home/schools/academic_year_list.html
+msgid "Учебных годов пока нет."
+msgstr "No academic years yet."
+
 #: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
 msgid "Ученик"
 msgstr "Student"
@@ -1789,7 +1886,7 @@ msgstr "School"
 msgid "Школа не указана"
 msgstr "No school set"
 
-#: pages/base.html pages/home/schools/school_list.html
+#: pages/base.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html
 msgid "Школы"
 msgstr "Schools"
 
@@ -1830,6 +1927,10 @@ msgstr "Interface language"
 msgid "Январь"
 msgstr "January"
 
+#: pages/home/contracts/contract_detail.html
+msgid "без начислений"
+msgstr "no charges"
+
 #: pages/home/import/excel_import.html
 msgid "будут загружены"
 msgstr "will be imported"
@@ -1846,6 +1947,14 @@ msgstr "disabled"
 msgid "да"
 msgstr "yes"
 
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html
+msgid "дата не указана"
+msgstr "date not set"
+
+#: pages/home/contracts/contract_detail.html
+msgid "дата отмены не указана"
+msgstr "cancellation date not set"
+
 #: users/excel_import.py
 msgid "дата отмены раньше даты договора"
 msgstr "the cancellation date is before the contract date"
@@ -1854,10 +1963,6 @@ msgstr "the cancellation date is before the contract date"
 #, python-format
 msgid "договор «%(number)s» не найден"
 msgstr "contract “%(number)s” not found"
-
-#: users/excel_import.py
-msgid "договор отменён — укажите дату отмены"
-msgstr "the contract is cancelled — enter the cancellation date"
 
 #: pages/home/integrations/integration.html
 msgid "доступна всегда"
@@ -1878,6 +1983,11 @@ msgstr "M"
 #: pages/home/integrations/integration.html
 msgid "настроена"
 msgstr "configured"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html
+#, python-format
+msgid "начисления по %(month)s"
+msgstr "charged until %(month)s"
 
 #: users/excel_import.py
 msgid "не заполнено"
@@ -1907,6 +2017,10 @@ msgstr "cannot read the amount “%(value)s”"
 msgid "не понятно значение «%(value)s»"
 msgstr "cannot read the value “%(value)s”"
 
+#: users/views.py
+msgid "не указана"
+msgstr "not set"
+
 #: users/excel_import.py
 #, python-format
 msgid "несколько сотрудников с именем «%(name)s» — укажите телефон"
@@ -1925,6 +2039,15 @@ msgstr "duplicate number — already in row %(row)s"
 #, python-format
 msgid "нужно целое число, а не «%(value)s»"
 msgstr "a whole number is needed, not “%(value)s”"
+
+#: pages/home/contracts/contract_detail.html
+#, python-format
+msgid "обучение с %(month)s"
+msgstr "studies from %(month)s"
+
+#: pages/home/debts/debt_list.html
+msgid "отменён"
+msgstr "cancelled"
 
 #: pages/home/integrations/integration.html
 msgid "ошибок"
@@ -1978,6 +2101,11 @@ msgstr "the employee has no school — fill in the column"
 #: pages/home/import/excel_import.html
 msgid "уже есть на платформе"
 msgstr "already on the platform"
+
+#: users/excel_import.py
+#, python-format
+msgid "учебный год «%(name)s» не найден на платформе"
+msgstr "academic year “%(name)s” not found on the platform"
 
 #: users/excel_import.py
 #, python-format

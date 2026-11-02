@@ -103,8 +103,8 @@ msgid "«%(value)s» — нет такого варианта"
 msgstr "“%(value)s” — 해당 선택지가 없습니다"
 
 #: users/excel_import.py
-msgid "«да», если договор уже отменён. Тогда нужна и дата отмены."
-msgstr "계약이 이미 해지된 경우 “예”. 이 경우 해지일도 필요합니다."
+msgid "«да», если договор уже отменён. Дату отмены можно не указывать — тогда начисления закончатся последним оплаченным месяцем."
+msgstr "계약이 이미 해지된 경우 “예”. 해지일은 비워 둘 수 있으며, 이 경우 마지막으로 납부한 달까지만 부과됩니다."
 
 #: pages/home/partials/finance_overview.html
 msgid "· прочее"
@@ -174,6 +174,14 @@ msgstr "소유자"
 #: pages/authorization/login.html
 msgid "Войти"
 msgstr "로그인"
+
+#: users/views.py
+msgid "Все"
+msgstr "전체"
+
+#: pages/home/contracts/contract_list.html
+msgid "Все учебные годы"
+msgstr "전체 학년도"
 
 #: pages/home/integrations/integration.html
 msgid "Всего"
@@ -294,10 +302,6 @@ msgstr "날짜"
 msgid "Дата выплаты"
 msgstr "지급일"
 
-#: users/excel_import.py
-msgid "Дата договора — с её месяца начисляется оплата. Например: 01.09.2026"
-msgstr "계약일 — 이 달부터 요금이 부과됩니다. 예: 01.09.2026"
-
 #: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "납부일"
@@ -314,6 +318,10 @@ msgstr "계약 해지일"
 msgid "Дата отмены не может быть раньше даты договора."
 msgstr "해지일은 계약일보다 앞설 수 없습니다."
 
+#: users/excel_import.py
+msgid "Дата подписания договора. Например: 01.06.2026"
+msgstr "계약 체결일. 예: 01.06.2026"
+
 #: users/models.py
 msgid "Дата сторно"
 msgstr "취소일"
@@ -326,8 +334,12 @@ msgstr "작업"
 msgid "Действия"
 msgstr "작업"
 
-#: users/views.py
+#: users/models.py
 msgid "Действует"
+msgstr "유효"
+
+#: users/views.py
+msgid "Действующие"
 msgstr "유효"
 
 #: users/models.py
@@ -366,6 +378,10 @@ msgstr "사용자 추가"
 msgid "Добавить транзакцию"
 msgstr "거래 추가"
 
+#: pages/home/schools/academic_year_form.html pages/home/schools/academic_year_list.html
+msgid "Добавить учебный год"
+msgstr "학년도 추가"
+
 #: pages/home/schools/school_form.html pages/home/schools/school_list.html
 msgid "Добавить школу"
 msgstr "학교 추가"
@@ -399,7 +415,7 @@ msgstr "같은 번호의 계약이 이미 있습니다."
 msgid "Договор № %(number)s от %(date)s"
 msgstr "계약 번호 %(number)s (%(date)s)"
 
-#: pages/home/owner.html
+#: pages/home/owner.html pages/home/schools/academic_year_list.html
 msgid "Договоров"
 msgstr "계약"
 
@@ -479,7 +495,7 @@ msgstr "대상 월 (해당 월의 아무 날짜)"
 msgid "За этот месяц по договору нет начисления — проверьте месяц."
 msgstr "이 달에는 계약상 부과 금액이 없습니다. 달을 확인하세요."
 
-#: users/views.py
+#: users/models.py
 msgid "Завершён"
 msgstr "종료"
 
@@ -608,13 +624,17 @@ msgstr "수정"
 msgid "Изменения"
 msgstr "변경 내용"
 
-#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
 msgid "Изменить"
 msgstr "수정"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Изменить договор"
 msgstr "계약 수정"
+
+#: pages/home/schools/academic_year_form.html
+msgid "Изменить учебный год"
+msgstr "학년도 수정"
 
 #: pages/home/users/user_form.html pages/home/users/user_list.html
 msgid "Имя"
@@ -740,7 +760,7 @@ msgstr "3월"
 msgid "Меню"
 msgstr "메뉴"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html users/models.py users/views.py
 msgid "Месяц"
 msgstr "월"
 
@@ -748,11 +768,11 @@ msgstr "월"
 msgid "Месяц:"
 msgstr "월:"
 
-#: pages/home/partials/finance_overview.html
+#: pages/home/partials/finance_overview.html pages/home/schools/academic_year_list.html
 msgid "Месяцев"
 msgstr "개월"
 
-#: pages/home/schools/school_list.html
+#: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
 msgid "Название"
 msgstr "이름"
 
@@ -800,6 +820,10 @@ msgstr "예: 09.2026 또는 2026년 9월"
 msgid "Например: 2015"
 msgstr "예: 2015"
 
+#: users/excel_import.py
+msgid "Например: 2026–2027. Пусто — определится по дате договора."
+msgstr "예: 2026–2027. 비워 두면 계약일로 정해집니다."
+
 #: pages/home/transactions/transaction_form.html
 msgid "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды"
 msgstr "예: 투자, 예상치 못한 지출, 비품"
@@ -815,6 +839,10 @@ msgstr "예: 금액 오류, 중복 입력"
 #: integrations/models.py
 msgid "Начало"
 msgstr "시작"
+
+#: users/views.py
+msgid "Начисления по"
+msgstr "부과 종료 월"
 
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html users/views.py
 msgid "Начислено"
@@ -911,6 +939,10 @@ msgstr "1C 동기화"
 #: integrations/models.py pages/home/integrations/integration.html
 msgid "Обновлено"
 msgstr "업데이트"
+
+#: pages/home/contracts/contract_list.html
+msgid "Обучение с"
+msgstr "수업 시작"
 
 #: pages/home/debts/debt_list.html
 msgid "Общий долг"
@@ -1013,13 +1045,25 @@ msgstr "잔액"
 msgid "От 0 до 100. Пусто — без скидки."
 msgstr "0~100. 비워 두면 할인 없음."
 
-#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/contracts/contract_list.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
+#: pages/authorization/password_change.html pages/home/contracts/contract_confirm_delete.html pages/home/finance/reverse_confirm.html pages/home/import/excel_import.html pages/home/payouts/payout_form.html pages/home/schools/academic_year_form.html pages/home/schools/school_confirm_delete.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_confirm_delete.html pages/home/users/user_form.html
 msgid "Отмена"
 msgstr "취소"
 
-#: users/excel_import.py users/views.py
+#: users/excel_import.py users/models.py users/views.py
 msgid "Отменён"
 msgstr "해지"
+
+#: users/views.py
+msgid "Отменённые"
+msgstr "해지됨"
+
+#: users/views.py
+msgid "Отменённые без даты"
+msgstr "해지일 없는 해지"
+
+#: users/views.py
+msgid "Отменённый договор не удаляется: он нужен в отчётах."
+msgstr "해지된 계약은 삭제하지 않습니다. 보고서에 필요합니다."
 
 #: users/models.py
 msgid "Отметка об отмены договора"
@@ -1065,6 +1109,14 @@ msgstr "여권"
 msgid "Паспорт / ИНПС"
 msgstr "여권 / 개인식별번호"
 
+#: pages/home/schools/academic_year_list.html users/forms.py users/models.py
+msgid "Первый месяц"
+msgstr "첫 달"
+
+#: users/excel_import.py users/forms.py users/models.py users/views.py
+msgid "Первый месяц обучения"
+msgstr "수업 첫 달"
+
 #: users/excel_import.py
 msgid "Перед сохранением сайт покажет, что будет загружено и где ошибки."
 msgstr "저장하기 전에 무엇을 가져올지, 어디에 오류가 있는지 보여 줍니다."
@@ -1072,6 +1124,11 @@ msgstr "저장하기 전에 무엇을 가져올지, 어디에 오류가 있는�
 #: pages/home/import/excel_import.html
 msgid "Перенесите данные из своей таблицы, а не вводите их по одному. Перед сохранением сайт покажет, что будет загружено и в каких строках ошибки."
 msgstr "하나씩 입력하는 대신 가지고 있는 표에서 데이터를 옮기세요. 저장하기 전에 무엇을 가져올지, 어느 행에 오류가 있는지 보여 줍니다."
+
+#: users/forms.py
+#, python-format
+msgid "Пересекается с учебным годом «%(name)s»."
+msgstr "“%(name)s” 학년도와 겹칩니다."
 
 #: users/models.py
 msgid "Перечисление на счёт"
@@ -1125,7 +1182,7 @@ msgstr "번호, 학생 이름으로 검색..."
 msgid "Поиск по номеру, ФИО, телефону..."
 msgstr "번호, 이름, 전화번호로 검색..."
 
-#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
 msgid "Показать"
 msgstr "보기"
 
@@ -1144,6 +1201,14 @@ msgstr "사용자가 없습니다."
 #: users/models.py
 msgid "Пользователь"
 msgstr "사용자"
+
+#: pages/home/schools/academic_year_list.html users/forms.py users/models.py
+msgid "Последний месяц"
+msgstr "마지막 달"
+
+#: users/forms.py
+msgid "Последний месяц раньше первого."
+msgstr "마지막 달이 첫 달보다 이릅니다."
 
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
@@ -1239,6 +1304,10 @@ msgstr "기타 수입 및 지출"
 msgid "Прошлый месяц:"
 msgstr "지난달:"
 
+#: users/forms.py
+msgid "Пусто — определится по дате договора."
+msgstr "비워 두면 계약일로 정해집니다."
+
 #: pages/home/employee.html
 msgid "Рабочая панель - SchoolPR"
 msgstr "작업 패널 - SchoolPR"
@@ -1312,12 +1381,20 @@ msgid "Русский язык или Узбекский язык (можно к
 msgstr "러시아어 또는 우즈베크어"
 
 #: users/forms.py
-msgid "С месяца отмены оплата больше не начисляется. Если не указать — сегодняшняя дата."
-msgstr "해지된 달부터는 청구되지 않습니다. 비워 두면 오늘 날짜가 사용됩니다."
+msgid "С месяца отмены оплата больше не начисляется. Если дата неизвестна — оставьте пустым: начисления остановятся на последнем оплаченном месяце."
+msgstr "해지한 달부터는 부과되지 않습니다. 날짜를 모르면 비워 두세요. 마지막으로 납부한 달에서 부과가 멈춥니다."
 
 #: pages/home/partials/finance_overview.html
 msgid "С начислением в этом месяце"
 msgstr "이번 달 청구"
+
+#: users/excel_import.py
+msgid "С него начисляется оплата, например 09.2026. Пусто — первый месяц учебного года или месяц договора, если он позже."
+msgstr "이 달부터 요금이 부과됩니다. 예: 09.2026. 비워 두면 학년도 첫 달 또는 그보다 늦은 경우 계약한 달."
+
+#: users/forms.py
+msgid "С него начисляется оплата. Пусто — первый месяц учебного года или месяц договора, если он позже."
+msgstr "이 달부터 요금이 부과됩니다. 비워 두면 학년도 첫 달 또는 그보다 늦은 경우 계약한 달."
 
 #: integrations/models.py
 msgid "С ошибками"
@@ -1465,6 +1542,10 @@ msgstr "직원 ↔ 1C 개인"
 msgid "Сотрудников в школе"
 msgstr "학교 직원 수"
 
+#: pages/home/schools/academic_year_form.html
+msgid "Сохранить"
+msgstr "저장"
+
 #: pages/authorization/password_change.html pages/home/contracts/contract_form.html pages/home/payouts/payout_form.html pages/home/schools/school_form.html pages/home/transactions/transaction_form.html pages/home/users/user_form.html
 msgid "Сохранить изменения"
 msgstr "변경 사항 저장"
@@ -1502,7 +1583,7 @@ msgstr "기간, 개월"
 msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
 msgstr "이전 .xls 형식은 지원하지 않습니다. Excel에서 파일을 열고 “Excel 통합 문서(.xlsx)”로 저장하세요."
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/import/excel_import.html pages/home/integrations/integration.html
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html
 msgid "Статус"
 msgstr "상태"
 
@@ -1715,6 +1796,22 @@ msgstr "학교 관리 - SchoolPR"
 msgid "Успешно"
 msgstr "성공"
 
+#: pages/home/schools/academic_year_list.html pages/home/schools/school_list.html users/models.py
+msgid "Учебные годы"
+msgstr "학년도"
+
+#: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
+msgid "Учебный год"
+msgstr "학년도"
+
+#: pages/home/schools/academic_year_list.html
+msgid "Учебный год один на всю сеть. Договор, подписанный летом, начисляется с первого месяца учебного года."
+msgstr "학년도는 전체 네트워크에 하나입니다. 여름에 체결한 계약은 학년도 첫 달부터 부과됩니다."
+
+#: pages/home/schools/academic_year_list.html
+msgid "Учебных годов пока нет."
+msgstr "아직 학년도가 없습니다."
+
 #: pages/home/debts/debt_list.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/views.py
 msgid "Ученик"
 msgstr "학생"
@@ -1789,7 +1886,7 @@ msgstr "학교"
 msgid "Школа не указана"
 msgstr "학교 미지정"
 
-#: pages/base.html pages/home/schools/school_list.html
+#: pages/base.html pages/home/schools/academic_year_list.html pages/home/schools/school_list.html
 msgid "Школы"
 msgstr "학교"
 
@@ -1830,6 +1927,10 @@ msgstr "인터페이스 언어"
 msgid "Январь"
 msgstr "1월"
 
+#: pages/home/contracts/contract_detail.html
+msgid "без начислений"
+msgstr "부과 없음"
+
 #: pages/home/import/excel_import.html
 msgid "будут загружены"
 msgstr "가져올 행"
@@ -1846,6 +1947,14 @@ msgstr "사용 안 함"
 msgid "да"
 msgstr "예"
 
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html
+msgid "дата не указана"
+msgstr "날짜 없음"
+
+#: pages/home/contracts/contract_detail.html
+msgid "дата отмены не указана"
+msgstr "해지일 없음"
+
 #: users/excel_import.py
 msgid "дата отмены раньше даты договора"
 msgstr "해지일이 계약일보다 이릅니다"
@@ -1854,10 +1963,6 @@ msgstr "해지일이 계약일보다 이릅니다"
 #, python-format
 msgid "договор «%(number)s» не найден"
 msgstr "계약 “%(number)s”을(를) 찾을 수 없습니다"
-
-#: users/excel_import.py
-msgid "договор отменён — укажите дату отмены"
-msgstr "해지된 계약입니다. 해지일을 입력하세요"
 
 #: pages/home/integrations/integration.html
 msgid "доступна всегда"
@@ -1878,6 +1983,11 @@ msgstr "백만"
 #: pages/home/integrations/integration.html
 msgid "настроена"
 msgstr "설정됨"
+
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html
+#, python-format
+msgid "начисления по %(month)s"
+msgstr "%(month)s까지 부과"
 
 #: users/excel_import.py
 msgid "не заполнено"
@@ -1907,6 +2017,10 @@ msgstr "“%(value)s” 금액을 읽을 수 없습니다"
 msgid "не понятно значение «%(value)s»"
 msgstr "“%(value)s” 값을 읽을 수 없습니다"
 
+#: users/views.py
+msgid "не указана"
+msgstr "없음"
+
 #: users/excel_import.py
 #, python-format
 msgid "несколько сотрудников с именем «%(name)s» — укажите телефон"
@@ -1925,6 +2039,15 @@ msgstr "번호가 중복됩니다 — %(row)s행에 이미 있습니다"
 #, python-format
 msgid "нужно целое число, а не «%(value)s»"
 msgstr "“%(value)s” 대신 정수를 입력하세요"
+
+#: pages/home/contracts/contract_detail.html
+#, python-format
+msgid "обучение с %(month)s"
+msgstr "%(month)s부터 수업"
+
+#: pages/home/debts/debt_list.html
+msgid "отменён"
+msgstr "해지됨"
 
 #: pages/home/integrations/integration.html
 msgid "ошибок"
@@ -1978,6 +2101,11 @@ msgstr "직원의 소속 학교가 없습니다. 열을 작성하세요"
 #: pages/home/import/excel_import.html
 msgid "уже есть на платформе"
 msgstr "이미 플랫폼에 있음"
+
+#: users/excel_import.py
+#, python-format
+msgid "учебный год «%(name)s» не найден на платформе"
+msgstr "학년도 “%(name)s”을(를) 플랫폼에서 찾을 수 없습니다"
 
 #: users/excel_import.py
 #, python-format

@@ -17,10 +17,10 @@ from django.views.generic import View, TemplateView, ListView, DetailView, Creat
 from django.urls import reverse_lazy
 from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
-    EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm,
+    EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
 )
 from . import excel_import
-from .models import User, School, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
+from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
 from .finance import (
     parse_month, contracts_with_active_payments, format_russian_month, get_debt_details,
     build_overview, chart_payload, contract_schedule,
@@ -355,6 +355,31 @@ class SchoolUpdateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, UpdateVie
         context['is_edit'] = True
         return context
 
+class AcademicYearListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+    model = AcademicYear
+    template_name = 'home/schools/academic_year_list.html'
+    context_object_name = 'years'
+
+    def get_queryset(self):
+        return AcademicYear.objects.annotate(contract_count=models.Count('contracts'))
+
+class AcademicYearCreateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, CreateView):
+    model = AcademicYear
+    form_class = AcademicYearForm
+    template_name = 'home/schools/academic_year_form.html'
+    success_url = reverse_lazy('academic_year_list')
+
+class AcademicYearUpdateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, UpdateView):
+    model = AcademicYear
+    form_class = AcademicYearForm
+    template_name = 'home/schools/academic_year_form.html'
+    success_url = reverse_lazy('academic_year_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_edit'] = True
+        return context
+
 class SchoolDeleteView(LoginRequiredMixin, OwnerOnlyMixin, ProtectedDeleteMixin, DeleteView):
     model = School
     template_name = 'home/schools/school_confirm_delete.html' # We'll reuse logic but create a separate template or generic one
@@ -371,26 +396,42 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
 
     def get_export_rows(self, context):
         personal = self.request.user.can_view_personal_data
-        headers = [_('№ договора'), _('Школа'), _('Дата'), _('ФИО ученика'), _('Год рождения'), _('Класс'), _('Срок, мес'), _('Направление')]
+        headers = [_('№ договора'), _('Школа'), _('Учебный год'), _('Дата'), _('Первый месяц обучения'), _('ФИО ученика'),
+                   _('Год рождения'), _('Класс'), _('Срок, мес'), _('Направление')]
         if personal:
             headers += [_('ФИО родителей'), _('Паспорт'), _('ИНПС'), _('Адрес'), _('Телефон')]
-        headers += [_('Стоимость'), _('Скидка %'), _('Скидка, сум'), _('Питание'), _('Итого в месяц'), _('Отменён'), _('Дата отмены'), _('Примечание')]
+        headers += [_('Стоимость'), _('Скидка %'), _('Скидка, сум'), _('Питание'), _('Итого в месяц'), _('Отменён'), _('Дата отмены'),
+                    _('Начисления по'), _('Примечание')]
         rows = []
         for c in self.object_list:
-            row = [c.number, c.school.name if c.school else '', c.date, c.student_full_name, c.student_birth_year,
+            row = [c.number, c.school.name if c.school else '', c.academic_year.name if c.academic_year else '', c.date,
+                   c.first_billing_month.strftime('%m.%Y'), c.student_full_name, c.student_birth_year,
                    c.student_class, c.duration_months, c.specialization]
             if personal:
                 row += [c.parents_full_name, c.passport_data, c.inps, c.address, c.phone_number]
+            last = c.last_billing_month
             row += [c.tuition_fee, c.discount_percentage, c.discount_amount, c.food_cost, c.total_amount,
-                    c.is_cancelled, c.cancelled_at, c.notes]
+                    c.is_cancelled, c.cancelled_at if c.cancelled_at else (_('не указана') if c.is_cancelled else ''),
+                    last.strftime('%m.%Y') if last else '', c.notes]
             rows.append(row)
         return headers, rows
 
     def get_queryset(self):
         from django.db.models import Q
-        queryset = super().get_queryset().select_related('school')
+        queryset = contracts_with_active_payments(super().get_queryset()).select_related('academic_year')
         if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
             queryset = queryset.filter(school=self.request.user.school)
+
+        status = self.request.GET.get('status')
+        if status == 'active':
+            queryset = queryset.filter(is_cancelled=False)
+        elif status == 'cancelled':
+            queryset = queryset.filter(is_cancelled=True)
+        elif status == 'no_cancel_date':
+            queryset = queryset.filter(is_cancelled=True, cancelled_at__isnull=True)
+        year = self.request.GET.get('year')
+        if year and year.isdigit():
+            queryset = queryset.filter(academic_year_id=int(year))
 
         # Search filter
         query = self.request.GET.get('q')
@@ -401,6 +442,15 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
             queryset = queryset.filter(search)
 
         return queryset.order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['academic_years'] = AcademicYear.objects.all()
+        context['status_filters'] = [
+            ('', _('Все')), ('active', _('Действующие')), ('cancelled', _('Отменённые')),
+            ('no_cancel_date', _('Отменённые без даты')),
+        ]
+        return context
 
 class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, DetailView):
     model = Contract
@@ -418,13 +468,7 @@ class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestor
         contract = self.object
         schedule = contract_schedule(contract)
         debt, unpaid = get_debt_details(contract, timezone.localdate())
-        last = contract.last_billing_month
-        if contract.is_cancelled:
-            status = ('cancelled', _('Отменён'))
-        elif last is not None and last < timezone.localdate().replace(day=1):
-            status = ('finished', _('Завершён'))
-        else:
-            status = ('active', _('Действует'))
+        status = contract.status()
         context.update({
             'schedule': schedule,
             'debt': debt,
@@ -484,6 +528,13 @@ class ContractDeleteView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Pro
     template_name = 'home/contracts/contract_confirm_delete.html'
     success_url = reverse_lazy('contract_list')
     protected_message = gettext_lazy("Нельзя удалить договор: по нему есть оплаты. Отметьте договор как отменённый.")
+
+    def form_valid(self, form):
+        # Отменённые договоры остаются в отчётах — их не удаляют
+        if self.get_object().is_cancelled:
+            messages.error(self.request, _("Отменённый договор не удаляется: он нужен в отчётах."))
+            return redirect(self.get_success_url())
+        return super().form_valid(form)
 
     def get_queryset(self):
         qs = super().get_queryset()

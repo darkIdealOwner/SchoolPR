@@ -319,12 +319,31 @@ class ContractImportTests(ImportTestBase):
             contract_row('C-3', **{'Отменён': 'нет'}),
             contract_row('C-4', **{'Отменён': 'да', 'Дата отмены': '01.01.2026'}),
         ]))
-        self.assertEqual(self.statuses(response), ['ok', 'error', 'ok', 'error'])
+        self.assertEqual(self.statuses(response), ['ok', 'ok', 'ok', 'error'])
         self.confirm(response, 'contracts')
         cancelled = Contract.objects.get(number='C-1')
         self.assertTrue(cancelled.is_cancelled)
         self.assertEqual(cancelled.cancelled_at, date(2026, 12, 15))
+        # Дата отмены неизвестна — договор отменён, дата пустая, начислений без оплат нет
+        no_date = Contract.objects.get(number='C-2')
+        self.assertTrue(no_date.is_cancelled)
+        self.assertIsNone(no_date.cancelled_at)
+        self.assertIsNone(no_date.last_billing_month)
         self.assertFalse(Contract.objects.get(number='C-3').is_cancelled)
+
+    def test_academic_year_and_first_month_columns(self):
+        headers = CONTRACT_HEADERS + ['Учебный год', 'Первый месяц обучения']
+        response = self.upload(self.director_a, 'contracts', xlsx(headers, [
+            contract_row('Y-1', **{'Дата': '01.06.2026'}),
+            contract_row('Y-2', **{'Дата': '01.06.2026', 'Учебный год': '2026-2027', 'Первый месяц обучения': 'окт 2026'}),
+            contract_row('Y-3', **{'Учебный год': '2030–2031'}),
+        ]))
+        self.assertEqual(self.statuses(response), ['ok', 'ok', 'error'], self.errors_text(response))
+        self.confirm(response, 'contracts')
+        auto = Contract.objects.get(number='Y-1')
+        self.assertEqual(auto.academic_year.name, '2026–2027')
+        self.assertEqual(auto.first_billing_month, date(2026, 9, 1))   # договор от июня → с сентября
+        self.assertEqual(Contract.objects.get(number='Y-2').first_billing_month, date(2026, 10, 1))
 
     def test_real_excel_cell_types(self):
         row = contract_row('Z-1', **{'Дата': date(2026, 9, 1), 'Стоимость': 1000000.0, 'Телефон': 998901112233,
