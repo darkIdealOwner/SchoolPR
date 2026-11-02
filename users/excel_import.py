@@ -26,7 +26,7 @@ from django.utils.translation import gettext as _, gettext_lazy
 
 from .finance import format_russian_month
 from .forms import ContractForm, PaymentForm, EmployeePayoutForm, TransactionForm
-from .models import AcademicYear, AuditLog, Contract, EmployeePayout, Payment, School, Transaction, User
+from .models import Account, AcademicYear, AuditLog, Category, Counterparty, Contract, EmployeePayout, Payment, School, Transaction, User
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
 from .templatetags.money import money as format_money
 
@@ -74,6 +74,7 @@ NOTES_HINT = gettext_lazy("Необязательно.")
 DATE_HINT = gettext_lazy("Например: 01.09.2026")
 MONTH_HINT = gettext_lazy("Например: 09.2026 или Сентябрь 2026")
 AMOUNT_HINT = gettext_lazy("Число в сумах, например 1500000")
+ACCOUNT_HINT = gettext_lazy("Касса, расчётный счёт или терминал (можно «наличные», «перечисление»). Пусто — касса.")
 REVERSED_HINT = gettext_lazy("Есть в выгрузке с платформы. Строки с отметкой «да» не загружаются.")
 
 KINDS = {
@@ -156,6 +157,7 @@ KINDS = {
             Column('school', gettext_lazy('Школа'), 'school', EmployeePayout, owner_only=True, width=24,
                    hint=gettext_lazy("Только для владельца. Пусто — школа сотрудника.")),
             Column('for_month', gettext_lazy('За месяц'), 'for_month', EmployeePayout, required=True, hint=MONTH_HINT),
+            Column('account', gettext_lazy('Счёт'), 'account', EmployeePayout, width=18, hint=ACCOUNT_HINT),
             Column('amount', gettext_lazy('Сумма'), 'amount', EmployeePayout, required=True, hint=AMOUNT_HINT),
             Column('payout_date', gettext_lazy('Дата выплаты'), 'payout_date', EmployeePayout, required=True, hint=DATE_HINT),
             Column('notes', gettext_lazy('Примечание'), 'notes', EmployeePayout, hint=NOTES_HINT, width=30),
@@ -170,12 +172,18 @@ KINDS = {
         'columns': [
             Column('date', gettext_lazy('Дата'), 'date', Transaction, required=True, hint=DATE_HINT),
             Column('school', gettext_lazy('Школа'), 'school', Transaction, required=True, owner_only=True, hint=SCHOOL_HINT, width=24),
-            Column('type', gettext_lazy('Тип'), 'type', Transaction, required=True,
-                   hint=gettext_lazy("Приход или Расход")),
-            Column('category', gettext_lazy('Категория'), 'category', Transaction, width=24,
-                   hint=gettext_lazy("Например: аренда, ремонт, инвестиция")),
+            Column('type', gettext_lazy('Тип'), 'type', Transaction,
+                   hint=gettext_lazy("Приход или Расход. Можно не заполнять, если указана статья.")),
+            Column('category', gettext_lazy('Статья'), 'category', Transaction, width=26,
+                   aliases=('Категория', 'Краткое назначение', 'Категория/Назначение'),
+                   hint=gettext_lazy("Статья из справочника, например: Аренда, Зарплата, Вложения учредителей. Пусто — «Прочие».")),
+            Column('account', gettext_lazy('Счёт'), 'account', Transaction, width=18,
+                   aliases=('Вид поступление', 'Вид поступления', 'Вид расходы', 'Вид расхода'), hint=ACCOUNT_HINT),
+            Column('counterparty', gettext_lazy('Контрагент'), 'counterparty', Transaction, width=22,
+                   hint=gettext_lazy("Учредитель, банк или поставщик из справочника. Можно не заполнять.")),
             Column('amount', gettext_lazy('Сумма'), 'amount', Transaction, required=True, hint=AMOUNT_HINT),
-            Column('notes', gettext_lazy('Примечание'), 'notes', Transaction, hint=NOTES_HINT, width=30),
+            Column('notes', gettext_lazy('Примечание'), 'notes', Transaction, hint=NOTES_HINT, width=30,
+                   aliases=('Назначение платежа',)),
             Column('reversed', gettext_lazy('Сторно'), hint=REVERSED_HINT, width=10),
         ],
     },
@@ -430,6 +438,37 @@ def parse_bool(text):
     return text.strip().casefold() in YES
 
 
+ACCOUNT_WORDS = {
+    # Как способ оплаты пишут в таблицах школ — к какому виду счёта это относится
+    Account.KIND_CASH: ('наличные', 'наличный', 'наличныйрасчет', 'наличныйрасчёт', 'касса', 'naqd', 'naqdpul', 'cash', '현금'),
+    Account.KIND_BANK: ('перечисление', 'безнал', 'банк', 'расчетныйсчет', 'расчётныйсчёт', 'otkazma', 'bank', 'banktransfer', '계좌이체'),
+    Account.KIND_CARD: ('терминал', 'карта', 'terminal', 'card', 'karta', '카드단말기'),
+}
+
+
+def find_account(row, school, key):
+    """Счёт школы по названию, виду («Касса», «Терминал») или способу («Наличный расчёт», «Перечисление»)."""
+    text = row.raw(key)
+    if not text or school is None:
+        return None
+    wanted = normalize_header(text)
+    accounts = list(Account.objects.filter(school=school, is_active=True))
+    for account in accounts:
+        names = {normalize_header(account.name)} if account.name else set()
+        for code, _name in settings.LANGUAGES:
+            with translation.override(code):
+                names.add(normalize_header(account.get_kind_display()))
+        if wanted in names:
+            return account
+    for kind, words in ACCOUNT_WORDS.items():
+        if wanted in words:
+            account = Account.default_for(school, kind)
+            if account and account.kind == kind:
+                return account
+    row.error(key, _("счёт «%(name)s» не найден у школы") % {'name': text})
+    return None
+
+
 def split_phones(text):
     """«901234567\n907654321», «911112233, 331112233» → два номера в виде +998XXXXXXXXX."""
     parts = [p for p in re.split(r'[\n,;/]+', text or '') if p.strip()]
@@ -561,6 +600,7 @@ class Context:
         self.contracts = {c.number.strip(): c for c in contracts}
         self.employees = list(employees)
         self.academic_years = list(AcademicYear.objects.all())
+        self.counterparties = list(Counterparty.objects.all())
         self.seen = {}
 
 
@@ -729,6 +769,7 @@ def check_payout(values, ctx, result):
     for_month = row.month('for_month', required=True)
     amount = row.amount('amount', required=True)
     payout_date = row.date('payout_date', required=True)
+    account = find_account(row, school, 'account')
     if result.errors:
         return
 
@@ -739,7 +780,7 @@ def check_payout(values, ctx, result):
         result.notes.append(_("Такая выплата уже есть — строка пропущена, чтобы не задвоить."))
         return
     data = {'employee': employee.pk, 'for_month': for_month.isoformat(), 'amount': amount,
-            'payout_date': payout_date.isoformat(), 'notes': row.raw('notes')}
+            'payout_date': payout_date.isoformat(), 'notes': row.raw('notes'), 'account': account.pk if account else ''}
     if ctx.user.role == 'OWNER':
         data['school'] = school.pk
     form = EmployeePayoutForm(data=data, user=ctx.user)
@@ -763,19 +804,38 @@ def check_transaction(values, ctx, result):
         return
     tr_date = row.date('date', required=True)
     school = row.school(ctx, required=True)
-    tr_type = row.choice('type', Transaction.TYPE_CHOICES, required=True)
+    tr_type = row.choice('type', Transaction.TYPE_CHOICES)
     amount = row.amount('amount', required=True)
-    category = row.raw('category')
+    category = None
+    if row.raw('category'):
+        category = Category.find(row.raw('category'), tr_type)
+        if category is None:
+            row.error('category', _("статьи «%(name)s» нет в справочнике — добавьте её или выберите другую")
+                      % {'name': row.raw('category')})
+    elif tr_type is None and 'type' not in row.bad_keys:
+        row.error('type', _("укажите тип или статью"))
+    elif tr_type:
+        category = Category.other(tr_type)
+    account = find_account(row, school, 'account')
+    counterparty = None
+    if row.raw('counterparty'):
+        found = find_by_name(ctx.counterparties, row.raw('counterparty'), 'display_name') or \
+            [c for c in ctx.counterparties if normalize_header(row.raw('counterparty')) in map(normalize_header, c.all_names())]
+        if found:
+            counterparty = found[0]
+        else:
+            row.error('counterparty', _("контрагента «%(name)s» нет в справочнике") % {'name': row.raw('counterparty')})
     if result.errors:
         return
 
-    result.summary = [tr_date.strftime('%d.%m.%Y'), school.name, dict(Transaction.TYPE_CHOICES)[tr_type],
-                      money(amount), category]
-    if Transaction.active.filter(school=school, type=tr_type, date=tr_date, amount=amount, category=category).exists():
+    result.summary = [tr_date.strftime('%d.%m.%Y'), school.name, category.display_name, money(amount),
+                      account.display_name if account else '']
+    if Transaction.active.filter(school=school, category=category, date=tr_date, amount=amount).exists():
         result.status = RowResult.EXISTS
         result.notes.append(_("Такая транзакция уже есть — строка пропущена, чтобы не задвоить."))
         return
-    data = {'type': tr_type, 'category': category, 'amount': amount, 'date': tr_date.isoformat(), 'notes': row.raw('notes')}
+    data = {'category': category.pk, 'amount': amount, 'date': tr_date.isoformat(), 'notes': row.raw('notes'),
+            'account': account.pk if account else '', 'counterparty': counterparty.pk if counterparty else ''}
     if ctx.user.role == 'OWNER':
         data['school'] = school.pk
     form = TransactionForm(data=data, user=ctx.user)
@@ -872,6 +932,9 @@ def build_template(kind, user):
         'method': lambda: [str(label) for _code, label in Payment.METHOD_CHOICES],
         'type': lambda: [str(label) for _code, label in Transaction.TYPE_CHOICES],
         'academic_year': lambda: [y.name for y in AcademicYear.objects.all()],
+        'category': lambda: [c.display_name for c in Category.objects.filter(is_active=True)],
+        'account': lambda: [str(label) for kind, label in Account.KIND_CHOICES if kind != Account.KIND_OTHER],
+        'counterparty': lambda: [c.display_name for c in Counterparty.objects.all()],
         'employee': lambda: [f"{e.first_name} — {format_phone(e.phone_number)}"
                              for e in User.objects.filter(role='EMPLOYEE', **({} if user.role == 'OWNER' else {'school': user.school}))],
         'cancelled': lambda: [_('да')],

@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from integrations.models import SyncRun
-from users.models import Contract, EmployeePayout, Payment, School, Transaction, User
+from users.models import Category, Contract, EmployeePayout, Payment, School, Transaction, User
 
 LANG_COOKIE = settings.LANGUAGE_COOKIE_NAME
 LANGS = ['uz', 'en', 'ko']
@@ -79,9 +79,10 @@ class I18nAuditBase(TestCase):
                                source='1C', external_id='X-1')
         cls.payout = EmployeePayout.objects.create(employee=cls.employee, school=cls.school, for_month=start,
                                                    amount=Decimal(3000000), notes='salary', created_by=cls.director)
-        cls.transaction = Transaction.objects.create(school=cls.school, type='EXPENSE', category='Rent',
+        cls.transaction = Transaction.objects.create(school=cls.school, type='EXPENSE', category=Category.objects.get(name='Аренда'),
                                                      amount=Decimal(800000), notes='October')
-        Transaction.objects.create(school=cls.school, type='INCOME', category='Investment', amount=Decimal(5000000))
+        Transaction.objects.create(school=cls.school, type='INCOME', category=Category.objects.get(name='Вложения учредителей'),
+                                   amount=Decimal(5000000))
         SyncRun.objects.create(entity='payments', channel='file', status='SUCCESS', total=1, created=1,
                                triggered_by=cls.owner, finished_at=timezone.now())
 
@@ -127,6 +128,15 @@ def _owner_pages(t):
         'academic_year_list': reverse('academic_year_list'),
         'academic_year_add': reverse('academic_year_add'),
         'contract_list_cancelled': reverse('contract_list') + '?status=no_cancel_date',
+        'account_list': reverse('account_list'),
+        'account_add': reverse('account_add'),
+        'account_edit': reverse('account_edit', args=[t.school.accounts.first().pk]),
+        'transfer_list': reverse('transfer_list'),
+        'transfer_create': reverse('transfer_create'),
+        'category_list': reverse('category_list'),
+        'category_add': reverse('category_add'),
+        'counterparty_list': reverse('counterparty_list'),
+        'counterparty_add': reverse('counterparty_add'),
         'profile': reverse('profile'),
         'password_change': reverse('password_change'),
     }
@@ -137,6 +147,8 @@ OWNER_PAGES = ['home', 'contract_list', 'contract_add', 'contract_edit', 'contra
                'payout_list', 'payout_create', 'payout_edit', 'transaction_list', 'transaction_create', 'transaction_edit',
                'user_list', 'user_add', 'user_edit', 'user_delete', 'school_list', 'school_add', 'school_edit',
                'school_delete', 'integration', 'academic_year_list', 'academic_year_add', 'contract_list_cancelled',
+               'account_list', 'account_add', 'account_edit', 'transfer_list', 'transfer_create', 'category_list',
+               'category_add', 'counterparty_list', 'counterparty_add',
                'profile', 'password_change']
 ROLE_PAGES = {
     'director_home': ('director', 'home'),

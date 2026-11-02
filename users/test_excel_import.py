@@ -12,7 +12,7 @@ from django.utils import timezone, translation
 
 from users import excel_import
 from users.excel_import import RowError, parse_amount, parse_choice, parse_date, parse_month
-from users.models import AuditLog, Contract, EmployeePayout, Payment, School, Transaction, User
+from users.models import AuditLog, Category, Contract, EmployeePayout, Payment, School, Transaction, User
 
 PASSWORD = 'Strong-pass-2026'
 
@@ -203,7 +203,7 @@ class TemplateTests(ImportTestBase):
         workbook = self.load(self.director_a, 'transactions')
         headers = [c.value for c in workbook.worksheets[0][1]]
         self.assertFalse(any(h.startswith('Школа') for h in headers))
-        self.assertIn('Тип *', headers)
+        self.assertIn('Статья', headers)
 
     def test_payout_template_lists_only_own_employees(self):
         workbook = self.load(self.director_a, 'payouts')
@@ -557,27 +557,27 @@ class PayoutImportTests(ImportTestBase):
         self.assertEqual(self.statuses(response), ['exists'], self.errors_text(response))
 
 
-TRANSACTION_HEADERS = ['Дата', 'Тип', 'Категория', 'Сумма', 'Примечание']
+TRANSACTION_HEADERS = ['Дата', 'Тип', 'Статья', 'Сумма', 'Примечание']
 
 
 class TransactionImportTests(ImportTestBase):
     def test_director_school_is_forced(self):
         response = self.upload(self.director_a, 'transactions', xlsx(TRANSACTION_HEADERS + ['Школа'], [
-            {'Дата': '10.09.2026', 'Тип': 'Расход', 'Категория': 'Аренда', 'Сумма': '5 000 000', 'Школа': 'Школа Б'},
+            {'Дата': '10.09.2026', 'Тип': 'Расход', 'Статья': 'Аренда', 'Сумма': '5 000 000', 'Школа': 'Школа Б'},
             {'Дата': '11.09.2026', 'Тип': 'приход', 'Сумма': 10000000},
             {'Дата': '11.09.2026', 'Тип': 'Подарок', 'Сумма': 10},
         ]))
         self.assertEqual(self.statuses(response), ['ok', 'ok', 'error'])
         self.confirm(response, 'transactions')
         self.assertEqual(Transaction.objects.filter(school=self.school_a).count(), 2)
-        self.assertEqual(Transaction.objects.get(category='Аренда').type, 'EXPENSE')
+        self.assertEqual(Transaction.objects.get(category__name='Аренда').type, 'EXPENSE')
         self.assertFalse(Transaction.objects.filter(school=self.school_b).exists())
 
     def test_owner_needs_school_and_duplicates_are_skipped(self):
-        Transaction.objects.create(school=self.school_b, type='INCOME', category='Инвестиция',
+        Transaction.objects.create(school=self.school_b, type='INCOME', category=Category.objects.get(name='Вложения учредителей'),
                                    amount=Decimal(1000), date=date(2026, 9, 1))
         response = self.upload(self.owner, 'transactions', xlsx(TRANSACTION_HEADERS + ['Школа', 'Сторно'], [
-            {'Дата': '01.09.2026', 'Тип': 'Приход', 'Категория': 'Инвестиция', 'Сумма': 1000, 'Школа': 'Школа Б'},
+            {'Дата': '01.09.2026', 'Тип': 'Приход', 'Статья': 'Вложения учредителей', 'Сумма': 1000, 'Школа': 'Школа Б'},
             {'Дата': '01.09.2026', 'Тип': 'Приход', 'Сумма': 1000, 'Школа': ''},
             {'Дата': '02.09.2026', 'Тип': 'Приход', 'Сумма': 1000, 'Школа': 'Школа А', 'Сторно': 'да'},
             {'Дата': '02.09.2026', 'Тип': 'Приход', 'Сумма': 1000, 'Школа': 'Школа А'},

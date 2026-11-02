@@ -100,6 +100,147 @@ class School(ExternalSyncMixin, models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            Account.create_defaults(self)
+
+
+class Account(models.Model):
+    """Где лежат деньги школы: касса, расчётный счёт, терминал. Остаток на начало — с даты opening_date."""
+    KIND_CASH, KIND_BANK, KIND_CARD, KIND_OTHER = 'CASH', 'BANK', 'CARD', 'OTHER'
+    KIND_CHOICES = [
+        (KIND_CASH, _('Касса')),
+        (KIND_BANK, _('Расчётный счёт')),
+        (KIND_CARD, _('Терминал')),
+        (KIND_OTHER, _('Другое')),
+    ]
+    # Куда приходят оплаты родителей каждым способом
+    METHOD_TO_KIND = {'CASH': KIND_CASH, 'CARD': KIND_CARD, 'CLICK': KIND_BANK, 'PAYME': KIND_BANK,
+                      'UZUM': KIND_BANK, 'BANK': KIND_BANK}
+
+    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='accounts', verbose_name=_("Школа"))
+    name = models.CharField(max_length=100, blank=True, verbose_name=_("Название"),
+                            help_text=_("Пусто — по виду счёта: «Касса», «Расчётный счёт», «Терминал»."))
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES, verbose_name=_("Вид"))
+    opening_balance = models.DecimalField(max_digits=14, decimal_places=2, default=0, verbose_name=_("Остаток на начало"))
+    opening_date = models.DateField(default=timezone.now, verbose_name=_("Дата остатка на начало"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Используется"))
+
+    class Meta:
+        ordering = ['school__name', 'kind', 'name']
+        verbose_name = _("Счёт")
+        verbose_name_plural = _("Счета")
+
+    def __str__(self):
+        return f"{self.display_name} · {self.school.name}"
+
+    @property
+    def display_name(self):
+        return self.name or self.get_kind_display()
+
+    @classmethod
+    def create_defaults(cls, school):
+        # Остаток на начало — с 1 января: так в остаток попадают и внесённые задним числом движения
+        start = timezone.localdate().replace(month=1, day=1)
+        for kind in (cls.KIND_CASH, cls.KIND_BANK, cls.KIND_CARD):
+            cls.objects.get_or_create(school=school, kind=kind, defaults={'opening_date': start})
+
+    @classmethod
+    def default_for(cls, school, kind=KIND_CASH):
+        """Основной счёт нужного вида; если такого нет — первый действующий счёт школы."""
+        if school is None:
+            return None
+        qs = cls.objects.filter(school=school, is_active=True)
+        return qs.filter(kind=kind).order_by('pk').first() or qs.order_by('pk').first()
+
+
+class TranslatedNameMixin(models.Model):
+    """Название на языке интерфейса: name — по-русски, остальные — по желанию."""
+    name = models.CharField(max_length=150, verbose_name=_("Название"))
+    name_uz = models.CharField(max_length=150, blank=True, verbose_name=_("Название (узб.)"))
+    name_en = models.CharField(max_length=150, blank=True, verbose_name=_("Название (англ.)"))
+    name_ko = models.CharField(max_length=150, blank=True, verbose_name=_("Название (кор.)"))
+
+    class Meta:
+        abstract = True
+
+    @property
+    def display_name(self):
+        from django.utils.translation import get_language
+        lang = (get_language() or 'ru')[:2]
+        return getattr(self, f'name_{lang}', '') or self.name
+
+    def __str__(self):
+        return self.display_name
+
+    def all_names(self):
+        return [n for n in (self.name, self.name_uz, self.name_en, self.name_ko) if n]
+
+
+class Category(TranslatedNameMixin, models.Model):
+    """Статья прихода или расхода. Раздел и отметка P&L нужны для отчётов о прибыли и денежных потоках."""
+    DIRECTION_CHOICES = [
+        ('INCOME', _('Приход')),
+        ('EXPENSE', _('Расход')),
+    ]
+    SECTION_CHOICES = [
+        ('OPERATING', _('Операционная деятельность')),
+        ('INVESTING', _('Инвестиционная деятельность')),
+        ('FINANCING', _('Финансовая деятельность')),
+    ]
+    direction = models.CharField(max_length=10, choices=DIRECTION_CHOICES, verbose_name=_("Приход или расход"))
+    section = models.CharField(max_length=10, choices=SECTION_CHOICES, default='OPERATING', verbose_name=_("Раздел денежного потока"))
+    in_pl = models.BooleanField(default=True, verbose_name=_("Входит в прибыль и убытки"))
+    is_salary = models.BooleanField(default=False, verbose_name=_("Зарплата"))
+    sort_order = models.PositiveIntegerField(default=100, verbose_name=_("Порядок"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Используется"))
+
+    class Meta:
+        ordering = ['direction', 'sort_order', 'name']
+        verbose_name = _("Статья")
+        verbose_name_plural = _("Статьи")
+
+    @classmethod
+    def other(cls, direction):
+        """Статья по умолчанию — «Прочие поступления» / «Прочие расходы»."""
+        name = 'Прочие поступления' if direction == 'INCOME' else 'Прочие расходы'
+        category, _created = cls.objects.get_or_create(name=name, direction=direction, defaults={'sort_order': 900})
+        return category
+
+    @classmethod
+    def find(cls, text, direction=None):
+        """Статья по названию на любом языке, без учёта регистра и пробелов."""
+        import re
+        wanted = re.sub(r"[\W_]+", '', str(text)).casefold()
+        if not wanted:
+            return None
+        qs = cls.objects.all() if direction is None else cls.objects.filter(direction=direction)
+        for category in qs:
+            if any(re.sub(r"[\W_]+", '', n).casefold() == wanted for n in category.all_names()):
+                return category
+        return None
+
+
+class Counterparty(TranslatedNameMixin, models.Model):
+    """С кем идут деньги помимо родителей и сотрудников: учредители, банк, поставщики."""
+    KIND_CHOICES = [
+        ('FOUNDER', _('Учредитель / инвестор')),
+        ('BANK', _('Банк')),
+        ('SUPPLIER', _('Поставщик')),
+        ('OTHER', _('Другое')),
+    ]
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES, default='FOUNDER', verbose_name=_("Вид"))
+    investor = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'INVESTOR'},
+                                 related_name='counterparties', verbose_name=_("Инвестор на платформе"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание"))
+
+    class Meta:
+        ordering = ['kind', 'name']
+        verbose_name = _("Контрагент")
+        verbose_name_plural = _("Контрагенты")
+
 
 class AcademicYear(models.Model):
     """Учебный год сети (у всех школ одинаковый): обычно сентябрь–июнь.
@@ -353,6 +494,7 @@ class Payment(FinancialRecord):
     for_month = models.DateField(verbose_name=_("За месяц (1-е число)"))
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма оплаты"))
     method = models.CharField(max_length=20, choices=METHOD_CHOICES, default='CASH', verbose_name=_("Способ оплаты"))
+    account = models.ForeignKey(Account, on_delete=models.PROTECT, null=True, blank=True, related_name='payments', verbose_name=_("Счёт"))
     payment_date = models.DateField(default=timezone.now, verbose_name=_("Дата оплаты"))
     notes = models.TextField(blank=True, verbose_name=_("Примечание"))
     created_at = models.DateTimeField(auto_now_add=True)
@@ -361,6 +503,11 @@ class Payment(FinancialRecord):
         verbose_name=_("Оплата")
         verbose_name_plural=_("Оплаты")
         ordering = ['-payment_date']
+
+    def save(self, *args, **kwargs):
+        if self.account_id is None and self.contract_id:
+            self.account = Account.default_for(self.contract.school, Account.METHOD_TO_KIND.get(self.method, Account.KIND_CASH))
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return gettext("Оплата %(student)s за %(month)s") % {
@@ -372,6 +519,7 @@ class EmployeePayout(FinancialRecord):
     for_month = models.DateField(verbose_name=_("За месяц (1-е число)"))
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
     payout_date = models.DateField(default=timezone.now, verbose_name=_("Дата выплаты"))
+    account = models.ForeignKey(Account, on_delete=models.PROTECT, null=True, blank=True, related_name='payouts', verbose_name=_("Счёт"))
     notes = models.TextField(blank=True, verbose_name=_("Примечание"))
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -384,6 +532,11 @@ class EmployeePayout(FinancialRecord):
         return gettext("%(employee)s - %(amount)s за %(month)s") % {
             'employee': self.employee.first_name, 'amount': self.amount, 'month': self.for_month.strftime('%m/%Y')}
 
+    def save(self, *args, **kwargs):
+        if self.account_id is None:
+            self.account = Account.default_for(self.school)
+        super().save(*args, **kwargs)
+
 class Transaction(FinancialRecord):
     TYPE_CHOICES = [
         ('INCOME', _('Приход / Инвестиция')),
@@ -391,7 +544,10 @@ class Transaction(FinancialRecord):
     ]
     school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='transactions', verbose_name=_("Школа"))
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name=_("Тип операции"))
-    category = models.CharField(max_length=100, blank=True, verbose_name=_("Категория/Назначение"))
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, related_name='transactions', verbose_name=_("Статья"))
+    account = models.ForeignKey(Account, on_delete=models.PROTECT, null=True, blank=True, related_name='transactions', verbose_name=_("Счёт"))
+    counterparty = models.ForeignKey(Counterparty, on_delete=models.PROTECT, null=True, blank=True, related_name='transactions',
+                                     verbose_name=_("Контрагент"))
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Сумма"))
     date = models.DateField(default=timezone.now, verbose_name=_("Дата"))
     notes = models.TextField(blank=True, verbose_name=_("Примечание / Описание / От кого"))
@@ -404,6 +560,34 @@ class Transaction(FinancialRecord):
 
     def __str__(self):
         return f"{self.get_type_display()} - {self.amount} ({self.date})"
+
+    def save(self, *args, **kwargs):
+        if self.category_id:
+            self.type = self.category.direction
+        elif self.type:
+            self.category = Category.other(self.type)
+        if self.account_id is None:
+            self.account = Account.default_for(self.school)
+        super().save(*args, **kwargs)
+
+
+class Transfer(FinancialRecord):
+    """Перевод между своими счетами (касса → банк и т. п.): не доход и не расход."""
+    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name='transfers', verbose_name=_("Школа"))
+    from_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='transfers_out', verbose_name=_("Откуда"))
+    to_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='transfers_in', verbose_name=_("Куда"))
+    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Сумма"))
+    date = models.DateField(default=timezone.now, verbose_name=_("Дата"))
+    notes = models.TextField(blank=True, verbose_name=_("Примечание"))
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Перевод между счетами")
+        verbose_name_plural = _("Переводы между счетами")
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.from_account.display_name} → {self.to_account.display_name}: {self.amount} ({self.date})"
 
 
 class AuditLog(models.Model):

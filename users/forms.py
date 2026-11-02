@@ -2,7 +2,10 @@ import re
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction
+from .models import (
+    User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction,
+    Account, Category, Counterparty, Transfer,
+)
 from .phone import normalize_phone, is_valid_uz_phone, format_phone
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -275,7 +278,7 @@ class PaymentForm(forms.ModelForm):
 class EmployeePayoutForm(forms.ModelForm):
     class Meta:
         model = EmployeePayout
-        fields = ['employee', 'school', 'for_month', 'amount', 'payout_date', 'notes']
+        fields = ['employee', 'school', 'account', 'for_month', 'amount', 'payout_date', 'notes']
         widgets = {
             'for_month': ISODateInput(),
             'payout_date': ISODateInput(),
@@ -299,11 +302,38 @@ class EmployeePayoutForm(forms.ModelForm):
             if user.role != 'OWNER':
                 employee_qs = employee_qs.filter(school=user.school)
             self.fields['employee'].queryset = employee_qs
+        setup_account_field(self, user)
+
+    def clean(self):
+        cleaned = super().clean()
+        check_account_school(self, cleaned)
+        return cleaned
+
+
+def setup_account_field(form, user):
+    """Счёт: только счета своей школы (у владельца — все, с названием школы); пусто — касса школы."""
+    field = form.fields['account']
+    qs = Account.objects.filter(is_active=True).select_related('school')
+    if user and user.role != 'OWNER':
+        qs = qs.filter(school=user.school)
+        field.label_from_instance = lambda a: a.display_name
+    field.queryset = qs
+    field.required = False
+    field.help_text = _("Пусто — касса школы.")
+
+
+def check_account_school(form, cleaned):
+    account = cleaned.get('account')
+    # Директору список счетов уже ограничен его школой; владелец выбирает школу в форме
+    school = cleaned.get('school') or (form.instance.school if form.instance.school_id else None)
+    if account and school and account.school_id != school.pk:
+        form.add_error('account', _("Счёт другой школы."))
+
 
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ['school', 'type', 'category', 'amount', 'date', 'notes']
+        fields = ['school', 'category', 'account', 'counterparty', 'amount', 'date', 'notes']
         widgets = {
             'date': ISODateInput(),
             'notes': forms.Textarea(attrs={'rows': 3}),
@@ -319,6 +349,111 @@ class TransactionForm(forms.ModelForm):
         if user and user.role != 'OWNER':
             if 'school' in self.fields:
                 self.fields.pop('school')
+
+        category = self.fields['category']
+        category.queryset = Category.objects.filter(is_active=True)
+        category.required = True
+        category.label_from_instance = lambda c: f"{c.get_direction_display()}: {c.display_name}"
+        self.fields['counterparty'].required = False
+        self.fields['counterparty'].help_text = _("Учредитель, банк, поставщик — если деньги от них или им.")
+        self.fields['notes'].label = _("Назначение платежа / примечание")
+        setup_account_field(self, user)
+
+    def clean_amount(self):
+        amount = self.cleaned_data['amount']
+        if amount <= 0:
+            raise forms.ValidationError(_("Сумма должна быть больше нуля."))
+        return amount
+
+    def clean(self):
+        cleaned = super().clean()
+        check_account_school(self, cleaned)
+        return cleaned
+
+
+class TransferForm(forms.ModelForm):
+    class Meta:
+        model = Transfer
+        fields = ['school', 'from_account', 'to_account', 'amount', 'date', 'notes']
+        widgets = {
+            'date': ISODateInput(),
+            'notes': forms.Textarea(attrs={'rows': 2}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        qs = Account.objects.filter(is_active=True).select_related('school')
+        if self.user and self.user.role != 'OWNER':
+            self.fields.pop('school')
+            qs = qs.filter(school=self.user.school)
+        for name in ('from_account', 'to_account'):
+            self.fields[name].queryset = qs
+            if self.user and self.user.role != 'OWNER':
+                self.fields[name].label_from_instance = lambda a: a.display_name
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'input-field'})
+
+    def clean(self):
+        cleaned = super().clean()
+        source, target = cleaned.get('from_account'), cleaned.get('to_account')
+        school = cleaned.get('school') if 'school' in self.fields else (self.user.school if self.user else None)
+        if source and target:
+            if source == target:
+                self.add_error('to_account', _("Выберите другой счёт."))
+            elif source.school_id != target.school_id or (school and source.school_id != school.pk):
+                self.add_error('to_account', _("Переводить можно только между счетами одной школы."))
+        amount = cleaned.get('amount')
+        if amount is not None and amount <= 0:
+            self.add_error('amount', _("Сумма должна быть больше нуля."))
+        return cleaned
+
+
+class AccountForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = ['school', 'kind', 'name', 'opening_balance', 'opening_date', 'is_active']
+        widgets = {'opening_date': ISODateInput()}
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user and user.role != 'OWNER':
+            self.fields.pop('school')
+        if self.instance.pk:
+            self.fields.pop('school', None)
+        self.fields['opening_date'].help_text = _("С этой даты считается остаток. Движения раньше неё не учитываются.")
+        for name, field in self.fields.items():
+            if name != 'is_active':
+                field.widget.attrs.update({'class': 'input-field'})
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'name_uz', 'name_en', 'name_ko', 'direction', 'section', 'in_pl', 'is_salary', 'sort_order', 'is_active']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['in_pl'].help_text = _("Нет — для вложений и выплат учредителям, кредитов, покупки основных средств.")
+        self.fields['is_salary'].help_text = _("Расходы по этой статье считаются зарплатой вместе с выплатами сотрудникам.")
+        for name, field in self.fields.items():
+            if name not in ('in_pl', 'is_salary', 'is_active'):
+                field.widget.attrs.update({'class': 'input-field'})
+
+
+class CounterpartyForm(forms.ModelForm):
+    class Meta:
+        model = Counterparty
+        fields = ['name', 'name_uz', 'name_en', 'name_ko', 'kind', 'investor', 'notes']
+        widgets = {'notes': forms.Textarea(attrs={'rows': 2})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['investor'].queryset = User.objects.filter(role='INVESTOR')
+        self.fields['investor'].help_text = _("Если этот учредитель заходит на платформу как инвестор.")
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'input-field'})
 
 
 class ReversalForm(forms.Form):

@@ -10,6 +10,9 @@ from .views import (
     TransactionListView, TransactionCreateView, TransactionUpdateView, TransactionReverseView,
     ExcelImportView, ExcelTemplateView,
     AcademicYearListView, AcademicYearCreateView, AcademicYearUpdateView,
+    AccountListView, AccountCreateView, AccountUpdateView, TransferListView, TransferCreateView, TransferReverseView,
+    CategoryListView, CategoryCreateView, CategoryUpdateView,
+    CounterpartyListView, CounterpartyCreateView, CounterpartyUpdateView,
 )
 
 urlpatterns = [
@@ -53,6 +56,19 @@ urlpatterns = [
     path('transactions/add/', TransactionCreateView.as_view(), name='transaction_create'),
     path('transactions/<int:pk>/edit/', TransactionUpdateView.as_view(), name='transaction_edit'),
     path('transactions/<int:pk>/reverse/', TransactionReverseView.as_view(), name='transaction_reverse'),
+
+    path('accounts/', AccountListView.as_view(), name='account_list'),
+    path('accounts/add/', AccountCreateView.as_view(), name='account_add'),
+    path('accounts/<int:pk>/edit/', AccountUpdateView.as_view(), name='account_edit'),
+    path('transfers/', TransferListView.as_view(), name='transfer_list'),
+    path('transfers/add/', TransferCreateView.as_view(), name='transfer_create'),
+    path('transfers/<int:pk>/reverse/', TransferReverseView.as_view(), name='transfer_reverse'),
+    path('categories/', CategoryListView.as_view(), name='category_list'),
+    path('categories/add/', CategoryCreateView.as_view(), name='category_add'),
+    path('categories/<int:pk>/edit/', CategoryUpdateView.as_view(), name='category_edit'),
+    path('counterparties/', CounterpartyListView.as_view(), name='counterparty_list'),
+    path('counterparties/add/', CounterpartyCreateView.as_view(), name='counterparty_add'),
+    path('counterparties/<int:pk>/edit/', CounterpartyUpdateView.as_view(), name='counterparty_edit'),
 
     path('import/<slug:kind>/', ExcelImportView.as_view(), name='excel_import'),
     path('import/<slug:kind>/template/', ExcelTemplateView.as_view(), name='excel_template'),

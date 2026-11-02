@@ -9,7 +9,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from users.models import AuditLog, Contract, EmployeePayout, Payment, School, Transaction, User
+from users.models import AuditLog, Category, Contract, EmployeePayout, Payment, School, Transaction, User
 
 PASSWORD = 'Strong-pass-2026'
 
@@ -199,7 +199,7 @@ class OwnerTests(RoleTestBase):
 
     def test_transaction_for_any_school_and_reversal(self):
         self.client.post(reverse('transaction_create'), {
-            'school': self.school_b.pk, 'type': 'INCOME', 'category': 'Инвестиции', 'amount': '50000000',
+            'school': self.school_b.pk, 'category': Category.objects.get(name='Вложения учредителей').pk, 'amount': '50000000',
             'date': '2026-10-01', 'notes': 'Вклад'})
         tr = Transaction.objects.get()
         self.assertEqual((tr.school, tr.created_by), (self.school_b, self.owner))
@@ -303,10 +303,11 @@ class DirectorTests(RoleTestBase):
         self.assertFalse(EmployeePayout.objects.exists())
 
     def test_transactions_scoped_to_own_school(self):
-        other = Transaction.objects.create(school=self.school_b, type='EXPENSE', amount=Decimal(10), category='Чужая трата')
+        other = Transaction.objects.create(school=self.school_b, type='EXPENSE', amount=Decimal(10), notes='Чужая трата')
+        repair = Category.objects.create(name='Ремонт', direction='EXPENSE')
         self.client.post(reverse('transaction_create'), {
-            'type': 'EXPENSE', 'category': 'Ремонт', 'amount': '500000', 'date': '2026-10-02', 'notes': ''})
-        mine = Transaction.objects.get(category='Ремонт')
+            'category': repair.pk, 'amount': '500000', 'date': '2026-10-02', 'notes': ''})
+        mine = Transaction.objects.get(category=repair)
         self.assertEqual(mine.school, self.school_a)
         response = self.client.get(reverse('transaction_list'))
         self.assertContains(response, 'Ремонт')
@@ -490,7 +491,8 @@ class InvestorTests(RoleTestBase):
     def test_reads_payouts_and_transactions_without_edit_links(self):
         payout = EmployeePayout.objects.create(employee=self.employee_a, school=self.school_a,
                                                for_month=date(2026, 9, 1), amount=Decimal(100))
-        tr = Transaction.objects.create(school=self.school_b, type='EXPENSE', amount=Decimal(50), category='Аренда')
+        tr = Transaction.objects.create(school=self.school_b, type='EXPENSE', amount=Decimal(50),
+                                        category=Category.objects.get(name='Аренда'))
         response = self.client.get(reverse('payout_list'))
         self.assertContains(response, 'Сотрудник А')
         self.assertNotContains(response, reverse('payout_edit', args=[payout.pk]))

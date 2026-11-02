@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.db import IntegrityError
-from users.models import User, Contract, School, EmployeePayout, Transaction
+from users.models import User, Category, Contract, School, EmployeePayout, Transaction
 from users.forms import ContractForm, EmployeePayoutForm, TransactionForm
 
 class ContractDuplicateTestCase(TestCase):
@@ -109,7 +109,7 @@ class FinanceTestCase(TestCase):
         tr_income = Transaction.objects.create(
             school=self.school,
             type="INCOME",
-            category="Инвестиции",
+            category=Category.objects.get(name='Вложения учредителей'),
             amount=50000000,
             notes="Инвестиция от Олега"
         )
@@ -120,7 +120,7 @@ class FinanceTestCase(TestCase):
         tr_expense = Transaction.objects.create(
             school=self.school,
             type="EXPENSE",
-            category="Траты",
+            category=Category.objects.get(name='Хозяйственные расходы'),
             amount=1200000,
             notes="Непредвиденный ремонт замка"
         )

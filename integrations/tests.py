@@ -161,7 +161,7 @@ class ODataMappingTestCase(BaseData):
         records = fetch_records('transactions', client=client)
         run = run_import('transactions', records, channel='odata')
         self.assertEqual(run.created, 1, run.errors)
-        self.assertEqual(Transaction.objects.get().category, 'Аренда')
+        self.assertEqual(Transaction.objects.get().category.name, 'Аренда')
 
 
 @override_settings(ONEC_API_TOKEN=TOKEN)

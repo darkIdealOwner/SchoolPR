@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Счета и остатки" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; white-space: nowrap; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
+.total { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.9rem 1rem; min-width: 0; }
+.total strong { display: block; font-size: 1.35rem; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.tbl th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+.tbl td.num { text-align: right; white-space: nowrap; }
+.neg { color: #ef4444; }
+.off td { opacity: 0.5; }
+{% endblock %}
+
+{% block content %}
+{% include 'home/finance/_finance_nav.html' with active='accounts' %}
+<div class="toolbar">
+    <h1 style="margin: 0;">{% translate "Счета и остатки" %}</h1>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="{% url 'transfer_create' %}" class="btn-excel">{% translate "Перевод между счетами" %}</a>
+        <a href="{% url 'account_add' %}" class="btn-add">{% translate "Добавить счёт" %}</a>
+    </div>
+</div>
+<p class="muted">{% blocktranslate with day=today|date:"d.m.Y" %}Остаток на {{ day }}: остаток на начало + оплаты и приходы − расходы и выплаты ± переводы.{% endblocktranslate %}</p>
+
+{% if school_totals|length > 1 %}
+<div class="totals">
+    {% for name, total in school_totals %}<div class="total"><span class="muted">{{ name }}</span><strong class="{% if total < 0 %}neg{% endif %}">{{ total|money }}</strong></div>{% endfor %}
+</div>
+{% endif %}
+
+<div class="table-container">
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th>{% translate "Счёт" %}</th>
+                {% if user.role == 'OWNER' %}<th>{% translate "Школа" %}</th>{% endif %}
+                <th>{% translate "Вид" %}</th>
+                <th>{% translate "Остаток на начало" %}</th>
+                <th>{% translate "Остаток сейчас" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in accounts %}
+            <tr class="{% if not a.is_active %}off{% endif %}">
+                <td style="font-weight: 600;">{{ a.display_name }}</td>
+                {% if user.role == 'OWNER' %}<td>{{ a.school.name }}</td>{% endif %}
+                <td>{{ a.get_kind_display }}</td>
+                <td class="num">{{ a.opening_balance|money }} <span class="muted">{{ a.opening_date|date:"d.m.Y" }}</span></td>
+                <td class="num {% if a.balance < 0 %}neg{% endif %}" style="font-weight: 700;">{{ a.balance|money }}</td>
+                <td><a href="{% url 'account_edit' a.pk %}" style="color: var(--text-muted); text-decoration: none;">{% translate "Изменить" %}</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Счетов пока нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

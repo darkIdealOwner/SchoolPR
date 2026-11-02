@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% block title %}{% translate "Учредители и контрагенты" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; white-space: nowrap; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.tbl th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+{% endblock %}
+
+{% block content %}
+{% include 'home/finance/_finance_nav.html' with active='counterparties' %}
+<div class="toolbar">
+    <h1 style="margin: 0;">{% translate "Учредители и контрагенты" %}</h1>
+    <a href="{% url 'counterparty_add' %}" class="btn-add">{% translate "Добавить" %}</a>
+</div>
+<p class="muted">{% translate "Учредители, банк, поставщики. Вложения и выплаты учредителям отмечаются в транзакциях — по ним строятся расчёты с учредителями." %}</p>
+
+<div class="table-container">
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th>{% translate "Название" %}</th>
+                <th>{% translate "Вид" %}</th>
+                <th>{% translate "Инвестор на платформе" %}</th>
+                <th>{% translate "Операций" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in counterparties %}
+            <tr>
+                <td style="font-weight: 600;">{{ c.display_name }}</td>
+                <td>{{ c.get_kind_display }}</td>
+                <td>{{ c.investor.first_name|default:"—" }}</td>
+                <td>{{ c.usage }}</td>
+                <td><a href="{% url 'counterparty_edit' c.pk %}" style="color: var(--text-muted); text-decoration: none;">{% translate "Изменить" %}</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Пока никого нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

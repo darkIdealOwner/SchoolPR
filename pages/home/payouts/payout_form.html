@@ -95,6 +95,12 @@ select.input-field {
         {% endif %}
 
         <div class="form-group">
+            <label for="{{ form.account.id_for_label }}">{% translate "Счёт" %}</label>
+            {{ form.account }}
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{{ form.account.help_text }}</p>
+        </div>
+
+        <div class="form-group">
             <label for="{{ form.for_month.id_for_label }}">{% translate "За месяц (любое число месяца)" %}</label>
             {{ form.for_month }}
         </div>

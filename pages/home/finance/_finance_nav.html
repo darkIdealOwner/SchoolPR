@@ -1,0 +1,15 @@
+{% load i18n %}
+<nav class="fin-nav" aria-label="{% translate "Финансы" %}">
+    <a href="{% url 'transaction_list' %}" class="{% if active == 'transactions' %}on{% endif %}">{% translate "Транзакции" %}</a>
+    <a href="{% url 'account_list' %}" class="{% if active == 'accounts' %}on{% endif %}">{% translate "Счета и остатки" %}</a>
+    <a href="{% url 'transfer_list' %}" class="{% if active == 'transfers' %}on{% endif %}">{% translate "Переводы" %}</a>
+    {% if user.role == 'OWNER' %}
+    <a href="{% url 'category_list' %}" class="{% if active == 'categories' %}on{% endif %}">{% translate "Статьи" %}</a>
+    <a href="{% url 'counterparty_list' %}" class="{% if active == 'counterparties' %}on{% endif %}">{% translate "Учредители и контрагенты" %}</a>
+    {% endif %}
+</nav>
+<style>
+.fin-nav { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.fin-nav a { padding: 0.4rem 0.8rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); color: var(--text-muted); text-decoration: none; font-size: 0.8125rem; }
+.fin-nav a.on { background: rgba(99,102,241,0.18); color: var(--text); border-color: transparent; }
+</style>

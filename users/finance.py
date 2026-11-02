@@ -7,12 +7,12 @@ from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.utils import timezone
 from django.utils.dates import MONTHS, MONTHS_3
 from django.utils.translation import gettext
 
-from .models import Contract, Payment, EmployeePayout, Transaction, School, shift_month
+from .models import Contract, Payment, EmployeePayout, Transaction, Transfer, School, shift_month
 
 ZERO = Decimal(0)
 
@@ -275,3 +275,32 @@ def chart_payload(series, include_spending=True):
     if include_spending:
         payload['spent'] = [float(row['spent']) for row in series]
     return payload
+
+
+def account_balances(accounts, until=None):
+    """Остаток на конец дня until по каждому счёту: остаток на начало + приход − расход ± переводы.
+
+    Учитываются только действующие записи с даты остатка на начало счёта. Возвращает {account.pk: Decimal}.
+    """
+    until = until or timezone.localdate()
+    accounts = list(accounts)
+    balances = {a.pk: (a.opening_balance if a.opening_date <= until else ZERO) for a in accounts}
+    starts = {a.pk: a.opening_date for a in accounts}
+    ids = list(balances)
+
+    def add(rows, date_attr, sign, account_attr='account_id'):
+        for row in rows:
+            account_id = getattr(row, account_attr)
+            day = getattr(row, date_attr)
+            if account_id in balances and starts[account_id] <= day <= until:
+                balances[account_id] += sign * row.amount
+
+    add(Payment.active.filter(account_id__in=ids).only('account_id', 'payment_date', 'amount'), 'payment_date', 1)
+    add(EmployeePayout.active.filter(account_id__in=ids).only('account_id', 'payout_date', 'amount'), 'payout_date', -1)
+    transactions = Transaction.active.filter(account_id__in=ids).only('account_id', 'date', 'amount', 'type')
+    add([t for t in transactions if t.type == 'INCOME'], 'date', 1)
+    add([t for t in transactions if t.type == 'EXPENSE'], 'date', -1)
+    transfers = list(Transfer.active.filter(Q(from_account_id__in=ids) | Q(to_account_id__in=ids)))
+    add(transfers, 'date', -1, 'from_account_id')
+    add(transfers, 'date', 1, 'to_account_id')
+    return balances

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Переводы между счетами" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; white-space: nowrap; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.tbl th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+{% endblock %}
+
+{% block content %}
+{% include 'home/finance/_finance_nav.html' with active='transfers' %}
+<div class="toolbar">
+    <h1 style="margin: 0;">{% translate "Переводы между счетами" %}</h1>
+    <a href="{% url 'transfer_create' %}" class="btn-add">{% translate "Новый перевод" %}</a>
+</div>
+<p class="muted">{% translate "Например, сдали наличные из кассы в банк или сняли деньги со счёта. Это не доход и не расход — меняются только остатки счетов." %}</p>
+
+<div class="table-container">
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th>{% translate "Дата" %}</th>
+                {% if user.role == 'OWNER' %}<th>{% translate "Школа" %}</th>{% endif %}
+                <th>{% translate "Откуда" %}</th>
+                <th>{% translate "Куда" %}</th>
+                <th>{% translate "Сумма" %}</th>
+                <th>{% translate "Примечание" %}</th>
+                <th>{% translate "Действия" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transfers %}
+            <tr{% if t.is_reversed %} class="reversed-row"{% endif %}>
+                <td>{{ t.date|date:"d.m.Y" }}</td>
+                {% if user.role == 'OWNER' %}<td>{{ t.school.name }}</td>{% endif %}
+                <td>{{ t.from_account.display_name }}</td>
+                <td>{{ t.to_account.display_name }}</td>
+                <td style="font-weight: 700; white-space: nowrap;">{{ t.amount|money }}</td>
+                <td>{{ t.notes|default:"—" }}</td>
+                <td class="reversal-info">
+                    {% if t.is_reversed %}
+                    <span style="color: #ef4444; font-size: 0.75rem;">{% translate "Сторно" %} {{ t.reversed_at|date:"d.m.Y" }}</span>
+                    <div style="color: var(--text-muted); font-size: 0.7rem;">{{ t.reversal_reason }}</div>
+                    {% else %}
+                    <a href="{% url 'transfer_reverse' t.pk %}" style="text-decoration: none; color: #ef4444; font-size: 0.75rem;">{% translate "Сторно" %}</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Переводов пока нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

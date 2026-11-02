@@ -90,14 +90,21 @@ select.input-field {
         {% endif %}
 
         <div class="form-group">
-            <label for="{{ form.type.id_for_label }}">{% translate "Тип операции" %}</label>
-            {{ form.type }}
+            <label for="{{ form.category.id_for_label }}">{% translate "Статья" %}</label>
+            {{ form.category }}
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{% translate "От статьи зависит, приход это или расход и куда он попадёт в отчётах." %}</p>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.category.id_for_label }}">{% translate "Категория / Назначение" %}</label>
-            {{ form.category }}
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{% translate "Например: Инвестиции, Непредвиденные расходы, Хоз. нужды" %}</p>
+            <label for="{{ form.account.id_for_label }}">{% translate "Счёт" %}</label>
+            {{ form.account }}
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{{ form.account.help_text }}</p>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.counterparty.id_for_label }}">{% translate "Контрагент" %}</label>
+            {{ form.counterparty }}
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{{ form.counterparty.help_text }}</p>
         </div>
 
         <div class="form-group">
@@ -111,9 +118,9 @@ select.input-field {
         </div>
 
         <div class="form-group">
-            <label for="{{ form.notes.id_for_label }}">{% translate "Примечание / От кого" %}</label>
+            <label for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
             {{ form.notes }}
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{% translate 'Например: "Инвестиция от Олега" или "Замена сломанного замка в кабинете"' %}</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{% translate "Например, текст из банковской выписки или «замена замка в кабинете»." %}</p>
         </div>
 
         <button type="submit" class="btn-save">{% if is_edit %}{% translate "Сохранить изменения" %}{% else %}{% translate "Добавить транзакцию" %}{% endif %}</button>

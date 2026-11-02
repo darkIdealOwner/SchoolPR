@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% block title %}{% translate "Статьи приходов и расходов" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.btn-add { padding: 0.625rem 1.25rem; background-color: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; white-space: nowrap; }
+.muted { color: var(--text-muted); font-size: 0.875rem; }
+.table-container { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; margin-bottom: 1.5rem; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.tbl th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); white-space: nowrap; }
+.off td { opacity: 0.5; }
+.yes { color: #10b981; }
+h2 { font-size: 1.05rem; margin: 0 0 0.75rem 0; }
+{% endblock %}
+
+{% block content %}
+{% include 'home/finance/_finance_nav.html' with active='categories' %}
+<div class="toolbar">
+    <h1 style="margin: 0;">{% translate "Статьи приходов и расходов" %}</h1>
+    <a href="{% url 'category_add' %}" class="btn-add">{% translate "Добавить статью" %}</a>
+</div>
+<p class="muted">{% translate "Статья определяет, куда операция попадёт в отчётах: в прибыль и убытки и в какой раздел денежного потока. Оплаты родителей и выплаты сотрудникам статей не требуют." %}</p>
+
+{% regroup categories by get_direction_display as groups %}
+{% for group in groups %}
+<h2>{{ group.grouper }}</h2>
+<div class="table-container">
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th>{% translate "Название" %}</th>
+                <th>{% translate "Раздел" %}</th>
+                <th>{% translate "В прибыли и убытках" %}</th>
+                <th>{% translate "Операций" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in group.list %}
+            <tr class="{% if not c.is_active %}off{% endif %}">
+                <td style="font-weight: 600;">{{ c.display_name }}{% if c.is_salary %} <span class="muted">· {% translate "зарплата" %}</span>{% endif %}</td>
+                <td>{{ c.get_section_display }}</td>
+                <td>{% if c.in_pl %}<span class="yes">{% translate "да" %}</span>{% else %}<span class="muted">{% translate "нет" %}</span>{% endif %}</td>
+                <td>{{ c.usage }}</td>
+                <td><a href="{% url 'category_edit' c.pk %}" style="color: var(--text-muted); text-decoration: none;">{% translate "Изменить" %}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+{% endblock %}

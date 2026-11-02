@@ -1,5 +1,6 @@
 import csv
 import uuid
+from collections import defaultdict
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -18,12 +19,14 @@ from django.urls import reverse_lazy
 from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
     EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
+    TransferForm, AccountForm, CategoryForm, CounterpartyForm,
 )
 from . import excel_import
+from .models import Account, Category, Counterparty, Transfer
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
 from .finance import (
     parse_month, contracts_with_active_payments, format_russian_month, get_debt_details,
-    build_overview, chart_payload, contract_schedule,
+    build_overview, chart_payload, contract_schedule, account_balances,
 )
 
 class CustomLoginView(LoginView):
@@ -180,12 +183,16 @@ class ProtectedDeleteMixin:
         try:
             with db_transaction.atomic():
                 AuditLog.record(self.request.user, 'DELETE', self.object)
+                self.before_delete(self.object)
                 self.object.delete()
         except ProtectedError:
             messages.error(self.request, self.protected_message)
             return redirect(self.get_success_url())
         messages.success(self.request, _("Запись удалена."))
         return redirect(self.get_success_url())
+
+    def before_delete(self, obj):
+        """Что удалить вместе с объектом (в той же транзакции)."""
 
 class BaseReverseView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
     """Сторно денежной записи: запись остаётся в базе, но перестаёт учитываться в расчётах."""
@@ -381,6 +388,10 @@ class AcademicYearUpdateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, Upd
         return context
 
 class SchoolDeleteView(LoginRequiredMixin, OwnerOnlyMixin, ProtectedDeleteMixin, DeleteView):
+    def before_delete(self, obj):
+        # Пустые счета создаются вместе со школой; если по ним были движения — удаление остановит PROTECT
+        obj.accounts.all().delete()
+
     model = School
     template_name = 'home/schools/school_confirm_delete.html' # We'll reuse logic but create a separate template or generic one
     success_url = reverse_lazy('school_list')
@@ -784,13 +795,15 @@ class TransactionListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, Cs
     export_filename = 'tranzakcii'
 
     def get_export_rows(self, context):
-        headers = [_('Дата'), _('Школа'), _('Тип'), _('Категория'), _('Сумма'), _('Примечание'), _('Сторно'), _('Причина сторно')]
-        rows = [[t.date, t.school.name, t.get_type_display(), t.category, t.amount, t.notes,
-                 t.is_reversed, t.reversal_reason] for t in self.object_list]
+        headers = [_('Дата'), _('Школа'), _('Тип'), _('Статья'), _('Счёт'), _('Контрагент'), _('Сумма'), _('Примечание'),
+                   _('Сторно'), _('Причина сторно')]
+        rows = [[t.date, t.school.name, t.get_type_display(), t.category.display_name if t.category else '',
+                 t.account.display_name if t.account else '', t.counterparty.display_name if t.counterparty else '',
+                 t.amount, t.notes, t.is_reversed, t.reversal_reason] for t in self.object_list]
         return headers, rows
 
     def get_queryset(self):
-        queryset = super().get_queryset().select_related('school', 'reversed_by')
+        queryset = super().get_queryset().select_related('school', 'reversed_by', 'category', 'account', 'counterparty')
         if self.request.user.role == 'DIRECTOR':
             queryset = queryset.filter(school=self.request.user.school)
         return queryset.order_by('-date', '-created_at')
@@ -930,3 +943,145 @@ class ExcelImportView(ExcelImportAccessMixin, TemplateView):
             text += ' ' + _("Пропущено: %(skipped)s (ошибки или уже были на платформе).") % {'skipped': skipped}
         messages.success(request, text)
         return redirect(excel_import.KINDS[kind]['list_url'])
+
+
+# Счета, переводы, справочники статей и контрагентов
+class SchoolScopedMixin:
+    """Директор видит только свою школу; у владельца — все."""
+    school_field = 'school'
+
+    def scope(self, qs):
+        if self.request.user.role == 'DIRECTOR':
+            return qs.filter(**{self.school_field: self.request.user.school})
+        return qs
+
+
+class AccountListView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixin, ListView):
+    template_name = 'home/finance/account_list.html'
+    context_object_name = 'accounts'
+
+    def get_queryset(self):
+        return self.scope(Account.objects.select_related('school'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        balances = account_balances(context['accounts'])
+        totals = defaultdict(Decimal)
+        for account in context['accounts']:
+            account.balance = balances[account.pk]
+            if account.is_active:
+                totals[account.school.name] += account.balance
+        context['school_totals'] = sorted(totals.items())
+        context['today'] = timezone.localdate()
+        return context
+
+
+class AccountCreateView(LoginRequiredMixin, OwnerOrDirectorMixin, AuditMixin, CreateView):
+    model = Account
+    form_class = AccountForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('account_list')
+    extra_context = {'title': gettext_lazy('Новый счёт'), 'back_url': reverse_lazy('account_list')}
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}
+
+    def form_valid(self, form):
+        if self.request.user.role != 'OWNER':
+            form.instance.school = self.request.user.school
+        return super().form_valid(form)
+
+
+class AccountUpdateView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixin, AuditMixin, UpdateView):
+    model = Account
+    form_class = AccountForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('account_list')
+    extra_context = {'title': gettext_lazy('Изменить счёт'), 'back_url': reverse_lazy('account_list')}
+
+    def get_queryset(self):
+        return self.scope(Account.objects.all())
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}
+
+
+class TransferListView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixin, ListView):
+    template_name = 'home/finance/transfer_list.html'
+    context_object_name = 'transfers'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return self.scope(Transfer.objects.select_related('school', 'from_account', 'to_account', 'reversed_by')) \
+            .order_by('-date', '-created_at')
+
+
+class TransferCreateView(LoginRequiredMixin, OwnerOrDirectorMixin, AuditMixin, CreateView):
+    model = Transfer
+    form_class = TransferForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('transfer_list')
+    extra_context = {'title': gettext_lazy('Перевод между счетами'), 'back_url': reverse_lazy('transfer_list')}
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'user': self.request.user}
+
+    def form_valid(self, form):
+        form.instance.school = form.cleaned_data['from_account'].school
+        return super().form_valid(form)
+
+
+class TransferReverseView(SchoolScopedMixin, BaseReverseView):
+    model = Transfer
+    success_url = reverse_lazy('transfer_list')
+
+    def get_queryset(self):
+        return self.scope(super().get_queryset())
+
+
+class CategoryListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+    template_name = 'home/finance/category_list.html'
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        return Category.objects.annotate(usage=models.Count('transactions'))
+
+
+class CategoryCreateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('category_list')
+    extra_context = {'title': gettext_lazy('Новая статья'), 'back_url': reverse_lazy('category_list')}
+
+
+class CategoryUpdateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, UpdateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('category_list')
+    extra_context = {'title': gettext_lazy('Изменить статью'), 'back_url': reverse_lazy('category_list')}
+
+
+class CounterpartyListView(LoginRequiredMixin, OwnerOnlyMixin, ListView):
+    template_name = 'home/finance/counterparty_list.html'
+    context_object_name = 'counterparties'
+
+    def get_queryset(self):
+        return Counterparty.objects.select_related('investor').annotate(usage=models.Count('transactions'))
+
+
+class CounterpartyCreateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, CreateView):
+    model = Counterparty
+    form_class = CounterpartyForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('counterparty_list')
+    extra_context = {'title': gettext_lazy('Новый контрагент'), 'back_url': reverse_lazy('counterparty_list')}
+
+
+class CounterpartyUpdateView(LoginRequiredMixin, OwnerOnlyMixin, AuditMixin, UpdateView):
+    model = Counterparty
+    form_class = CounterpartyForm
+    template_name = 'home/finance/simple_form.html'
+    success_url = reverse_lazy('counterparty_list')
+    extra_context = {'title': gettext_lazy('Изменить контрагента'), 'back_url': reverse_lazy('counterparty_list')}

@@ -12,7 +12,7 @@ from decimal import Decimal, InvalidOperation
 from django.db import transaction as db_transaction
 from django.utils import timezone
 
-from users.models import AuditLog, Contract, EmployeePayout, Payment, School, Transaction, User, ExternalSyncMixin
+from users.models import AuditLog, Category, Contract, EmployeePayout, Payment, School, Transaction, User, ExternalSyncMixin
 
 from .models import SyncRun
 
@@ -158,13 +158,21 @@ def transaction_fields(record):
     tr_type = str(record.get('type') or '').upper()
     if tr_type not in dict(Transaction.TYPE_CHOICES):
         raise RecordError(f"type должен быть INCOME или EXPENSE, получено {record.get('type')!r}")
+    # Статья 1С ищется в справочнике по названию; если такой нет — «Прочие», а название статьи 1С — в примечании
+    category_name = str(record.get('category') or '').strip()
+    category = Category.find(category_name, tr_type) if category_name else None
+    notes = record.get('notes') or ''
+    if category is None:
+        category = Category.other(tr_type)
+        if category_name:
+            notes = f"[{category_name}] {notes}".strip()
     return {
         'school': find_school(record),
         'type': tr_type,
-        'category': (record.get('category') or '')[:100],
+        'category': category,
         'date': parse_date(record.get('date'), 'date'),
         'amount': parse_amount(record.get('amount')),
-        'notes': record.get('notes') or '',
+        'notes': notes,
     }
 
 
