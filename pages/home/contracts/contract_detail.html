@@ -42,6 +42,7 @@
 {% block content %}
 <a href="{% url 'contract_list' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← К списку договоров" %}</a>
 
+{% if contract.data_problem %}<div class="problem-banner" style="margin-top: 1rem;">⚠ {% translate "При загрузке из книги в договоре была ошибка — проверьте:" %}<div>{{ contract.data_problem|linebreaksbr }}</div>{% if can_edit %}<div style="margin-top: 0.4rem; font-weight: 400;"><a href="{% url 'contract_edit' contract.pk %}">{% translate "Исправить договор" %}</a>{% if can_reverse %} · <form method="post" action="{% url 'data_problem_clear' 'contract' contract.pk %}" style="display: inline;">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button type="submit" style="background: none; border: none; padding: 0; color: #fca5a5; text-decoration: underline; cursor: pointer; font: inherit;">{% translate "всё верно — снять пометку" %}</button></form>{% endif %}</div>{% endif %}</div>{% endif %}
 <div class="card-head">
     <div>
         <h1>{{ contract.student_full_name }}</h1>
@@ -177,13 +178,13 @@
             </thead>
             <tbody>
                 {% for p in payments_history %}
-                <tr{% if p.is_reversed %} class="reversed-row"{% endif %}>
+                <tr class="{% if p.is_reversed %}reversed-row{% endif %}{% if p.data_problem %} problem-row{% endif %}">
                     <td>{{ p.payment_date|date:"d.m.Y" }}</td>
                     <td>{{ p.for_month|date:"YEAR_MONTH_FORMAT" }}</td>
                     <td class="num">{% if p.is_refund %}<span style="color: #f87171;">−{{ p.amount|money }}</span><div style="font-size: 0.7rem; color: var(--text-muted);">{% translate "возврат" %}</div>{% else %}{{ p.amount|money }}{% endif %}</td>
                     <td>{{ p.get_method_display }}</td>
                     <td>{{ p.created_by.first_name|default:"—" }}</td>
-                    <td style="white-space: normal; max-width: 240px;">{{ p.notes|default:"—" }}</td>
+                    <td style="white-space: normal; max-width: 240px;">{{ p.notes|default:"—" }}{% include 'home/partials/data_problem.html' with obj=p kind='payment' %}</td>
                     <td class="reversal-info">
                         {% if p.is_reversed %}
                             <span style="color: #f87171; font-size: 0.75rem;">{% translate "Сторно" %} {{ p.reversed_at|date:"d.m.Y" }}{% if p.reversed_by %} · {{ p.reversed_by.first_name }}{% endif %}</span>

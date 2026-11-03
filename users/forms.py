@@ -186,6 +186,11 @@ class ContractForm(forms.ModelForm):
         self.fields['discount_fixed'].help_text =_("Можно вместе с процентом. Всего скидка не больше стоимости учёбы.")
         for name in ('passport_data', 'inps', 'address'):
             self.fields[name].help_text = _("Можно оставить пустым — договор будет помечен «неполные данные».")
+        if self.instance.data_problem:
+            # Договор загружен из книги с ошибкой: пометку снимают, когда всё исправлено
+            self.fields['clear_problem'] = forms.BooleanField(
+                required=False, initial=False, label=_("Ошибки из книги исправлены — снять красную пометку"),
+                help_text=self.instance.data_problem)
 
     def _clean_phone(self, name, required):
         value = (self.cleaned_data.get(name) or '').strip()
@@ -248,6 +253,11 @@ class ContractForm(forms.ModelForm):
         if cleaned.get('is_cancelled') and cancelled_at and start and cancelled_at < start:
             self.add_error('cancelled_at', _("Дата отмены не может быть раньше даты договора."))
         return cleaned
+
+    def save(self, commit=True):
+        if self.cleaned_data.get('clear_problem'):
+            self.instance.data_problem = ''
+        return super().save(commit)
 
 class PaymentForm(forms.ModelForm):
     class Meta:

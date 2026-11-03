@@ -108,15 +108,17 @@ class WorkbookFlowTests(Base):
     def test_full_import_and_reconciliation(self):
         preview = self.upload(self.owner, book(CONTRACTS, INCOME, EXPENSE))
         counts = preview.context['plan'].counts()
-        self.assertEqual(counts['contracts'], {'ok': 5, 'exists': 0, 'skipped': 0, 'error': 1})
-        self.assertEqual(counts['income'], {'ok': 7, 'exists': 0, 'skipped': 1, 'error': 2})
-        self.assertEqual(counts['expense'], {'ok': 6, 'exists': 0, 'skipped': 0, 'error': 1})
+        # Класс 2013 и даты 2023/2006 — ошибки книги, но строки загружаются с пометкой; договора № 99 нет — ошибка
+        self.assertEqual(counts['contracts'], {'ok': 6, 'exists': 0, 'skipped': 0, 'error': 0, 'flagged': 1, 'fixed': 0})
+        self.assertEqual(counts['income'], {'ok': 8, 'exists': 0, 'skipped': 1, 'error': 1, 'flagged': 1, 'fixed': 0})
+        self.assertEqual(counts['expense'], {'ok': 7, 'exists': 0, 'skipped': 0, 'error': 0, 'flagged': 1, 'fixed': 0})
         self.assertFalse(Contract.objects.exists())   # предпросмотр ничего не сохраняет
 
         result = self.confirm(preview)
         created = result.context['created']
         self.assertEqual((created['contracts'], created['payment'], created['receipt'], created['transaction'], created['transfer']),
-                         (5, 4, 1, 6, 2))
+                         (6, 5, 1, 7, 2))
+        self.assertEqual(created['flagged'], 3)
         recon = result.context['recon']
         self.assertTrue(recon['ok'], [c for c in recon['checks'] if not c['ok']])
         self.assertContains(result, 'совпадают')
@@ -133,11 +135,13 @@ class WorkbookFlowTests(Base):
         c5 = Contract.objects.get(number='5')
         self.assertTrue(c5.is_cancelled)
         self.assertIsNone(c5.cancelled_at)
-        self.assertFalse(Contract.objects.filter(number='6').exists())
+        c6 = Contract.objects.get(number='6')
+        self.assertEqual(c6.student_class, '2013')
+        self.assertIn('Класс', c6.data_problem)
 
         bank = Account.objects.get(school=self.school, kind='BANK')
         cash = Account.objects.get(school=self.school, kind='CASH')
-        sept = Payment.objects.get(contract=c1, for_month=date(2026, 9, 1))
+        sept = Payment.objects.get(contract=c1, for_month=date(2026, 9, 1), data_problem='')
         self.assertEqual((sept.payment_date, sept.method, sept.account), (date(2026, 7, 8), 'BANK', bank))
         self.assertEqual(Payment.objects.filter(contract=c1, for_month=date(2026, 10, 1)).count(), 2)   # пустая статья + номер = оплата
         self.assertEqual(UnidentifiedReceipt.objects.get().amount, D(500000))
@@ -165,12 +169,14 @@ class WorkbookFlowTests(Base):
         self.assertEqual(before, after)
 
     def test_fixed_rows_are_added_on_reupload(self):
-        self.confirm(self.upload(self.owner, book(CONTRACTS, INCOME, EXPENSE)))
+        self.confirm(self.upload(self.owner, book(CONTRACTS, INCOME[:1], [])))
         fixed = [dict(r) for r in CONTRACTS]
         fixed[5]['Класс'] = 3
-        response = self.confirm(self.upload(self.owner, book(fixed, INCOME, EXPENSE)))
-        self.assertEqual(response.context['created']['contracts'], 1)
-        self.assertTrue(Contract.objects.filter(number='6').exists())
+        response = self.confirm(self.upload(self.owner, book(fixed, INCOME[:1], [])))
+        self.assertEqual(response.context['created']['contracts'], 0)
+        self.assertEqual(response.context['created']['fixed'], 1)
+        c6 = Contract.objects.get(number='6')
+        self.assertEqual((c6.student_class, c6.data_problem), ('3', ''))
 
     def test_numbers_taken_by_other_school_need_prefix(self):
         Contract.objects.create(number='1', school=self.other, date=date(2026, 9, 1), tuition_fee=D(1))

@@ -36,13 +36,13 @@
         </thead>
         <tbody>
             {% for t in transfers %}
-            <tr{% if t.is_reversed %} class="reversed-row"{% endif %}>
+            <tr class="{% if t.is_reversed %}reversed-row{% endif %}{% if t.data_problem %} problem-row{% endif %}">
                 <td>{{ t.date|date:"d.m.Y" }}</td>
                 {% if user.role == 'OWNER' %}<td>{{ t.school.name }}</td>{% endif %}
                 <td>{{ t.from_account.display_name }}</td>
                 <td>{{ t.to_account.display_name }}</td>
                 <td style="font-weight: 700; white-space: nowrap;">{{ t.amount|money }}</td>
-                <td>{{ t.notes|default:"—" }}</td>
+                <td>{{ t.notes|default:"—" }}{% include 'home/partials/data_problem.html' with obj=t kind='transfer' %}</td>
                 <td class="reversal-info">
                     {% if t.is_reversed %}
                     <span style="color: #ef4444; font-size: 0.75rem;">{% translate "Сторно" %} {{ t.reversed_at|date:"d.m.Y" }}</span>

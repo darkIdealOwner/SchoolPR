@@ -85,10 +85,11 @@
 
     <form method="post" class="card">
         {% csrf_token %}
+        {% if form.instance.data_problem %}<div class="problem-banner">⚠ {% translate "При загрузке из книги в договоре была ошибка:" %}<div>{{ form.instance.data_problem|linebreaksbr }}</div><div style="margin-top: 0.4rem; font-weight: 400;">{% translate "Исправьте поля и отметьте галочку внизу формы — красная пометка снимется." %}</div></div>{% endif %}
         
         <div class="form-grid">
             {% for field in form %}
-            <div class="form-group {% if field.name == 'is_cancelled' %}checkbox-group{% endif %}" {% if field.name == 'notes' %}style="grid-column: 1 / -1;"{% endif %}>
+            <div class="form-group {% if field.name == 'is_cancelled' or field.name == 'clear_problem' %}checkbox-group{% endif %}" {% if field.name == 'notes' or field.name == 'clear_problem' %}style="grid-column: 1 / -1;"{% endif %}>
                 <label for="{{ field.id_for_label }}" class="label">{{ field.label }}</label>
                 {{ field }}
                 {% if field.help_text %}

@@ -505,6 +505,7 @@ class RowResult:
         self.number = number
         self.status = self.OK
         self.errors = []
+        self.bad_keys = set()   # колонки с ошибками
         self.notes = []
         self.summary = []
         self.form = None
@@ -522,7 +523,7 @@ class RowChecker:
         self.columns = {c.key: c for c in KINDS[kind]['columns']}
         self.values = values
         self.result = result
-        self.bad_keys = set()
+        self.bad_keys = result.bad_keys
 
     def label(self, key):
         return str(self.columns[key].label)
@@ -612,7 +613,8 @@ class Context:
         self.seen = {}
 
 
-def check_contract(values, ctx, result):
+def check_contract(values, ctx, result, instance=None):
+    """instance — уже загруженный договор, который эта строка исправляет (повторная загрузка книги)."""
     row = RowChecker('contracts', values, result)
     number = row.get('number', required=True)
     if number:
@@ -620,7 +622,7 @@ def check_contract(values, ctx, result):
             row.error('number', _("номер повторяется — уже был в строке %(row)s") % {'row': ctx.seen[number]})
         else:
             ctx.seen[number] = result.number
-            if Contract.objects.filter(number=number).exists():
+            if instance is None and Contract.objects.filter(number=number).exists():
                 result.status = RowResult.EXISTS
                 result.notes.append(_("Договор с таким номером уже есть — строка пропущена."))
                 result.summary = [number, row.raw('student_full_name')]
@@ -685,9 +687,10 @@ def check_contract(values, ctx, result):
     for column in row.columns.values():
         if column.required and column.key not in ('school',) and column.key not in row.bad_keys and not row.raw(column.key):
             row.error(column.key, _("не заполнено"))
-    form = ContractForm(data=data, user=ctx.user)
+    form = ContractForm(data=data, user=ctx.user, instance=instance)
     if not form.is_valid():
         row.form_errors(form, extra={'month': 'date'})   # месяц договора берётся из даты
+    result.form = form      # и при ошибках: загрузка книги может сохранить договор с пометкой
 
     if fee is not None and not result.errors:
         monthly = fee - min(fee, fee * Decimal(discount or 0) / 100 + (discount_fixed or 0)) + (food or 0)

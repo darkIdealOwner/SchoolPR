@@ -176,6 +176,10 @@ msgstr "In the workbook"
 msgid "В книге нет листов: %(sheets)s."
 msgstr "The workbook is missing sheets: %(sheets)s."
 
+#: users/workbook_import.py
+msgid "В книге строка исправлена — красная пометка будет снята."
+msgstr "The row is fixed in the workbook — the red mark will be removed."
+
 #: pages/home/finance/category_list.html
 msgid "В прибыли и убытках"
 msgstr "In P&L"
@@ -196,6 +200,10 @@ msgstr "The file has no data rows."
 #: pages/home/import/excel_import.html
 msgid "В шаблоне нужные колонки, подсказки и списки значений. Можно загрузить и свою таблицу или выгрузку «⬇ Excel» — главное, чтобы названия колонок совпадали."
 msgstr "The template has the right columns, tips and lists of values. You can also upload your own table or a “⬇ Excel” export — as long as the column names match."
+
+#: pages/home/import/workbook_import.html
+msgid "В этих строках книги ошибка, но их можно внести: вместо неправильного значения поставлено другое, и запись будет выделена красным с пояснением. Исправьте её потом на платформе или в книге — при повторной загрузке исправленной книги пометка снимется."
+msgstr "These workbook rows contain errors but can still be loaded: the wrong value is replaced and the record is highlighted in red with an explanation. Fix it later on the platform or in the workbook — the mark is removed when the corrected workbook is uploaded again."
 
 #: pages/home/investor.html
 msgid "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям."
@@ -562,6 +570,10 @@ msgstr "A contract with this number already exists — row skipped."
 msgid "Договор с таким номером уже существует."
 msgstr "A contract with this number already exists."
 
+#: users/workbook_import.py
+msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
+msgstr "The contract is already loaded with a red mark and the workbook still has the error — skipped."
+
 #: pages/home/contracts/contract_detail.html
 #, python-format
 msgid "Договор № %(number)s от %(date)s"
@@ -570,6 +582,11 @@ msgstr "Contract No. %(number)s of %(date)s"
 #: pages/home/import/workbook_import.html pages/home/owner.html pages/home/schools/academic_year_list.html users/workbook_import.py
 msgid "Договоров"
 msgstr "Contracts"
+
+#: pages/home/contracts/contract_list.html
+#, python-format
+msgid "Договоров с ошибками из книги (выделены красным): %(count)s."
+msgstr "Contracts with workbook errors (highlighted in red): %(count)s."
 
 #: pages/home/reports/payment_control.html
 msgid "Договоров этого учебного года нет."
@@ -582,6 +599,10 @@ msgstr "Contracts"
 #: pages/home/contracts/contract_list.html
 msgid "Договоры не найдены."
 msgstr "No contracts found."
+
+#: pages/home/import/workbook_import.html
+msgid "Договоры с пометкой"
+msgstr "Marked contracts"
 
 #: integrations/views.py
 msgid "Договоры ↔ договоры контрагентов 1С"
@@ -708,6 +729,10 @@ msgstr "Upload the whole school workbook — the “Договоры”, “По
 msgid "Загрузится"
 msgstr "Will be imported"
 
+#: users/workbook_import.py
+msgid "Загрузится с красной пометкой — потом исправьте договор."
+msgstr "Will be loaded with a red mark — fix the contract later."
+
 #: pages/home/integrations/integration.html
 msgid "Загрузить"
 msgstr "Upload"
@@ -750,6 +775,11 @@ msgstr "School workbook import"
 msgid "Загрузка файлом:"
 msgstr "File upload:"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Загрузятся с красной пометкой (%(count)s)"
+msgstr "Will be loaded with a red mark (%(count)s)"
+
 #: pages/home/debts/debt_list.html
 msgid "Задолженностей не найдено. Прекрасно!"
 msgstr "No debts found. Great!"
@@ -770,6 +800,11 @@ msgstr "Notes"
 msgid "Записей"
 msgstr "Records"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Записей с красной пометкой: %(count)s. В них в книге была ошибка — что именно, написано в самой записи. Проверьте и исправьте их."
+msgstr "Records with a red mark: %(count)s. The workbook had an error in them — the record itself says exactly what. Check and fix them."
+
 #: pages/home/finance/reverse_confirm.html
 msgid "Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах."
 msgstr "The record is not deleted: it stays in the history marked as reversed and is no longer counted."
@@ -781,6 +816,10 @@ msgstr "The record has been reversed."
 #: users/views.py
 msgid "Запись удалена."
 msgstr "The record has been deleted."
+
+#: users/models.py
+msgid "Заполняется при загрузке строки с ошибкой: что было в книге и что поставлено вместо этого."
+msgstr "Filled in when a row with an error is loaded: what was in the workbook and what was put instead."
 
 #: users/excel_import.py
 #, python-format
@@ -843,6 +882,10 @@ msgstr "From Excel"
 #: users/workbook_import.py
 msgid "Из них отменённых"
 msgstr "Of which cancelled"
+
+#: pages/home/import/workbook_import.html
+msgid "Из них с красной пометкой"
+msgstr "Of them with a red mark"
 
 #: users/views.py
 #, python-format
@@ -928,6 +971,18 @@ msgstr "In use"
 #: pages/authorization/login.html
 msgid "Используйте номер телефона для входа"
 msgstr "Sign in with your phone number"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Исправить договор"
+msgstr "Fix the contract"
+
+#: pages/home/import/workbook_import.html
+msgid "Исправлено по книге, пометка снята"
+msgstr "Fixed from the workbook, mark removed"
+
+#: pages/home/contracts/contract_form.html
+msgid "Исправьте поля и отметьте галочку внизу формы — красная пометка снимется."
+msgstr "Fix the fields and tick the box at the bottom of the form — the red mark will be removed."
 
 #: pages/home/contracts/contract_detail.html
 msgid "История оплат"
@@ -1055,6 +1110,10 @@ msgstr "Counterparties"
 #: pages/home/reports/_header.html pages/home/reports/payment_control.html
 msgid "Контроль оплаты"
 msgstr "Payment control"
+
+#: users/views.py
+msgid "Красная пометка снята."
+msgstr "The red mark has been removed."
 
 #: pages/home/partials/finance_overview.html
 msgid "Крупнейшие должники"
@@ -1613,9 +1672,17 @@ msgstr "Reports"
 msgid "Ошибка"
 msgstr "Failed"
 
+#: users/views.py
+msgid "Ошибка в книге"
+msgstr "Workbook error"
+
 #: integrations/models.py
 msgid "Ошибки"
 msgstr "Errors"
+
+#: users/forms.py
+msgid "Ошибки из книги исправлены — снять красную пометку"
+msgstr "Workbook errors are fixed — remove the red mark"
 
 #: pages/home/integrations/integration.html
 msgid "Ошибок"
@@ -1766,6 +1833,10 @@ msgstr "Nobody yet."
 msgid "Показать"
 msgstr "Show"
 
+#: pages/home/contracts/contract_list.html
+msgid "Показать только их"
+msgstr "Show only them"
+
 #: pages/home/owner.html
 msgid "Пользователей"
 msgstr "Users"
@@ -1827,6 +1898,14 @@ msgstr "Upcoming"
 #: users/forms.py
 msgid "Префикс номеров договоров"
 msgstr "Contract number prefix"
+
+#: pages/home/contracts/contract_detail.html
+msgid "При загрузке из книги в договоре была ошибка — проверьте:"
+msgstr "The contract had an error when loaded from the workbook — check:"
+
+#: pages/home/contracts/contract_form.html
+msgid "При загрузке из книги в договоре была ошибка:"
+msgstr "The contract had an error when loaded from the workbook:"
 
 #: pages/home/reports/matrix.html users/reports.py
 msgid "Прибыль"
@@ -2115,6 +2194,10 @@ msgstr "Fees are charged from this month. Empty — the first month of the acade
 #: integrations/models.py
 msgid "С ошибками"
 msgstr "With errors"
+
+#: users/views.py
+msgid "С ошибками из книги"
+msgstr "With workbook errors"
 
 #: users/forms.py
 msgid "С этой даты считается остаток. Движения раньше неё не учитываются."
@@ -2769,6 +2852,14 @@ msgstr "Net cash flow"
 msgid "Что загружаем"
 msgstr "What to upload"
 
+#: pages/home/import/workbook_import.html
+msgid "Что не так"
+msgstr "What's wrong"
+
+#: users/models.py
+msgid "Что не так в исходных данных"
+msgstr "What's wrong in the source data"
+
 #: pages/home/import/excel_import.html
 msgid "Шаблон .xlsx"
 msgstr ".xlsx template"
@@ -2842,6 +2933,10 @@ msgstr "enabled"
 msgid "возврат"
 msgstr "refund"
 
+#: pages/home/contracts/contract_detail.html
+msgid "всё верно — снять пометку"
+msgstr "all correct — remove the mark"
+
 #: pages/home/integrations/integration.html
 msgid "выключено"
 msgstr "disabled"
@@ -2896,6 +2991,14 @@ msgstr "salary"
 #: pages/home/integrations/integration.html pages/home/partials/finance_overview.html
 msgid "из"
 msgstr "of"
+
+#: pages/home/import/workbook_import.html
+msgid "из них с красной пометкой"
+msgstr "of them with a red mark"
+
+#: pages/home/import/workbook_import.html
+msgid "исправлены в книге — пометка снимется"
+msgstr "fixed in the workbook — mark will be removed"
 
 #: users/excel_import.py
 #, python-format
@@ -3022,6 +3125,14 @@ msgstr "tuition payment"
 msgid "оплачено"
 msgstr "paid"
 
+#: users/workbook_import.py
+msgid "оставлено по умолчанию"
+msgstr "left at the default"
+
+#: users/workbook_import.py
+msgid "оставлено пустым"
+msgstr "left empty"
+
 #: users/views.py
 msgid "остаток"
 msgstr "balance"
@@ -3051,6 +3162,15 @@ msgstr "transfer: %(from)s → %(to)s"
 msgid "подробнее"
 msgstr "details"
 
+#: users/workbook_import.py
+#, python-format
+msgid "поставлено %(months)s мес. — до конца учебного года"
+msgstr "set to %(months)s months — until the end of the school year"
+
+#: pages/home/partials/data_problem.html
+msgid "проверено — снять пометку"
+msgstr "checked — remove the mark"
+
 #: pages/home/import/workbook_import.html
 msgid "пропущены"
 msgstr "skipped"
@@ -3076,6 +3196,11 @@ msgstr "employee “%(name)s” not found"
 msgid "сотрудников"
 msgstr "staff"
 
+#: users/workbook_import.py
+#, python-format
+msgid "сохранено как в книге: «%(value)s»"
+msgstr "saved as in the workbook: “%(value)s”"
+
 #: users/excel_import.py
 msgid "срок должен быть больше нуля"
 msgstr "the term must be greater than zero"
@@ -3092,6 +3217,16 @@ msgstr "reverse"
 #: pages/home/import/excel_import.html
 msgid "сторно, пропущены"
 msgstr "reversed, skipped"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: %(error)s — %(fix)s"
+msgstr "row %(row)s: %(error)s — %(fix)s"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: в книге дата %(day)s — не тот учебный год, поставлено %(fixed)s, проверьте"
+msgstr "row %(row)s: the workbook date %(day)s is in the wrong school year, set to %(fixed)s — check"
 
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "сум"

@@ -31,6 +31,10 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
 .banner { padding: 0.9rem 1rem; border-radius: 0.75rem; margin: 1rem 0; font-weight: 600; }
 .banner.ok { background: rgba(16,185,129,0.12); color: #10b981; }
 .banner.warn { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.banner.bad { background: rgba(239,68,68,0.12); color: #fca5a5; }
+.banner.bad a { color: #fca5a5; }
+.c-warn { color: #fca5a5; font-weight: 700; }
+.problems.warn { color: #fca5a5; }
 @media (max-width: 640px) { .problems { list-style: none; padding-left: 0; } }
 {% endblock %}
 
@@ -47,8 +51,11 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
         <div><span>{% translate "Приходов и расходов" %}</span><span class="c-ok">{{ created.transaction|default:0 }}</span></div>
         <div><span>{% translate "Переводов между счетами" %}</span><span class="c-ok">{{ created.transfer|default:0 }}</span></div>
         <div><span>{% translate "Нераспознанных поступлений" %}</span><span class="c-ok">{{ created.receipt|default:0 }}</span></div>
+        {% if created.fixed %}<div><span>{% translate "Исправлено по книге, пометка снята" %}</span><span class="c-ok">{{ created.fixed }}</span></div>{% endif %}
+        {% if created.flagged %}<div><span>{% translate "Из них с красной пометкой" %}</span><span class="c-err">{{ created.flagged }}</span></div>{% endif %}
     </div>
 </div>
+{% if created.flagged %}<div class="banner bad">{% blocktranslate with count=created.flagged %}Записей с красной пометкой: {{ count }}. В них в книге была ошибка — что именно, написано в самой записи. Проверьте и исправьте их.{% endblocktranslate %} <a href="{% url 'contract_list' %}?status=problem">{% translate "Договоры с пометкой" %}</a></div>{% endif %}
 
 <h2>{% translate "Сверка с книгой" %}</h2>
 {% if recon.ok %}
@@ -94,6 +101,8 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
         <div><span>{% translate "будут загружены" %}</span><span class="c-ok">{{ c.ok }}</span></div>
         <div><span>{% translate "уже есть на платформе" %}</span><span class="c-ex">{{ c.exists }}</span></div>
         {% if c.skipped %}<div><span>{% translate "пропущены" %}</span><span class="c-ex">{{ c.skipped }}</span></div>{% endif %}
+        {% if c.flagged %}<div><span>{% translate "из них с красной пометкой" %}</span><span class="c-warn">{{ c.flagged }}</span></div>{% endif %}
+        {% if c.fixed %}<div><span>{% translate "исправлены в книге — пометка снимется" %}</span><span class="c-ok">{{ c.fixed }}</span></div>{% endif %}
         <div><span>{% translate "с ошибками" %}</span><span class="c-err">{{ c.error }}</span></div>
     </div>
     {% endfor %}
@@ -115,6 +124,28 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
     </table>
 </div>
 {% if plan.new_founders %}<p class="muted">{% translate "Будут добавлены учредители:" %} {{ plan.new_founders|join:", " }}</p>{% endif %}
+
+{% with flagged=plan.flagged %}
+{% if flagged %}
+<h2>{% blocktranslate with count=flagged|length %}Загрузятся с красной пометкой ({{ count }}){% endblocktranslate %}</h2>
+<p class="muted">{% translate "В этих строках книги ошибка, но их можно внести: вместо неправильного значения поставлено другое, и запись будет выделена красным с пояснением. Исправьте её потом на платформе или в книге — при повторной загрузке исправленной книги пометка снимется." %}</p>
+<div class="table-container">
+    <table class="tbl">
+        <thead><tr><th>{% translate "Лист" %}</th><th>{% translate "Строка" %}</th><th>{% translate "Данные" %}</th><th>{% translate "Что не так" %}</th></tr></thead>
+        <tbody>
+            {% for item in flagged %}
+            <tr>
+                <td>{% if item.sheet == 'contracts' %}{% translate "Договоры" %}{% elif item.sheet == 'income' %}{% translate "Поступления" %}{% else %}{% translate "Расходы" %}{% endif %}</td>
+                <td>{{ item.number }}</td>
+                <td>{{ item.summary|join:" · " }}</td>
+                <td><ul class="problems warn">{% for e in item.problems %}<li>{{ e }}</li>{% endfor %}</ul></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endwith %}
 
 {% with problems=plan.problems %}
 {% if problems %}

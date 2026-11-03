@@ -148,6 +148,9 @@
     </div>
 </div>
 
+{% if problem_count and request.GET.status != 'problem' %}
+<div class="problem-banner">⚠ {% blocktranslate with count=problem_count %}Договоров с ошибками из книги (выделены красным): {{ count }}.{% endblocktranslate %} <a href="?status=problem">{% translate "Показать только их" %}</a></div>
+{% endif %}
 <form method="get" class="filters">
     {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
     <select name="status" class="input-field" onchange="this.form.submit()" aria-label="{% translate "Статус" %}">
@@ -192,13 +195,13 @@
         </thead>
         <tbody>
             {% for c in contracts_list %}
-            <tr>
+            <tr{% if c.data_problem %} class="problem-row"{% endif %}>
                 <td style="font-weight: 600;"><a href="{% url 'contract_detail' c.pk %}" style="color: var(--primary); text-decoration: none;">{{ c.number }}</a></td>
                 <td>{{ c.school.name|default:"—" }}</td>
                 <td>{{ c.date|date:"d.m.Y" }}</td>
                 <td>{{ c.first_billing_month|date:"m.Y" }}</td>
-                <td><a href="{% url 'contract_detail' c.pk %}" style="color: var(--text); text-decoration: none;">{{ c.student_full_name }}</a></td>
-                <td>{{ c.student_birth_year }}</td>
+                <td><a href="{% url 'contract_detail' c.pk %}" style="color: var(--text); text-decoration: none;">{{ c.student_full_name }}</a>{% include 'home/partials/data_problem.html' with obj=c kind='contract' %}</td>
+                <td>{{ c.student_birth_year|default:"—" }}</td>
                 <td>{{ c.student_class }}</td>
                 <td>{{ c.duration_months }}</td>
                 {% if user.can_view_personal_data %}

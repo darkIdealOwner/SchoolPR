@@ -176,6 +176,10 @@ msgstr "Kitobda"
 msgid "В книге нет листов: %(sheets)s."
 msgstr "Kitobda varaqlar yoʻq: %(sheets)s."
 
+#: users/workbook_import.py
+msgid "В книге строка исправлена — красная пометка будет снята."
+msgstr "Kitobda qator tuzatilgan — qizil belgi olib tashlanadi."
+
 #: pages/home/finance/category_list.html
 msgid "В прибыли и убытках"
 msgstr "Foyda va zararda"
@@ -196,6 +200,10 @@ msgstr "Faylda maʼlumotli qatorlar yoʻq."
 #: pages/home/import/excel_import.html
 msgid "В шаблоне нужные колонки, подсказки и списки значений. Можно загрузить и свою таблицу или выгрузку «⬇ Excel» — главное, чтобы названия колонок совпадали."
 msgstr "Shablonda kerakli ustunlar, maslahatlar va qiymatlar roʻyxati bor. Oʻz jadvalingizni yoki «⬇ Excel» yuklamasini ham yuklash mumkin — asosiysi, ustun nomlari mos kelsin."
+
+#: pages/home/import/workbook_import.html
+msgid "В этих строках книги ошибка, но их можно внести: вместо неправильного значения поставлено другое, и запись будет выделена красным с пояснением. Исправьте её потом на платформе или в книге — при повторной загрузке исправленной книги пометка снимется."
+msgstr "Bu qatorlarda kitobda xato bor, lekin ularni kiritish mumkin: noto'g'ri qiymat o'rniga boshqasi qo'yiladi, yozuv esa izoh bilan qizil rangda ajratiladi. Keyin uni platformada yoki kitobda tuzating — tuzatilgan kitob qayta yuklanganda belgi olib tashlanadi."
 
 #: pages/home/investor.html
 msgid "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям."
@@ -562,6 +570,10 @@ msgstr "Bunday raqamli shartnoma allaqachon bor — qator oʻtkazib yuborildi."
 msgid "Договор с таким номером уже существует."
 msgstr "Bunday raqamli shartnoma allaqachon mavjud."
 
+#: users/workbook_import.py
+msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
+msgstr "Shartnoma allaqachon qizil belgi bilan yuklangan, kitobdagi xato qolgan — o'tkazib yuborildi."
+
 #: pages/home/contracts/contract_detail.html
 #, python-format
 msgid "Договор № %(number)s от %(date)s"
@@ -570,6 +582,11 @@ msgstr "%(date)s sanadagi %(number)s-sonli shartnoma"
 #: pages/home/import/workbook_import.html pages/home/owner.html pages/home/schools/academic_year_list.html users/workbook_import.py
 msgid "Договоров"
 msgstr "Shartnomalar"
+
+#: pages/home/contracts/contract_list.html
+#, python-format
+msgid "Договоров с ошибками из книги (выделены красным): %(count)s."
+msgstr "Kitobdagi xatolar bilan shartnomalar (qizil rangda): %(count)s."
 
 #: pages/home/reports/payment_control.html
 msgid "Договоров этого учебного года нет."
@@ -582,6 +599,10 @@ msgstr "Shartnomalar"
 #: pages/home/contracts/contract_list.html
 msgid "Договоры не найдены."
 msgstr "Shartnomalar topilmadi."
+
+#: pages/home/import/workbook_import.html
+msgid "Договоры с пометкой"
+msgstr "Belgilangan shartnomalar"
 
 #: integrations/views.py
 msgid "Договоры ↔ договоры контрагентов 1С"
@@ -708,6 +729,10 @@ msgstr "Maktab kitobini toʻliq yuklang — «Договоры», «Поступ
 msgid "Загрузится"
 msgstr "Yuklanadi"
 
+#: users/workbook_import.py
+msgid "Загрузится с красной пометкой — потом исправьте договор."
+msgstr "Qizil belgi bilan yuklanadi — keyin shartnomani tuzating."
+
 #: pages/home/integrations/integration.html
 msgid "Загрузить"
 msgstr "Yuklash"
@@ -750,6 +775,11 @@ msgstr "Maktab kitobini yuklash"
 msgid "Загрузка файлом:"
 msgstr "Fayl orqali yuklash:"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Загрузятся с красной пометкой (%(count)s)"
+msgstr "Qizil belgi bilan yuklanadi (%(count)s)"
+
 #: pages/home/debts/debt_list.html
 msgid "Задолженностей не найдено. Прекрасно!"
 msgstr "Qarzlar topilmadi. Ajoyib!"
@@ -770,6 +800,11 @@ msgstr "Izohlar"
 msgid "Записей"
 msgstr "Yozuvlar"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Записей с красной пометкой: %(count)s. В них в книге была ошибка — что именно, написано в самой записи. Проверьте и исправьте их."
+msgstr "Qizil belgili yozuvlar: %(count)s. Ularda kitobda xato bo'lgan — aynan nima ekanligi yozuvning o'zida yozilgan. Tekshiring va tuzating."
+
 #: pages/home/finance/reverse_confirm.html
 msgid "Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах."
 msgstr "Yozuv oʻchirilmaydi: u tarixda «storno» belgisi bilan qoladi va hisob-kitoblarda inobatga olinmaydi."
@@ -781,6 +816,10 @@ msgstr "Yozuv storno qilindi."
 #: users/views.py
 msgid "Запись удалена."
 msgstr "Yozuv oʻchirildi."
+
+#: users/models.py
+msgid "Заполняется при загрузке строки с ошибкой: что было в книге и что поставлено вместо этого."
+msgstr "Xatoli qator yuklanganda to'ldiriladi: kitobda nima bo'lgani va o'rniga nima qo'yilgani."
 
 #: users/excel_import.py
 #, python-format
@@ -843,6 +882,10 @@ msgstr "Exceldan"
 #: users/workbook_import.py
 msgid "Из них отменённых"
 msgstr "Shundan bekor qilingan"
+
+#: pages/home/import/workbook_import.html
+msgid "Из них с красной пометкой"
+msgstr "Shundan qizil belgili"
 
 #: users/views.py
 #, python-format
@@ -928,6 +971,18 @@ msgstr "Ishlatiladi"
 #: pages/authorization/login.html
 msgid "Используйте номер телефона для входа"
 msgstr "Kirish uchun telefon raqamingizdan foydalaning"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Исправить договор"
+msgstr "Shartnomani tuzatish"
+
+#: pages/home/import/workbook_import.html
+msgid "Исправлено по книге, пометка снята"
+msgstr "Kitob bo'yicha tuzatildi, belgi olindi"
+
+#: pages/home/contracts/contract_form.html
+msgid "Исправьте поля и отметьте галочку внизу формы — красная пометка снимется."
+msgstr "Maydonlarni tuzating va forma pastidagi belgini qo'ying — qizil belgi olib tashlanadi."
 
 #: pages/home/contracts/contract_detail.html
 msgid "История оплат"
@@ -1055,6 +1110,10 @@ msgstr "Kontragentlar"
 #: pages/home/reports/_header.html pages/home/reports/payment_control.html
 msgid "Контроль оплаты"
 msgstr "Toʻlov nazorati"
+
+#: users/views.py
+msgid "Красная пометка снята."
+msgstr "Qizil belgi olib tashlandi."
 
 #: pages/home/partials/finance_overview.html
 msgid "Крупнейшие должники"
@@ -1613,9 +1672,17 @@ msgstr "Hisobotlar"
 msgid "Ошибка"
 msgstr "Xato"
 
+#: users/views.py
+msgid "Ошибка в книге"
+msgstr "Kitobdagi xato"
+
 #: integrations/models.py
 msgid "Ошибки"
 msgstr "Xatolar"
+
+#: users/forms.py
+msgid "Ошибки из книги исправлены — снять красную пометку"
+msgstr "Kitobdagi xatolar tuzatildi — qizil belgini olib tashlash"
 
 #: pages/home/integrations/integration.html
 msgid "Ошибок"
@@ -1766,6 +1833,10 @@ msgstr "Hozircha hech kim yoʻq."
 msgid "Показать"
 msgstr "Koʻrsatish"
 
+#: pages/home/contracts/contract_list.html
+msgid "Показать только их"
+msgstr "Faqat ularni ko'rsatish"
+
 #: pages/home/owner.html
 msgid "Пользователей"
 msgstr "Foydalanuvchilar"
@@ -1827,6 +1898,14 @@ msgstr "Kutilmoqda"
 #: users/forms.py
 msgid "Префикс номеров договоров"
 msgstr "Shartnoma raqamlari prefiksi"
+
+#: pages/home/contracts/contract_detail.html
+msgid "При загрузке из книги в договоре была ошибка — проверьте:"
+msgstr "Kitobdan yuklashda shartnomada xato bo'lgan — tekshiring:"
+
+#: pages/home/contracts/contract_form.html
+msgid "При загрузке из книги в договоре была ошибка:"
+msgstr "Kitobdan yuklashda shartnomada xato bo'lgan:"
 
 #: pages/home/reports/matrix.html users/reports.py
 msgid "Прибыль"
@@ -2115,6 +2194,10 @@ msgstr "Toʻlov shu oydan hisoblanadi. Boʻsh boʻlsa — oʻquv yilining birinc
 #: integrations/models.py
 msgid "С ошибками"
 msgstr "Xatolar bilan"
+
+#: users/views.py
+msgid "С ошибками из книги"
+msgstr "Kitobdagi xatolar bilan"
 
 #: users/forms.py
 msgid "С этой даты считается остаток. Движения раньше неё не учитываются."
@@ -2769,6 +2852,14 @@ msgstr "Sof pul oqimi"
 msgid "Что загружаем"
 msgstr "Nima yuklanadi"
 
+#: pages/home/import/workbook_import.html
+msgid "Что не так"
+msgstr "Nima noto'g'ri"
+
+#: users/models.py
+msgid "Что не так в исходных данных"
+msgstr "Dastlabki ma'lumotlarda nima noto'g'ri"
+
 #: pages/home/import/excel_import.html
 msgid "Шаблон .xlsx"
 msgstr ".xlsx shabloni"
@@ -2842,6 +2933,10 @@ msgstr "yoqilgan"
 msgid "возврат"
 msgstr "qaytarish"
 
+#: pages/home/contracts/contract_detail.html
+msgid "всё верно — снять пометку"
+msgstr "hammasi to'g'ri — belgini olib tashlash"
+
 #: pages/home/integrations/integration.html
 msgid "выключено"
 msgstr "oʻchirilgan"
@@ -2896,6 +2991,14 @@ msgstr "ish haqi"
 #: pages/home/integrations/integration.html pages/home/partials/finance_overview.html
 msgid "из"
 msgstr "dan"
+
+#: pages/home/import/workbook_import.html
+msgid "из них с красной пометкой"
+msgstr "shundan qizil belgili"
+
+#: pages/home/import/workbook_import.html
+msgid "исправлены в книге — пометка снимется"
+msgstr "kitobda tuzatilgan — belgi olinadi"
 
 #: users/excel_import.py
 #, python-format
@@ -3022,6 +3125,14 @@ msgstr "oʻqish uchun toʻlov"
 msgid "оплачено"
 msgstr "toʻlangan"
 
+#: users/workbook_import.py
+msgid "оставлено по умолчанию"
+msgstr "standart qiymat qoldirildi"
+
+#: users/workbook_import.py
+msgid "оставлено пустым"
+msgstr "bo'sh qoldirildi"
+
 #: users/views.py
 msgid "остаток"
 msgstr "qoldiq"
@@ -3051,6 +3162,15 @@ msgstr "oʻtkazma: %(from)s → %(to)s"
 msgid "подробнее"
 msgstr "batafsil"
 
+#: users/workbook_import.py
+#, python-format
+msgid "поставлено %(months)s мес. — до конца учебного года"
+msgstr "%(months)s oy qo'yildi — o'quv yili oxirigacha"
+
+#: pages/home/partials/data_problem.html
+msgid "проверено — снять пометку"
+msgstr "tekshirildi — belgini olib tashlash"
+
 #: pages/home/import/workbook_import.html
 msgid "пропущены"
 msgstr "oʻtkazildi"
@@ -3076,6 +3196,11 @@ msgstr "«%(name)s» xodimi topilmadi"
 msgid "сотрудников"
 msgstr "xodim"
 
+#: users/workbook_import.py
+#, python-format
+msgid "сохранено как в книге: «%(value)s»"
+msgstr "kitobdagidek saqlandi: «%(value)s»"
+
 #: users/excel_import.py
 msgid "срок должен быть больше нуля"
 msgstr "muddat noldan katta boʻlishi kerak"
@@ -3092,6 +3217,16 @@ msgstr "storno"
 #: pages/home/import/excel_import.html
 msgid "сторно, пропущены"
 msgstr "storno, oʻtkazildi"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: %(error)s — %(fix)s"
+msgstr "%(row)s-qator: %(error)s — %(fix)s"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: в книге дата %(day)s — не тот учебный год, поставлено %(fixed)s, проверьте"
+msgstr "%(row)s-qator: kitobda sana %(day)s — boshqa o'quv yili, %(fixed)s qo'yildi, tekshiring"
 
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "сум"

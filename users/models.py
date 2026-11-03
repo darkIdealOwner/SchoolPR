@@ -312,7 +312,8 @@ class Contract(ExternalSyncMixin, models.Model):
     date = models.DateField(default=timezone.now, verbose_name=_("Дата"))
     month = models.CharField(max_length=20, choices=MONTH_CHOICES, default='Январь', verbose_name=_("Месяц"))
     student_full_name = models.CharField(max_length=255, default="", verbose_name=_("ФИО ученика"))
-    student_birth_year = models.IntegerField(default=2000, verbose_name=_("Год рождения"))
+    # Пусто бывает только у договоров из книги школы, где год не заполнен (такой договор помечен data_problem)
+    student_birth_year = models.IntegerField(null=True, default=2000, verbose_name=_("Год рождения"))
     student_class = models.CharField(max_length=50, default="", verbose_name=_("Класс"))
     duration_months = models.IntegerField(default=12, verbose_name=_("Срок, мес"))
     parents_full_name = models.CharField(max_length=255, default="", verbose_name=_("ФИО родителей"))
@@ -336,6 +337,8 @@ class Contract(ExternalSyncMixin, models.Model):
     is_cancelled = models.BooleanField(default=False, verbose_name=_("Отметка об отмены договора"))
     cancelled_at = models.DateField(null=True, blank=True, verbose_name=_("Дата отмены договора"))
     notes = models.TextField(blank=True, verbose_name=_("Примечание"))
+    data_problem = models.TextField(blank=True, verbose_name=_("Что не так в исходных данных"),
+                                    help_text=_("Заполняется при загрузке строки с ошибкой: что было в книге и что поставлено вместо этого."))
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contracts', verbose_name=_("Создал"))
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True, related_name='contracts', verbose_name=_("Школа"))
@@ -478,6 +481,7 @@ class FinancialRecord(ExternalSyncMixin, models.Model):
     reversed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name=_("Кто сторнировал"))
     reversal_reason = models.CharField(max_length=255, blank=True, verbose_name=_("Причина сторно"))
     updated_at = models.DateTimeField(auto_now=True)
+    data_problem = models.TextField(blank=True, verbose_name=_("Что не так в исходных данных"))
 
     objects = models.Manager()
     active = ActiveManager()

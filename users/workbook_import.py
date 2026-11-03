@@ -10,7 +10,12 @@
 - «Расходы ДС» → расходы по справочнику статей; пополнение счёта, снятие наличных, терминал → переводы между счетами;
 - незнакомая статья (имя человека или фирмы) → учредитель: вложение (приход) или выплата ему (расход).
 
-Повторная загрузка той же книги ничего не задваивает: уже внесённые строки пропускаются.
+Строка с ошибкой, которую можно внести с заменой (нет срока или года рождения, неправильный телефон или класс,
+дата не того года), загружается с красной пометкой: в поле data_problem записано, что было в книге и что поставлено.
+Без номера, ФИО, стоимости, даты или суммы строку загрузить нельзя — она остаётся в списке ошибок.
+
+Повторная загрузка той же книги ничего не задваивает: уже внесённые строки пропускаются. Если в исправленной книге
+строка стала правильной, договор с пометкой обновляется по ней, а пометка снимается.
 """
 import re
 import zipfile
@@ -271,12 +276,43 @@ def discount_reason(notes):
 
 # --- проверка
 
+# Колонки договора, ошибку в которых можно пропустить с пометкой; в остальных (номер, ФИО, школа, дата, стоимость,
+# учебный год) без исправления книги договор не внести
+FLAGGABLE = {
+    'student_birth_year', 'student_class', 'duration_months', 'parents_full_name', 'passport_data', 'inps', 'address',
+    'phone_number', 'phone_number_2', 'specialization', 'discount_percentage', 'discount_fixed', 'discount_reason',
+    'food_cost',
+}
+
+
+def months_to_year_end(contract):
+    """Сколько месяцев от первого месяца обучения до конца учебного года (срок вместо пустого)."""
+    start, end = contract.first_billing_month, contract.academic_year.end_month if contract.academic_year else None
+    if end is None or end < start:
+        return 12
+    return (end.year - start.year) * 12 + end.month - start.month + 1
+
+
 class Item(RowResult):
     def __init__(self, sheet, number):
         super().__init__(number)
         self.sheet = sheet
         self.action = None
         self.payload = {}
+        self.problems = []          # что не так в книге — строка всё равно загружается, с красной пометкой
+        self.instance = None        # договор, собранный вручную из строки с ошибками
+        self.clear_problem = None   # уже загруженная запись с пометкой, которую исправленная строка подтверждает
+
+    @property
+    def flagged(self):
+        return self.status == RowResult.OK and bool(self.problems)
+
+    @property
+    def fixes_contract(self):
+        return self.status == RowResult.OK and self.instance is None and self.form is not None and self.form.instance.pk
+
+    def problem_text(self):
+        return '\n'.join(self.problems)
 
 
 class WorkbookPlan:
@@ -316,6 +352,8 @@ class WorkbookPlan:
                 self.contract_numbers[number] = None
                 self.items['contracts'].append(item)
                 continue
+            existing = Contract.objects.filter(number=number, school=self.school).first() if number else None
+            fixing = existing if existing and existing.data_problem else None
             fee = _decimal(row.get('fee'))
             pct, fixed = discount_parts(fee, row.get('discount_pct'), _decimal(row.get('total')), _decimal(row.get('food')))
             reason = discount_reason(row.get('notes')) if (pct or fixed) else ''
@@ -338,7 +376,13 @@ class WorkbookPlan:
                                    % {'phones': ', '.join(unknown)}).strip()
                 item.notes.append(_("Телефон «%(phones)s» не распознан — сохранён в примечании.") % {'phones': ', '.join(unknown)})
             values = {k: str(v) for k, v in values.items()}
-            excel_import.check_contract(values, ctx, item)
+            excel_import.check_contract(values, ctx, item, instance=fixing)
+            if item.errors and fixing:
+                # В книге ошибка осталась — загруженный договор с пометкой не трогаем
+                item.errors, item.status = [], RowResult.EXISTS
+                item.notes.append(_("Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."))
+            elif item.errors:
+                self.flag_contract(item, values, ctx)
             if item.errors:
                 item.status = RowResult.ERROR
             if not item.summary:
@@ -346,21 +390,70 @@ class WorkbookPlan:
             if item.status == RowResult.OK:
                 self.contract_numbers[number] = 'new'
             elif item.status == RowResult.EXISTS:
-                self.contract_numbers[number] = Contract.objects.filter(number=number, school=self.school).first()
+                self.contract_numbers[number] = existing
             else:
                 self.contract_numbers.setdefault(number, None)
             self.items['contracts'].append(item)
 
+    def flag_contract(self, item, values, ctx):
+        """Договор с ошибками только в заменяемых колонках → собрать вручную и записать в пометку, что не так."""
+        form = item.form
+        if form is None or not item.bad_keys or not item.bad_keys <= FLAGGABLE:
+            return
+        obj = form.instance        # правильные колонки форма уже перенесла в договор
+        obj.user = ctx.user
+        if ctx.user.role != 'OWNER':
+            obj.school = ctx.user.school
+        if not obj.school_id:
+            return
+        if values.get('cancelled'):
+            obj.is_cancelled = True
+        labels = {str(c.label): c.key for c in excel_import.KINDS['contracts']['columns']}
+        problems = []
+        for error in item.errors:
+            match = re.match(r'«(.+?)»:', error)
+            key = labels.get(match.group(1)) if match else None
+            raw = (values.get(key) or '').strip() if key else ''
+            if key == 'duration_months':
+                obj.duration_months = months_to_year_end(obj)
+                fix = _("поставлено %(months)s мес. — до конца учебного года") % {'months': obj.duration_months}
+            elif key == 'student_birth_year':
+                obj.student_birth_year = None
+                fix = _("оставлено пустым")
+            else:
+                field = Contract._meta.get_field(key)
+                if raw and field.get_internal_type() in ('CharField', 'TextField') and not field.choices:
+                    setattr(obj, key, raw[:field.max_length] if field.max_length else raw)
+                    fix = _("сохранено как в книге: «%(value)s»") % {'value': raw}
+                else:
+                    setattr(obj, key, field.get_default())
+                    fix = _("оставлено по умолчанию")
+            problems.append(_("строка %(row)s: %(error)s — %(fix)s") % {'row': item.number, 'error': error, 'fix': fix})
+        item.problems = problems
+        item.instance = obj
+        item.errors = []
+        item.notes.append(_("Загрузится с красной пометкой — потом исправьте договор."))
+
     # деньги
     def in_window(self, item, day):
+        """Дата строки внутри финансового года; дата не того года (опечатка в годе) исправляется с пометкой."""
         if day is None:
             item.errors.append(_("не понятна дата"))
-            return False
-        if not self.window[0] <= day <= self.window[1]:
-            item.errors.append(_("дата %(day)s вне учебного года %(year)s — проверьте") % {
-                'day': day.strftime('%d.%m.%Y'), 'year': self.year.name})
-            return False
-        return True
+            return None
+        if self.window[0] <= day <= self.window[1]:
+            return day
+        for year in sorted({self.window[0].year, self.window[1].year}):
+            try:
+                fixed = day.replace(year=year)
+            except ValueError:      # 29 февраля
+                continue
+            if self.window[0] <= fixed <= self.window[1]:
+                item.problems.append(_("строка %(row)s: в книге дата %(day)s — не тот учебный год, поставлено %(fixed)s, проверьте")
+                                     % {'row': item.number, 'day': day.strftime('%d.%m.%Y'), 'fixed': fixed.strftime('%d.%m.%Y')})
+                return fixed
+        item.errors.append(_("дата %(day)s вне учебного года %(year)s — проверьте") % {
+            'day': day.strftime('%d.%m.%Y'), 'year': self.year.name})
+        return None
 
     def target(self, kind, row):
         """Что это за строка: (действие, параметры, подпись для таблицы соответствия)."""
@@ -388,7 +481,7 @@ class WorkbookPlan:
             amount = _decimal(row.get('amount'))
             if amount is None or amount <= 0:
                 item.errors.append(_("не понятна сумма «%(value)s»") % {'value': _text(row.get('amount'))})
-            self.in_window(item, day)
+            day = self.in_window(item, day)
             target, label = self.target(kind, row)
             account_kind = _method(row.get('method'))
             purpose = ' / '.join(t for t in (_text(row.get('purpose')), _text(row.get('notes'))) if t)
@@ -475,19 +568,19 @@ class WorkbookPlan:
         return ('transfer', p['from'], p['to'], p['date'], p['amount'])
 
     def existing_keys(self):
-        """Сколько раз каждая такая запись уже есть на платформе (для повторной загрузки)."""
-        found = Counter()
+        """Какие такие записи уже есть на платформе (для повторной загрузки): ключ → список записей."""
+        found = defaultdict(list)
         start, end = self.window
         for p in Payment.active.filter(contract__school=self.school, kind=Payment.KIND_PAYMENT,
                                        payment_date__range=(start, end)).select_related('contract'):
-            found[('payment', p.contract.number, p.for_month, p.amount, p.payment_date)] += 1
+            found[('payment', p.contract.number, p.for_month, p.amount, p.payment_date)].append(p)
         for r in UnidentifiedReceipt.active.filter(school=self.school, date__range=(start, end)):
-            found[('receipt', r.date, r.amount, r.payer)] += 1
+            found[('receipt', r.date, r.amount, r.payer)].append(r)
         for t in Transaction.active.filter(school=self.school, date__range=(start, end)).select_related('category', 'counterparty'):
             found[('transaction', t.category.name if t.category else '', t.counterparty.name if t.counterparty else '',
-                   t.date, t.amount)] += 1
+                   t.date, t.amount)].append(t)
         for t in Transfer.active.filter(school=self.school, date__range=(start, end)).select_related('from_account', 'to_account'):
-            found[('transfer', t.from_account.kind, t.to_account.kind, t.date, t.amount)] += 1
+            found[('transfer', t.from_account.kind, t.to_account.kind, t.date, t.amount)].append(t)
         return found
 
     def apply_existing(self):
@@ -496,21 +589,31 @@ class WorkbookPlan:
             for item in self.items[kind]:
                 if item.status != RowResult.OK or not item.action:
                     continue
-                key = self.key(item)
-                if found[key] > 0:
-                    found[key] -= 1
+                records = found.get(self.key(item))
+                if records:
+                    # Строка с ошибкой ↔ запись с пометкой, исправленная строка ↔ запись без пометки — если есть
+                    records.sort(key=lambda r: bool(r.data_problem) != bool(item.problems))
+                    record = records.pop(0)
                     item.status = RowResult.EXISTS
                     item.notes.append(_("Уже есть на платформе — пропущено."))
+                    if record.data_problem and not item.problems:
+                        item.clear_problem = record
+                        item.notes.append(_("В книге строка исправлена — красная пометка будет снята."))
 
     # итоги для предпросмотра
     def counts(self):
         result = {}
         for kind, items in self.items.items():
             result[kind] = {s: sum(1 for i in items if i.status == s) for s in ('ok', 'exists', 'skipped', 'error')}
+            result[kind]['flagged'] = sum(1 for i in items if i.flagged)
+            result[kind]['fixed'] = sum(1 for i in items if i.fixes_contract or i.clear_problem is not None)
         return result
 
     def problems(self):
         return [i for kind in ('contracts', 'income', 'expense') for i in self.items[kind] if i.errors]
+
+    def flagged(self):
+        return [i for kind in ('contracts', 'income', 'expense') for i in self.items[kind] if i.flagged]
 
     def mapping_rows(self):
         rows = []
@@ -526,12 +629,21 @@ class WorkbookPlan:
             contracts = {}
             for item in self.items['contracts']:
                 if item.status == RowResult.OK:
-                    obj = item.form.save(commit=False)
-                    item.prepare(obj)
+                    if item.instance is not None:
+                        obj = item.instance
+                    else:
+                        obj = item.form.save(commit=False)
+                        item.prepare(obj)
+                    fixing = obj.pk is not None
+                    obj.data_problem = item.problem_text()
                     obj.save()
                     contracts[obj.number] = obj
-                    AuditLog.record(self.user, 'CREATE', obj, {'source': 'workbook', 'file': filename[:100], 'row': item.number})
-                    created['contracts'] += 1
+                    details = {'source': 'workbook', 'file': filename[:100], 'row': item.number}
+                    if obj.data_problem:
+                        details['data_problem'] = obj.data_problem
+                        created['flagged'] += 1
+                    AuditLog.record(self.user, 'UPDATE' if fixing else 'CREATE', obj, details)
+                    created['fixed' if fixing else 'contracts'] += 1
             for number, state in self.contract_numbers.items():
                 if isinstance(state, Contract):
                     contracts.setdefault(number, state)
@@ -542,9 +654,20 @@ class WorkbookPlan:
                     'name_uz': uz, 'name_en': en, 'name_ko': ko, 'sort_order': 165})
             for kind in ('income', 'expense'):
                 for item in self.items[kind]:
+                    if item.clear_problem is not None:
+                        record = item.clear_problem
+                        AuditLog.record(self.user, 'UPDATE', record, {'source': 'workbook', 'file': filename[:100],
+                                                                      'data_problem': [record.data_problem, '']})
+                        record.data_problem = ''
+                        record.save(update_fields=['data_problem', 'updated_at'])
+                        created['fixed'] += 1
                     if item.status != RowResult.OK or not item.action:
                         continue
                     obj = self.create(item, contracts)
+                    if item.problems:
+                        obj.data_problem = item.problem_text()
+                        obj.save(update_fields=['data_problem'])
+                        created['flagged'] += 1
                     AuditLog.record(self.user, 'CREATE', obj, {'source': 'workbook', 'file': filename[:100],
                                                                'sheet': kind, 'row': item.number})
                     created[item.action] += 1

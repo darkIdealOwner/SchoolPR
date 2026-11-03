@@ -142,7 +142,7 @@
         </thead>
         <tbody>
             {% for t in transactions_list %}
-            <tr{% if t.is_reversed %} class="reversed-row"{% endif %}>
+            <tr class="{% if t.is_reversed %}reversed-row{% endif %}{% if t.data_problem %} problem-row{% endif %}">
                 <td style="font-weight: 600;">{{ t.date|date:"d.m.Y" }}</td>
                 <td>{{ t.school.name }}</td>
                 <td>
@@ -161,6 +161,7 @@
                     <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                         {{ t.notes|default:"—" }}
                     </div>
+                    {% include 'home/partials/data_problem.html' with obj=t kind='transaction' %}
                 </td>
                 <td class="reversal-info">
                     {% if t.is_reversed %}

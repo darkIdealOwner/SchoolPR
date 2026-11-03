@@ -176,6 +176,10 @@ msgstr "통합 문서"
 msgid "В книге нет листов: %(sheets)s."
 msgstr "통합 문서에 시트가 없습니다: %(sheets)s."
 
+#: users/workbook_import.py
+msgid "В книге строка исправлена — красная пометка будет снята."
+msgstr "통합 문서에서 행이 수정되었습니다 — 빨간 표시가 해제됩니다."
+
 #: pages/home/finance/category_list.html
 msgid "В прибыли и убытках"
 msgstr "손익 포함"
@@ -196,6 +200,10 @@ msgstr "파일에 데이터 행이 없습니다."
 #: pages/home/import/excel_import.html
 msgid "В шаблоне нужные колонки, подсказки и списки значений. Можно загрузить и свою таблицу или выгрузку «⬇ Excel» — главное, чтобы названия колонок совпадали."
 msgstr "템플릿에는 필요한 열, 안내, 값 목록이 들어 있습니다. 직접 만든 표나 “⬇ Excel” 내보내기 파일도 올릴 수 있습니다. 열 이름만 일치하면 됩니다."
+
+#: pages/home/import/workbook_import.html
+msgid "В этих строках книги ошибка, но их можно внести: вместо неправильного значения поставлено другое, и запись будет выделена красным с пояснением. Исправьте её потом на платформе или в книге — при повторной загрузке исправленной книги пометка снимется."
+msgstr "이 행들에는 통합 문서 오류가 있지만 불러올 수 있습니다. 잘못된 값은 다른 값으로 대체되고 기록은 설명과 함께 빨간색으로 표시됩니다. 나중에 플랫폼이나 통합 문서에서 수정하세요 — 수정된 통합 문서를 다시 올리면 표시가 해제됩니다."
 
 #: pages/home/investor.html
 msgid "Ваш инвестиционный обзор в SchoolPR. Здесь отображаются сводные показатели по всем подразделениям."
@@ -562,6 +570,10 @@ msgstr "같은 번호의 계약이 이미 있어 이 행은 건너뜁니다."
 msgid "Договор с таким номером уже существует."
 msgstr "같은 번호의 계약이 이미 있습니다."
 
+#: users/workbook_import.py
+msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
+msgstr "계약이 이미 빨간 표시와 함께 불러와졌고 통합 문서의 오류가 남아 있습니다 — 건너뜀."
+
 #: pages/home/contracts/contract_detail.html
 #, python-format
 msgid "Договор № %(number)s от %(date)s"
@@ -570,6 +582,11 @@ msgstr "계약 번호 %(number)s (%(date)s)"
 #: pages/home/import/workbook_import.html pages/home/owner.html pages/home/schools/academic_year_list.html users/workbook_import.py
 msgid "Договоров"
 msgstr "계약"
+
+#: pages/home/contracts/contract_list.html
+#, python-format
+msgid "Договоров с ошибками из книги (выделены красным): %(count)s."
+msgstr "통합 문서 오류가 있는 계약 (빨간색 표시): %(count)s."
 
 #: pages/home/reports/payment_control.html
 msgid "Договоров этого учебного года нет."
@@ -582,6 +599,10 @@ msgstr "계약"
 #: pages/home/contracts/contract_list.html
 msgid "Договоры не найдены."
 msgstr "계약이 없습니다."
+
+#: pages/home/import/workbook_import.html
+msgid "Договоры с пометкой"
+msgstr "표시된 계약"
 
 #: integrations/views.py
 msgid "Договоры ↔ договоры контрагентов 1С"
@@ -708,6 +729,10 @@ msgstr "학교 통합 문서 전체를 올리세요 — “Договоры”, 
 msgid "Загрузится"
 msgstr "가져옴"
 
+#: users/workbook_import.py
+msgid "Загрузится с красной пометкой — потом исправьте договор."
+msgstr "빨간 표시와 함께 불러옵니다 — 나중에 계약을 수정하세요."
+
 #: pages/home/integrations/integration.html
 msgid "Загрузить"
 msgstr "업로드"
@@ -750,6 +775,11 @@ msgstr "학교 통합 문서 가져오기"
 msgid "Загрузка файлом:"
 msgstr "파일 업로드:"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Загрузятся с красной пометкой (%(count)s)"
+msgstr "빨간 표시와 함께 불러옴 (%(count)s)"
+
 #: pages/home/debts/debt_list.html
 msgid "Задолженностей не найдено. Прекрасно!"
 msgstr "미납이 없습니다. 좋습니다!"
@@ -770,6 +800,11 @@ msgstr "비고"
 msgid "Записей"
 msgstr "레코드"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Записей с красной пометкой: %(count)s. В них в книге была ошибка — что именно, написано в самой записи. Проверьте и исправьте их."
+msgstr "빨간 표시 기록: %(count)s. 통합 문서에 오류가 있었습니다 — 정확한 내용은 기록 자체에 적혀 있습니다. 확인하고 수정하세요."
+
 #: pages/home/finance/reverse_confirm.html
 msgid "Запись не удаляется: она останется в истории с отметкой «сторно» и перестанет учитываться в расчётах."
 msgstr "기록은 삭제되지 않습니다. \"취소\" 표시로 이력에 남고 계산에서 제외됩니다."
@@ -781,6 +816,10 @@ msgstr "기록이 취소되었습니다."
 #: users/views.py
 msgid "Запись удалена."
 msgstr "기록이 삭제되었습니다."
+
+#: users/models.py
+msgid "Заполняется при загрузке строки с ошибкой: что было в книге и что поставлено вместо этого."
+msgstr "오류가 있는 행을 불러올 때 채워집니다: 통합 문서에 있던 값과 대신 넣은 값."
 
 #: users/excel_import.py
 #, python-format
@@ -843,6 +882,10 @@ msgstr "Excel에서"
 #: users/workbook_import.py
 msgid "Из них отменённых"
 msgstr "그중 해지"
+
+#: pages/home/import/workbook_import.html
+msgid "Из них с красной пометкой"
+msgstr "그중 빨간 표시"
 
 #: users/views.py
 #, python-format
@@ -928,6 +971,18 @@ msgstr "사용 중"
 #: pages/authorization/login.html
 msgid "Используйте номер телефона для входа"
 msgstr "전화번호로 로그인하세요"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Исправить договор"
+msgstr "계약 수정"
+
+#: pages/home/import/workbook_import.html
+msgid "Исправлено по книге, пометка снята"
+msgstr "통합 문서로 수정됨, 표시 해제"
+
+#: pages/home/contracts/contract_form.html
+msgid "Исправьте поля и отметьте галочку внизу формы — красная пометка снимется."
+msgstr "필드를 수정하고 양식 아래의 확인란을 선택하세요 — 빨간 표시가 해제됩니다."
 
 #: pages/home/contracts/contract_detail.html
 msgid "История оплат"
@@ -1055,6 +1110,10 @@ msgstr "거래처"
 #: pages/home/reports/_header.html pages/home/reports/payment_control.html
 msgid "Контроль оплаты"
 msgstr "납부 관리"
+
+#: users/views.py
+msgid "Красная пометка снята."
+msgstr "빨간 표시가 해제되었습니다."
 
 #: pages/home/partials/finance_overview.html
 msgid "Крупнейшие должники"
@@ -1613,9 +1672,17 @@ msgstr "보고서"
 msgid "Ошибка"
 msgstr "오류"
 
+#: users/views.py
+msgid "Ошибка в книге"
+msgstr "통합 문서 오류"
+
 #: integrations/models.py
 msgid "Ошибки"
 msgstr "오류"
+
+#: users/forms.py
+msgid "Ошибки из книги исправлены — снять красную пометку"
+msgstr "통합 문서 오류 수정됨 — 빨간 표시 해제"
 
 #: pages/home/integrations/integration.html
 msgid "Ошибок"
@@ -1766,6 +1833,10 @@ msgstr "아직 없습니다."
 msgid "Показать"
 msgstr "보기"
 
+#: pages/home/contracts/contract_list.html
+msgid "Показать только их"
+msgstr "이것만 보기"
+
 #: pages/home/owner.html
 msgid "Пользователей"
 msgstr "사용자"
@@ -1827,6 +1898,14 @@ msgstr "예정"
 #: users/forms.py
 msgid "Префикс номеров договоров"
 msgstr "계약 번호 접두사"
+
+#: pages/home/contracts/contract_detail.html
+msgid "При загрузке из книги в договоре была ошибка — проверьте:"
+msgstr "통합 문서에서 불러올 때 계약에 오류가 있었습니다 — 확인하세요:"
+
+#: pages/home/contracts/contract_form.html
+msgid "При загрузке из книги в договоре была ошибка:"
+msgstr "통합 문서에서 불러올 때 계약에 오류가 있었습니다:"
 
 #: pages/home/reports/matrix.html users/reports.py
 msgid "Прибыль"
@@ -2115,6 +2194,10 @@ msgstr "이 달부터 요금이 부과됩니다. 비워 두면 학년도 첫 달
 #: integrations/models.py
 msgid "С ошибками"
 msgstr "오류 있음"
+
+#: users/views.py
+msgid "С ошибками из книги"
+msgstr "통합 문서 오류 있음"
 
 #: users/forms.py
 msgid "С этой даты считается остаток. Движения раньше неё не учитываются."
@@ -2769,6 +2852,14 @@ msgstr "순현금 흐름"
 msgid "Что загружаем"
 msgstr "업로드 항목"
 
+#: pages/home/import/workbook_import.html
+msgid "Что не так"
+msgstr "문제"
+
+#: users/models.py
+msgid "Что не так в исходных данных"
+msgstr "원본 데이터의 문제"
+
 #: pages/home/import/excel_import.html
 msgid "Шаблон .xlsx"
 msgstr ".xlsx 템플릿"
@@ -2842,6 +2933,10 @@ msgstr "사용"
 msgid "возврат"
 msgstr "환불"
 
+#: pages/home/contracts/contract_detail.html
+msgid "всё верно — снять пометку"
+msgstr "모두 맞음 — 표시 해제"
+
 #: pages/home/integrations/integration.html
 msgid "выключено"
 msgstr "사용 안 함"
@@ -2896,6 +2991,14 @@ msgstr "급여"
 #: pages/home/integrations/integration.html pages/home/partials/finance_overview.html
 msgid "из"
 msgstr "/"
+
+#: pages/home/import/workbook_import.html
+msgid "из них с красной пометкой"
+msgstr "그중 빨간 표시"
+
+#: pages/home/import/workbook_import.html
+msgid "исправлены в книге — пометка снимется"
+msgstr "통합 문서에서 수정됨 — 표시 해제 예정"
 
 #: users/excel_import.py
 #, python-format
@@ -3022,6 +3125,14 @@ msgstr "수업료 납부"
 msgid "оплачено"
 msgstr "납부"
 
+#: users/workbook_import.py
+msgid "оставлено по умолчанию"
+msgstr "기본값으로 둠"
+
+#: users/workbook_import.py
+msgid "оставлено пустым"
+msgstr "비워 둠"
+
 #: users/views.py
 msgid "остаток"
 msgstr "잔액"
@@ -3051,6 +3162,15 @@ msgstr "이체: %(from)s → %(to)s"
 msgid "подробнее"
 msgstr "자세히"
 
+#: users/workbook_import.py
+#, python-format
+msgid "поставлено %(months)s мес. — до конца учебного года"
+msgstr "%(months)s개월로 설정 — 학년 말까지"
+
+#: pages/home/partials/data_problem.html
+msgid "проверено — снять пометку"
+msgstr "확인함 — 표시 해제"
+
 #: pages/home/import/workbook_import.html
 msgid "пропущены"
 msgstr "건너뜀"
@@ -3076,6 +3196,11 @@ msgstr "직원 “%(name)s”을(를) 찾을 수 없습니다"
 msgid "сотрудников"
 msgstr "명"
 
+#: users/workbook_import.py
+#, python-format
+msgid "сохранено как в книге: «%(value)s»"
+msgstr "통합 문서 그대로 저장: «%(value)s»"
+
 #: users/excel_import.py
 msgid "срок должен быть больше нуля"
 msgstr "기간은 0보다 커야 합니다"
@@ -3092,6 +3217,16 @@ msgstr "취소"
 #: pages/home/import/excel_import.html
 msgid "сторно, пропущены"
 msgstr "취소, 건너뜀"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: %(error)s — %(fix)s"
+msgstr "%(row)s행: %(error)s — %(fix)s"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: в книге дата %(day)s — не тот учебный год, поставлено %(fixed)s, проверьте"
+msgstr "%(row)s행: 통합 문서 날짜 %(day)s — 다른 학년, %(fixed)s(으)로 설정, 확인하세요"
 
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "сум"

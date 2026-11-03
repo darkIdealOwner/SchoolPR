@@ -232,6 +232,29 @@ class BaseReverseView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
         return super().form_valid(form)
 
 
+class DataProblemClearView(LoginRequiredMixin, OwnerOrDirectorMixin, View):
+    """Снять красную пометку «ошибка в книге» с записи, когда её проверили."""
+    models_by_kind = {
+        'contract': (Contract, 'school'), 'payment': (Payment, 'contract__school'),
+        'transaction': (Transaction, 'school'), 'transfer': (Transfer, 'school'), 'receipt': (UnidentifiedReceipt, 'school'),
+    }
+
+    def post(self, request, kind, pk):
+        if kind not in self.models_by_kind:
+            raise Http404
+        model, school_path = self.models_by_kind[kind]
+        qs = model.objects.all()
+        if request.user.role == 'DIRECTOR':
+            qs = qs.filter(**{school_path: request.user.school})
+        obj = get_object_or_404(qs, pk=pk)
+        if obj.data_problem:
+            AuditLog.record(request.user, 'UPDATE', obj, {'data_problem': [obj.data_problem, '']})
+            obj.data_problem = ''
+            obj.save(update_fields=['data_problem', 'updated_at'])
+            messages.success(request, _("Красная пометка снята."))
+        return redirect(safe_next_url(request) or 'home')
+
+
 class UserListView(LoginRequiredMixin, OwnerOrDirectorMixin, ListView):
     model = User
     template_name = 'home/users/user_list.html'
@@ -414,7 +437,7 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
         if personal:
             headers += [_('ФИО родителей'), _('Паспорт'), _('ИНПС'), _('Адрес'), _('Телефон'), _('Доп. телефон')]
         headers += [_('Стоимость'), _('Скидка %'), _('Скидка суммой'), _('Причина скидки'), _('Скидка, сум'), _('Питание'), _('Итого в месяц'), _('Отменён'), _('Дата отмены'),
-                    _('Начисления по'), _('Примечание')]
+                    _('Начисления по'), _('Примечание'), _('Ошибка в книге')]
         rows = []
         for c in self.object_list:
             row = [c.number, c.school.name if c.school else '', c.academic_year.name if c.academic_year else '', c.date,
@@ -426,7 +449,7 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
             row += [c.tuition_fee, c.discount_percentage, c.discount_fixed, c.get_discount_reason_display(),
                     c.discount_amount, c.food_cost, c.total_amount,
                     c.is_cancelled, c.cancelled_at if c.cancelled_at else (_('не указана') if c.is_cancelled else ''),
-                    last.strftime('%m.%Y') if last else '', c.notes]
+                    last.strftime('%m.%Y') if last else '', c.notes, c.data_problem]
             rows.append(row)
         return headers, rows
 
@@ -443,6 +466,8 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
             queryset = queryset.filter(is_cancelled=True)
         elif status == 'no_cancel_date':
             queryset = queryset.filter(is_cancelled=True, cancelled_at__isnull=True)
+        elif status == 'problem':
+            queryset = queryset.exclude(data_problem='')
         elif status == 'incomplete':
             queryset = queryset.filter(
                 Q(passport_data='') | Q(inps='') | Q(address='')
@@ -466,10 +491,14 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
         context['academic_years'] = AcademicYear.objects.all()
         context['status_filters'] = [
             ('', _('Все')), ('active', _('Действующие')), ('cancelled', _('Отменённые')),
-            ('no_cancel_date', _('Отменённые без даты')),
+            ('no_cancel_date', _('Отменённые без даты')), ('problem', _('С ошибками из книги')),
         ]
         if self.request.user.can_view_personal_data:
             context['status_filters'].append(('incomplete', _('Неполные данные')))
+        flagged = Contract.objects.exclude(data_problem='')
+        if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
+            flagged = flagged.filter(school=self.request.user.school)
+        context['problem_count'] = flagged.count()
         return context
 
 class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, DetailView):
