@@ -235,7 +235,7 @@
         /* Запись из книги школы с ошибкой: выделена красным, рядом — что не так */
         tr.problem-row td { background-color: rgba(239, 68, 68, 0.09); }
         tr.problem-row td:first-child { box-shadow: inset 3px 0 0 #ef4444; }
-        .problem-note { color: #fca5a5; font-size: 0.75rem; font-weight: 500; margin-top: 0.3rem; white-space: normal; text-align: left; line-height: 1.35; }
+        .problem-note { color: #fca5a5; font-size: 0.75rem; font-weight: 500; margin-top: 0.3rem; white-space: normal; text-align: left; line-height: 1.35; min-width: 16rem; max-width: 28rem; }
         .problem-note form { display: inline; }
         .problem-note button { background: none; border: none; padding: 0; margin-left: 0.25rem; color: #fca5a5; text-decoration: underline; cursor: pointer; font-size: 0.75rem; }
         .problem-banner { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5; border-radius: 0.75rem; padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-weight: 600; font-size: 0.875rem; }
@@ -449,6 +449,7 @@
             table.m-cards .m-val div { white-space: normal !important; max-width: 100% !important; }
             table.m-cards .m-val .btn-action, table.m-cards .m-val .pay-link { display: inline-block; padding: 0.4rem 0.9rem !important; }
             table.m-cards tr.reversed-row td::before { text-decoration: none; }
+            table.m-cards .problem-note { min-width: 0; }
             .pagination { gap: 0.5rem !important; }
         }
 
