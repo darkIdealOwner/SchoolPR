@@ -9,6 +9,7 @@ from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import IntegrityError, models, transaction as db_transaction
 from django.db.models import Prefetch, ProtectedError
+from django.db.models.functions import Length
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -69,6 +70,54 @@ class PageSizeMixin:
 
     def get_context_data(self, **kwargs):
         return add_page_context(super().get_context_data(**kwargs))
+
+
+def contract_search(queryset, query, user, prefix=''):
+    """Поиск договоров по любому полю. Каждое слово запроса должно найтись хотя бы в одном поле договора.
+
+    Ищет по номеру, ФИО, классу, направлению, школе, учебному году, примечанию и пометке об ошибке; телефон — по цифрам
+    в любом виде; «01.09.2026» — по дате; число от 4 цифр — ещё и по году рождения и суммам. Личные данные (родители,
+    телефоны, паспорт, ИНПС, адрес) — только тем, кому их можно видеть. prefix — путь к договору (для оплат: 'contract__').
+    """
+    import re
+    from django.db.models import Q
+    query = re.sub(r'(?<=\d) (?=\d{3}\b)', '', (query or '').strip())     # «2 552 000» → «2552000»
+    text_fields = ['number', 'student_full_name', 'student_class', 'specialization', 'notes', 'data_problem',
+                   'school__name', 'academic_year__name']
+    personal = user.can_view_personal_data
+    if personal:
+        text_fields += ['parents_full_name', 'passport_data', 'inps', 'address', 'phone_number', 'phone_number_2']
+    for word in query.split():
+        match = Q()
+        for field in text_fields:
+            match |= Q(**{f'{prefix}{field}__icontains': word})
+        digits = re.sub(r'\D', '', word)
+        if personal and len(digits) >= 3 and digits != word:
+            # «+998 (90)-123-45-67» — в базе телефон хранится цифрами
+            match |= Q(**{f'{prefix}phone_number__contains': digits}) | Q(**{f'{prefix}phone_number_2__contains': digits})
+        if word.isdigit() and len(word) >= 4:
+            number = int(word)
+            match |= Q(**{f'{prefix}student_birth_year': number}) | Q(**{f'{prefix}tuition_fee': number}) | \
+                Q(**{f'{prefix}total_amount': number}) | Q(**{f'{prefix}discount_amount': number}) | Q(**{f'{prefix}food_cost': number})
+        try:
+            day = datetime.strptime(word, '%d.%m.%Y').date()
+            match |= Q(**{f'{prefix}date': day})
+        except ValueError:
+            pass
+        queryset = queryset.filter(match)
+    return queryset      # связи только «договор → школа, учебный год» — строки не дублируются
+
+
+def number_key(number):
+    """Порядок номеров договоров как у людей: 9, 10, 94, 155, а не 10, 155, 9, 94."""
+    return (len(number), number)
+
+
+def sort_list(items, sorts, choice):
+    """Сортировка готового списка: sorts — {значение: (подпись, ключ, по убыванию)}, первое значение — по умолчанию."""
+    choice = choice if choice in sorts else next(iter(sorts))
+    _label, key, reverse = sorts[choice]
+    return sorted(items, key=key, reverse=reverse), choice
 
 class CustomLoginView(LoginView):
     template_name = 'authorization/login.html'
@@ -465,6 +514,17 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
     model = Contract
     template_name = 'home/contracts/contract_list.html'
     context_object_name = 'contracts_list'
+    SORTS = {
+        '': (gettext_lazy('Сначала новые'), ['-created_at', '-pk']),
+        'number': (gettext_lazy('№ по возрастанию'), [Length('number'), 'number']),
+        '-number': (gettext_lazy('№ по убыванию'), [Length('number').desc(), '-number']),
+        'student': (gettext_lazy('ФИО ученика: А → Я'), ['student_full_name', 'pk']),
+        '-student': (gettext_lazy('ФИО ученика: Я → А'), ['-student_full_name', '-pk']),
+        'date': (gettext_lazy('Дата договора: сначала старые'), ['date', 'pk']),
+        '-date': (gettext_lazy('Дата договора: сначала новые'), ['-date', '-pk']),
+        '-total': (gettext_lazy('Сумма в месяц: больше сначала'), ['-total_amount', 'pk']),
+        'total': (gettext_lazy('Сумма в месяц: меньше сначала'), ['total_amount', 'pk']),
+    }
     export_filename = 'dogovory'
 
     def get_export_rows(self, context):
@@ -513,15 +573,9 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
         if year and year.isdigit():
             queryset = queryset.filter(academic_year_id=int(year))
 
-        # Search filter
-        query = self.request.GET.get('q')
-        if query:
-            search = Q(number__icontains=query) | Q(student_full_name__icontains=query)
-            if self.request.user.can_view_personal_data:
-                search |= Q(parents_full_name__icontains=query) | Q(phone_number__icontains=query)
-            queryset = queryset.filter(search)
-
-        return queryset.order_by('-created_at')
+        queryset = contract_search(queryset, self.request.GET.get('q'), self.request.user)
+        self.sort = self.request.GET.get('sort', '')
+        return queryset.order_by(*self.SORTS.get(self.sort, self.SORTS[''])[1])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -536,6 +590,8 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
         if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
             flagged = flagged.filter(school=self.request.user.school)
         context['problem_count'] = flagged.count()
+        context['sort_options'] = [(value, label) for value, (label, _order) in self.SORTS.items()]
+        context['sort'] = self.sort if self.sort in self.SORTS else ''
         return context
 
 class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, DetailView):
@@ -639,6 +695,15 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
     template_name = 'home/payments/payment_list.html'
     context_object_name = 'contracts'
     export_filename = 'oplaty'
+    SORTS = {
+        '': (gettext_lazy('Сначала новые договоры'), lambda c: (c.date, c.pk), True),
+        'number': (gettext_lazy('№ по возрастанию'), lambda c: number_key(c.number), False),
+        '-number': (gettext_lazy('№ по убыванию'), lambda c: number_key(c.number), True),
+        'student': (gettext_lazy('ФИО ученика: А → Я'), lambda c: c.student_full_name.lower(), False),
+        '-student': (gettext_lazy('ФИО ученика: Я → А'), lambda c: c.student_full_name.lower(), True),
+        '-balance': (gettext_lazy('Остаток к оплате: больше сначала'), lambda c: c.this_month_balance, True),
+        'balance': (gettext_lazy('Остаток к оплате: меньше сначала'), lambda c: c.this_month_balance, False),
+    }
 
     def get_export_rows(self, context):
         headers = [_('Месяц'), _('№ договора'), _('Школа'), _('Ученик'), _('Начислено'), _('Оплачено'), _('Остаток')]
@@ -652,7 +717,8 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         qs = super().get_queryset()
         if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
             qs = qs.filter(school=self.request.user.school)
-        qs = contracts_with_active_payments(qs.filter(date__lt=shift_month(self.selected_month, 1)).order_by('-date'))
+        qs = contract_search(qs.filter(date__lt=shift_month(self.selected_month, 1)), self.request.GET.get('q'), self.request.user)
+        qs = contracts_with_active_payments(qs.select_related('school').order_by('-date', '-pk'))
         # Только договоры, по которым в этом месяце есть начисление (учитываем срок и отмену)
         contracts = [c for c in qs if c.is_billable_in(self.selected_month)]
         for contract in contracts:
@@ -660,6 +726,7 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
             contract.month_payments = month_payments
             contract.this_month_paid = sum((p.signed_amount for p in month_payments), Decimal(0))
             contract.this_month_balance = contract.total_amount - contract.this_month_paid
+        contracts, self.sort = sort_list(contracts, self.SORTS, self.request.GET.get('sort', ''))
         return contracts
 
     def get_context_data(self, **kwargs):
@@ -672,6 +739,8 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
             receipts = receipts.filter(school=self.request.user.school)
         context['open_receipts'] = receipts.count()
+        context['sort_options'] = [(value, label) for value, (label, *_rest) in self.SORTS.items()]
+        context['sort'] = self.sort
         return context
 
 class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
@@ -679,6 +748,15 @@ class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin,
     template_name = 'home/debts/debt_list.html'
     context_object_name = 'contracts'
     export_filename = 'dolgi'
+    SORTS = {
+        '': (gettext_lazy('Долг: больше сначала'), lambda c: c.total_debt, True),
+        'debt': (gettext_lazy('Долг: меньше сначала'), lambda c: c.total_debt, False),
+        '-months': (gettext_lazy('Просрочено месяцев: больше сначала'), lambda c: (c.unpaid_count, c.total_debt), True),
+        'number': (gettext_lazy('№ по возрастанию'), lambda c: number_key(c.number), False),
+        '-number': (gettext_lazy('№ по убыванию'), lambda c: number_key(c.number), True),
+        'student': (gettext_lazy('ФИО ученика: А → Я'), lambda c: c.student_full_name.lower(), False),
+        '-student': (gettext_lazy('ФИО ученика: Я → А'), lambda c: c.student_full_name.lower(), True),
+    }
 
     def get_export_rows(self, context):
         personal = self.request.user.can_view_personal_data
@@ -710,9 +788,10 @@ class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin,
         else:
             calc_limit = target_month
 
-        contract_qs = Contract.objects.all()
+        contract_qs = Contract.objects.select_related('school')
         if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
             contract_qs = contract_qs.filter(school=self.request.user.school)
+        contract_qs = contract_search(contract_qs, self.request.GET.get('q'), self.request.user)
 
         debtors = []
         for contract in contracts_with_active_payments(contract_qs):
@@ -726,8 +805,8 @@ class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin,
                 contract.unpaid_count = len(unpaid_month_dates)
                 debtors.append(contract)
 
-        # Sort debtors by debt amount descending
-        debtors.sort(key=lambda c: c.total_debt, reverse=True)
+        debtors, context['sort'] = sort_list(debtors, self.SORTS, self.request.GET.get('sort', ''))
+        context['sort_options'] = [(value, label) for value, (label, *_rest) in self.SORTS.items()]
         context['debtors'] = debtors        # все — для выгрузки и итога
         context['debt_total'] = sum((c.total_debt for c in debtors), Decimal(0))
         context.update(paginate_list(self.request, debtors))

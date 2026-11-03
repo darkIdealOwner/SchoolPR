@@ -426,6 +426,14 @@ msgstr "Refund date"
 msgid "Дата выплаты"
 msgstr "Payout date"
 
+#: users/views.py
+msgid "Дата договора: сначала новые"
+msgstr "Contract date: newest first"
+
+#: users/views.py
+msgid "Дата договора: сначала старые"
+msgstr "Contract date: oldest first"
+
 #: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "Payment date"
@@ -623,6 +631,14 @@ msgstr "Debt to date"
 #: pages/home/contracts/contract_detail.html
 msgid "Долг нарастающим"
 msgstr "Running debt"
+
+#: users/views.py
+msgid "Долг: больше сначала"
+msgstr "Debt: largest first"
+
+#: users/views.py
+msgid "Долг: меньше сначала"
+msgstr "Debt: smallest first"
 
 #: pages/base.html
 msgid "Долги"
@@ -1237,7 +1253,7 @@ msgstr "School name as on the platform. Only the owner fills it in — directors
 msgid "Назначение платежа / примечание"
 msgstr "Payment purpose / note"
 
-#: pages/home/contracts/contract_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/users/user_list.html
 msgid "Найти"
 msgstr "Search"
 
@@ -1607,6 +1623,14 @@ msgstr "Balance"
 msgid "Остаток денег на конец месяца"
 msgstr "Cash at end of month"
 
+#: users/views.py
+msgid "Остаток к оплате: больше сначала"
+msgstr "Balance due: largest first"
+
+#: users/views.py
+msgid "Остаток к оплате: меньше сначала"
+msgstr "Balance due: smallest first"
+
 #: pages/home/reports/matrix.html
 #, python-format
 msgid "Остаток на %(day)s"
@@ -1818,17 +1842,21 @@ msgstr "Confirm deletion"
 msgid "Подтверждение удаления - SchoolPR"
 msgstr "Confirm deletion - SchoolPR"
 
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск"
+msgstr "Search"
+
 #: pages/home/users/user_list.html
 msgid "Поиск по имени, тел. или школе..."
 msgstr "Search by name, phone or school..."
 
-#: pages/home/contracts/contract_list.html
-msgid "Поиск по номеру, ФИО ученика..."
-msgstr "Search by number or student name..."
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск по любому полю: №, ФИО, класс, сумма…"
+msgstr "Search any field: no., name, grade, amount…"
 
-#: pages/home/contracts/contract_list.html
-msgid "Поиск по номеру, ФИО, телефону..."
-msgstr "Search by number, name, phone..."
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск по любому полю: №, ФИО, телефон, паспорт, сумма…"
+msgstr "Search any field: no., name, phone, passport, amount…"
 
 #: pages/home/finance/counterparty_list.html
 msgid "Пока никого нет."
@@ -2043,6 +2071,10 @@ msgstr "View contracts"
 msgid "Просрочено месяцев"
 msgstr "Months overdue"
 
+#: users/views.py
+msgid "Просрочено месяцев: больше сначала"
+msgstr "Months overdue: most first"
+
 #: pages/authorization/profile.html
 msgid "Профиль - SchoolPR"
 msgstr "Profile - SchoolPR"
@@ -2225,6 +2257,10 @@ msgstr "The balance is counted from this date. Movements before it are ignored."
 msgid "Сальдо"
 msgstr "Balance"
 
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Сбросить поиск"
+msgstr "Clear search"
+
 #: pages/home/import/workbook_import.html
 msgid "Сверка с книгой"
 msgstr "Reconciliation with the workbook"
@@ -2338,6 +2374,14 @@ msgstr "Change password"
 msgid "Сначала добавьте учебный год."
 msgstr "Add an academic year first."
 
+#: users/views.py
+msgid "Сначала новые"
+msgstr "Newest first"
+
+#: users/views.py
+msgid "Сначала новые договоры"
+msgstr "Newest contracts first"
+
 #: pages/home/import/excel_import.html
 #, python-format
 msgid "Сначала только проверка — ничего не сохраняется. До %(max_rows)s строк за раз."
@@ -2378,6 +2422,10 @@ msgstr "Create contract"
 #: pages/home/schools/school_form.html
 msgid "Создать школу"
 msgstr "Create school"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Сортировка"
+msgstr "Sort"
 
 #: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сотрудник"
@@ -2553,6 +2601,14 @@ msgstr "Amount (UZS)"
 #: users/workbook_import.py
 msgid "Сумма в месяц по действующим договорам"
 msgstr "Monthly total of active contracts"
+
+#: users/views.py
+msgid "Сумма в месяц: больше сначала"
+msgstr "Monthly amount: largest first"
+
+#: users/views.py
+msgid "Сумма в месяц: меньше сначала"
+msgstr "Monthly amount: smallest first"
 
 #: users/forms.py
 msgid "Сумма возврата"
@@ -2810,6 +2866,14 @@ msgstr "Parents’ full name"
 #: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО ученика"
 msgstr "Student’s full name"
+
+#: users/views.py
+msgid "ФИО ученика: А → Я"
+msgstr "Student name: A → Z"
+
+#: users/views.py
+msgid "ФИО ученика: Я → А"
+msgstr "Student name: Z → A"
 
 #: integrations/models.py
 msgid "Файл"
@@ -3295,6 +3359,14 @@ msgstr "— contract"
 #: pages/home/debts/debt_list.html pages/home/import/workbook_import.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
 msgid "№ договора"
 msgstr "Contract No."
+
+#: users/views.py
+msgid "№ по возрастанию"
+msgstr "No. ascending"
+
+#: users/views.py
+msgid "№ по убыванию"
+msgstr "No. descending"
 
 #: users/models.py
 msgid "№ телефона"

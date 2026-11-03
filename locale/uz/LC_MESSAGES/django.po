@@ -426,6 +426,14 @@ msgstr "Qaytarish sanasi"
 msgid "Дата выплаты"
 msgstr "Toʻlov sanasi"
 
+#: users/views.py
+msgid "Дата договора: сначала новые"
+msgstr "Shartnoma sanasi: avval yangilari"
+
+#: users/views.py
+msgid "Дата договора: сначала старые"
+msgstr "Shartnoma sanasi: avval eskilari"
+
 #: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "Toʻlov sanasi"
@@ -623,6 +631,14 @@ msgstr "Bugungi qarz"
 #: pages/home/contracts/contract_detail.html
 msgid "Долг нарастающим"
 msgstr "Jamlangan qarz"
+
+#: users/views.py
+msgid "Долг: больше сначала"
+msgstr "Qarz: avval kattasi"
+
+#: users/views.py
+msgid "Долг: меньше сначала"
+msgstr "Qarz: avval kichigi"
 
 #: pages/base.html
 msgid "Долги"
@@ -1237,7 +1253,7 @@ msgstr "Maktab nomi, platformadagidek. Faqat egasi toʻldiradi — direktor va x
 msgid "Назначение платежа / примечание"
 msgstr "Toʻlov maqsadi / izoh"
 
-#: pages/home/contracts/contract_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/users/user_list.html
 msgid "Найти"
 msgstr "Qidirish"
 
@@ -1607,6 +1623,14 @@ msgstr "Qoldiq"
 msgid "Остаток денег на конец месяца"
 msgstr "Oy oxiridagi pul qoldigʻi"
 
+#: users/views.py
+msgid "Остаток к оплате: больше сначала"
+msgstr "To'lov qoldig'i: avval kattasi"
+
+#: users/views.py
+msgid "Остаток к оплате: меньше сначала"
+msgstr "To'lov qoldig'i: avval kichigi"
+
 #: pages/home/reports/matrix.html
 #, python-format
 msgid "Остаток на %(day)s"
@@ -1818,17 +1842,21 @@ msgstr "Oʻchirishni tasdiqlash"
 msgid "Подтверждение удаления - SchoolPR"
 msgstr "Oʻchirishni tasdiqlash - SchoolPR"
 
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск"
+msgstr "Qidiruv"
+
 #: pages/home/users/user_list.html
 msgid "Поиск по имени, тел. или школе..."
 msgstr "Ism, tel. yoki maktab boʻyicha qidirish..."
 
-#: pages/home/contracts/contract_list.html
-msgid "Поиск по номеру, ФИО ученика..."
-msgstr "Raqam, oʻquvchi F.I.Sh. boʻyicha qidirish..."
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск по любому полю: №, ФИО, класс, сумма…"
+msgstr "Istalgan maydon bo'yicha qidiruv: №, F.I.Sh., sinf, summa…"
 
-#: pages/home/contracts/contract_list.html
-msgid "Поиск по номеру, ФИО, телефону..."
-msgstr "Raqam, F.I.Sh., telefon boʻyicha qidirish..."
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск по любому полю: №, ФИО, телефон, паспорт, сумма…"
+msgstr "Istalgan maydon bo'yicha qidiruv: №, F.I.Sh., telefon, pasport, summa…"
 
 #: pages/home/finance/counterparty_list.html
 msgid "Пока никого нет."
@@ -2043,6 +2071,10 @@ msgstr "Shartnomalarni koʻrish"
 msgid "Просрочено месяцев"
 msgstr "Kechiktirilgan oylar"
 
+#: users/views.py
+msgid "Просрочено месяцев: больше сначала"
+msgstr "Muddati o'tgan oylar: avval ko'pi"
+
 #: pages/authorization/profile.html
 msgid "Профиль - SchoolPR"
 msgstr "Profil - SchoolPR"
@@ -2225,6 +2257,10 @@ msgstr "Qoldiq shu sanadan hisoblanadi. Undan oldingi harakatlar hisobga olinmay
 msgid "Сальдо"
 msgstr "Saldo"
 
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Сбросить поиск"
+msgstr "Qidiruvni tozalash"
+
 #: pages/home/import/workbook_import.html
 msgid "Сверка с книгой"
 msgstr "Kitob bilan solishtirish"
@@ -2338,6 +2374,14 @@ msgstr "Parolni almashtirish"
 msgid "Сначала добавьте учебный год."
 msgstr "Avval oʻquv yilini qoʻshing."
 
+#: users/views.py
+msgid "Сначала новые"
+msgstr "Avval yangilari"
+
+#: users/views.py
+msgid "Сначала новые договоры"
+msgstr "Avval yangi shartnomalar"
+
 #: pages/home/import/excel_import.html
 #, python-format
 msgid "Сначала только проверка — ничего не сохраняется. До %(max_rows)s строк за раз."
@@ -2378,6 +2422,10 @@ msgstr "Shartnoma yaratish"
 #: pages/home/schools/school_form.html
 msgid "Создать школу"
 msgstr "Maktab yaratish"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Сортировка"
+msgstr "Saralash"
 
 #: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сотрудник"
@@ -2553,6 +2601,14 @@ msgstr "Summa (soʻm)"
 #: users/workbook_import.py
 msgid "Сумма в месяц по действующим договорам"
 msgstr "Amaldagi shartnomalar boʻyicha oylik summa"
+
+#: users/views.py
+msgid "Сумма в месяц: больше сначала"
+msgstr "Oylik summa: avval kattasi"
+
+#: users/views.py
+msgid "Сумма в месяц: меньше сначала"
+msgstr "Oylik summa: avval kichigi"
 
 #: users/forms.py
 msgid "Сумма возврата"
@@ -2810,6 +2866,14 @@ msgstr "Ota-onalar F.I.Sh."
 #: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО ученика"
 msgstr "Oʻquvchi F.I.Sh."
+
+#: users/views.py
+msgid "ФИО ученика: А → Я"
+msgstr "O'quvchi F.I.Sh.: A → Z"
+
+#: users/views.py
+msgid "ФИО ученика: Я → А"
+msgstr "O'quvchi F.I.Sh.: Z → A"
 
 #: integrations/models.py
 msgid "Файл"
@@ -3295,6 +3359,14 @@ msgstr "— shartnoma"
 #: pages/home/debts/debt_list.html pages/home/import/workbook_import.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
 msgid "№ договора"
 msgstr "Shartnoma №"
+
+#: users/views.py
+msgid "№ по возрастанию"
+msgstr "№ o'sish tartibida"
+
+#: users/views.py
+msgid "№ по убыванию"
+msgstr "№ kamayish tartibida"
 
 #: users/models.py
 msgid "№ телефона"

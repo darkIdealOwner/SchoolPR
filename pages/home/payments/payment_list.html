@@ -47,6 +47,10 @@
     color: #f87171;
     font-weight: 600;
 }
+.list-tools { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin: -1rem 0 1.25rem 0; }
+.list-tools input[type="search"] { flex: 1 1 260px; max-width: 420px; margin: 0; padding: 0.6rem 1rem; background-color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; color: var(--text); font-size: 0.875rem; }
+.list-tools select { width: auto; min-width: 0; max-width: 100%; margin: 0; }
 {% endblock %}
 
 {% block content %}
@@ -56,12 +60,21 @@
     <form method="get" style="display: flex; gap: 0.5rem;">
         <input type="month" name="month" value="{{ month_str }}" class="input-field" style="margin: 0; width: auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; padding: 0.5rem;">
         <button type="submit" class="btn-action">{% translate "Показать" %}</button>
-        <a href="?month={{ month_str }}&export=csv" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
+        <a href="{% querystring month=month_str export="csv" page=None %}" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
         {% if user.role != 'INVESTOR' %}<a href="{% url 'receipt_list' %}" class="btn-excel" title="{% translate "Деньги без номера договора" %}">{% translate "Нераспознанные" %}{% if open_receipts %} ({{ open_receipts }}){% endif %}</a>{% endif %}
         {% if user.role != 'INVESTOR' %}<a href="{% url 'excel_import' 'payments' %}" class="btn-excel" title="{% translate "Загрузить из таблицы Excel" %}">⬆ {% translate "Из Excel" %}</a>{% endif %}
     </form>
 </div>
 
+<form method="get" class="list-tools">
+    {% if request.GET.month %}<input type="hidden" name="month" value="{{ request.GET.month }}">{% endif %}{% if request.GET.per_page %}<input type="hidden" name="per_page" value="{{ request.GET.per_page }}">{% endif %}
+    <input type="search" name="q" value="{{ request.GET.q }}" placeholder="{% if user.can_view_personal_data %}{% translate "Поиск по любому полю: №, ФИО, телефон, паспорт, сумма…" %}{% else %}{% translate "Поиск по любому полю: №, ФИО, класс, сумма…" %}{% endif %}" aria-label="{% translate "Поиск" %}">
+    <select name="sort" class="input-field" onchange="this.form.submit()" aria-label="{% translate "Сортировка" %}">
+        {% for value, label in sort_options %}<option value="{{ value }}"{% if sort == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="btn-action">{% translate "Найти" %}</button>
+    {% if request.GET.q %}<a href="{% querystring q=None page=None %}" style="color: var(--text-muted); font-size: 0.8125rem;">{% translate "Сбросить поиск" %}</a>{% endif %}
+</form>
 <div style="overflow-x: auto; border-radius: 1rem;">
     <table class="payment-table">
         <thead>

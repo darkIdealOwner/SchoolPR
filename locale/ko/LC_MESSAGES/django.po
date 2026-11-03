@@ -426,6 +426,14 @@ msgstr "환불일"
 msgid "Дата выплаты"
 msgstr "지급일"
 
+#: users/views.py
+msgid "Дата договора: сначала новые"
+msgstr "계약일: 최신순"
+
+#: users/views.py
+msgid "Дата договора: сначала старые"
+msgstr "계약일: 오래된 순"
+
 #: users/excel_import.py users/models.py
 msgid "Дата оплаты"
 msgstr "납부일"
@@ -623,6 +631,14 @@ msgstr "현재 미납액"
 #: pages/home/contracts/contract_detail.html
 msgid "Долг нарастающим"
 msgstr "누적 미납액"
+
+#: users/views.py
+msgid "Долг: больше сначала"
+msgstr "미납액: 큰 순"
+
+#: users/views.py
+msgid "Долг: меньше сначала"
+msgstr "미납액: 작은 순"
 
 #: pages/base.html
 msgid "Долги"
@@ -1237,7 +1253,7 @@ msgstr "플랫폼에 있는 학교 이름. 소유자만 작성합니다. 원장�
 msgid "Назначение платежа / примечание"
 msgstr "결제 목적 / 비고"
 
-#: pages/home/contracts/contract_list.html pages/home/users/user_list.html
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/users/user_list.html
 msgid "Найти"
 msgstr "검색"
 
@@ -1607,6 +1623,14 @@ msgstr "잔액"
 msgid "Остаток денег на конец месяца"
 msgstr "월말 현금 잔액"
 
+#: users/views.py
+msgid "Остаток к оплате: больше сначала"
+msgstr "남은 금액: 큰 순"
+
+#: users/views.py
+msgid "Остаток к оплате: меньше сначала"
+msgstr "남은 금액: 작은 순"
+
 #: pages/home/reports/matrix.html
 #, python-format
 msgid "Остаток на %(day)s"
@@ -1818,17 +1842,21 @@ msgstr "삭제 확인"
 msgid "Подтверждение удаления - SchoolPR"
 msgstr "삭제 확인 - SchoolPR"
 
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск"
+msgstr "검색"
+
 #: pages/home/users/user_list.html
 msgid "Поиск по имени, тел. или школе..."
 msgstr "이름, 전화번호, 학교로 검색..."
 
-#: pages/home/contracts/contract_list.html
-msgid "Поиск по номеру, ФИО ученика..."
-msgstr "번호, 학생 이름으로 검색..."
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск по любому полю: №, ФИО, класс, сумма…"
+msgstr "모든 항목 검색: 번호, 이름, 학년, 금액…"
 
-#: pages/home/contracts/contract_list.html
-msgid "Поиск по номеру, ФИО, телефону..."
-msgstr "번호, 이름, 전화번호로 검색..."
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Поиск по любому полю: №, ФИО, телефон, паспорт, сумма…"
+msgstr "모든 항목 검색: 번호, 이름, 전화, 여권, 금액…"
 
 #: pages/home/finance/counterparty_list.html
 msgid "Пока никого нет."
@@ -2043,6 +2071,10 @@ msgstr "계약 보기"
 msgid "Просрочено месяцев"
 msgstr "연체 개월"
 
+#: users/views.py
+msgid "Просрочено месяцев: больше сначала"
+msgstr "연체 개월: 많은 순"
+
 #: pages/authorization/profile.html
 msgid "Профиль - SchoolPR"
 msgstr "프로필 - SchoolPR"
@@ -2225,6 +2257,10 @@ msgstr "이 날짜부터 잔액을 계산합니다. 그 이전 거래는 제외�
 msgid "Сальдо"
 msgstr "잔액"
 
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Сбросить поиск"
+msgstr "검색 초기화"
+
 #: pages/home/import/workbook_import.html
 msgid "Сверка с книгой"
 msgstr "통합 문서와 대조"
@@ -2338,6 +2374,14 @@ msgstr "비밀번호 변경"
 msgid "Сначала добавьте учебный год."
 msgstr "먼저 학년도를 추가하세요."
 
+#: users/views.py
+msgid "Сначала новые"
+msgstr "최신순"
+
+#: users/views.py
+msgid "Сначала новые договоры"
+msgstr "최신 계약순"
+
 #: pages/home/import/excel_import.html
 #, python-format
 msgid "Сначала только проверка — ничего не сохраняется. До %(max_rows)s строк за раз."
@@ -2378,6 +2422,10 @@ msgstr "계약 생성"
 #: pages/home/schools/school_form.html
 msgid "Создать школу"
 msgstr "학교 생성"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html
+msgid "Сортировка"
+msgstr "정렬"
 
 #: pages/home/payouts/payout_form.html pages/home/payouts/payout_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сотрудник"
@@ -2553,6 +2601,14 @@ msgstr "금액 (숨)"
 #: users/workbook_import.py
 msgid "Сумма в месяц по действующим договорам"
 msgstr "유효 계약 월 합계"
+
+#: users/views.py
+msgid "Сумма в месяц: больше сначала"
+msgstr "월 금액: 큰 순"
+
+#: users/views.py
+msgid "Сумма в месяц: меньше сначала"
+msgstr "월 금액: 작은 순"
 
 #: users/forms.py
 msgid "Сумма возврата"
@@ -2810,6 +2866,14 @@ msgstr "학부모 성명"
 #: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "ФИО ученика"
 msgstr "학생 성명"
+
+#: users/views.py
+msgid "ФИО ученика: А → Я"
+msgstr "학생 이름: 오름차순"
+
+#: users/views.py
+msgid "ФИО ученика: Я → А"
+msgstr "학생 이름: 내림차순"
 
 #: integrations/models.py
 msgid "Файл"
@@ -3295,6 +3359,14 @@ msgstr "— 계약"
 #: pages/home/debts/debt_list.html pages/home/import/workbook_import.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
 msgid "№ договора"
 msgstr "계약 번호"
+
+#: users/views.py
+msgid "№ по возрастанию"
+msgstr "번호 오름차순"
+
+#: users/views.py
+msgid "№ по убыванию"
+msgstr "번호 내림차순"
 
 #: users/models.py
 msgid "№ телефона"

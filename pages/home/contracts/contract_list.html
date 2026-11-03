@@ -134,7 +134,8 @@
     <h1 style="margin: 0;">{% translate "Договоры" %}</h1>
     
     <form class="search-form" method="get">
-        <input type="text" name="q" class="search-input" placeholder="{% if user.can_view_personal_data %}{% translate "Поиск по номеру, ФИО, телефону..." %}{% else %}{% translate "Поиск по номеру, ФИО ученика..." %}{% endif %}" value="{{ request.GET.q }}">
+        {% if request.GET.status %}<input type="hidden" name="status" value="{{ request.GET.status }}">{% endif %}{% if request.GET.year %}<input type="hidden" name="year" value="{{ request.GET.year }}">{% endif %}{% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}{% if request.GET.per_page %}<input type="hidden" name="per_page" value="{{ request.GET.per_page }}">{% endif %}
+        <input type="search" name="q" class="search-input" placeholder="{% if user.can_view_personal_data %}{% translate "Поиск по любому полю: №, ФИО, телефон, паспорт, сумма…" %}{% else %}{% translate "Поиск по любому полю: №, ФИО, класс, сумма…" %}{% endif %}" value="{{ request.GET.q }}" aria-label="{% translate "Поиск" %}">
         <button type="submit" class="btn-add" style="padding: 0.625rem 1rem;">{% translate "Найти" %}</button>
     </form>
 
@@ -152,7 +153,10 @@
 <div class="problem-banner">⚠ {% blocktranslate with count=problem_count %}Договоров с ошибками из книги (выделены красным): {{ count }}.{% endblocktranslate %} <a href="?status=problem">{% translate "Показать только их" %}</a></div>
 {% endif %}
 <form method="get" class="filters">
-    {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+    {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}{% if request.GET.per_page %}<input type="hidden" name="per_page" value="{{ request.GET.per_page }}">{% endif %}
+    <select name="sort" class="input-field" onchange="this.form.submit()" aria-label="{% translate "Сортировка" %}">
+        {% for value, label in sort_options %}<option value="{{ value }}"{% if sort == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
     <select name="status" class="input-field" onchange="this.form.submit()" aria-label="{% translate "Статус" %}">
         {% for value, label in status_filters %}<option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
     </select>
