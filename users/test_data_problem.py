@@ -157,6 +157,61 @@ class FlaggedImportTests(Base):
         self.assertIn('Телефон', log.changes['data_problem'])
 
 
+class ExtraPhoneTests(Base):
+    """В ячейке правильный номер и рядом неправильный: договор грузится с правильным, но с пометкой."""
+    ROW = contract(31, **{'№ телефона': '901234567\n123456'})
+
+    def load(self, contracts):
+        return self.confirm(self.upload(self.owner, book(list(contracts), [], [])))
+
+    def test_new_contract_gets_mark(self):
+        self.load([self.ROW])
+        c = Contract.objects.get()
+        self.assertEqual(c.phone_number, '+998901234567')
+        self.assertIn('123456', c.notes)
+        self.assertIn('123456', c.data_problem)
+        self.assertIn('Телефон', c.data_problem)
+
+    def test_preview_shows_it_as_flagged(self):
+        preview = self.upload(self.owner, book([self.ROW], [], []))
+        self.assertEqual(preview.context['plan'].counts()['contracts']['flagged'], 1)
+
+    def test_two_good_numbers_have_no_mark(self):
+        self.load([contract(32, **{'№ телефона': '901234567\n907654321'})])
+        self.assertEqual(Contract.objects.get().data_problem, '')
+
+    def test_already_loaded_contract_gets_mark_on_reupload(self):
+        self.load([self.ROW])
+        Contract.objects.update(data_problem='')     # как будто загружен до того, как такие номера помечались
+        preview = self.upload(self.owner, book([self.ROW], [], []))
+        item = preview.context['plan'].items['contracts'][0]
+        self.assertEqual((item.status, item.flagged), ('exists', True))
+        response = self.confirm(preview)
+        self.assertEqual(response.context['created']['flagged'], 1)
+        self.assertEqual(Contract.objects.count(), 1)
+        self.assertIn('123456', Contract.objects.get().data_problem)
+        self.assertTrue(AuditLog.objects.filter(action='UPDATE', model_name=Contract._meta.verbose_name).exists())
+
+    def test_reupload_does_not_mark_twice(self):
+        self.load([self.ROW])
+        response = self.load([self.ROW])
+        self.assertEqual(dict(response.context['created']), {})
+
+    def test_cleared_mark_is_not_restored_with_same_book(self):
+        # Пометку сняли кнопкой «проверено» — повторная загрузка той же книги её не возвращает
+        self.load([self.ROW])
+        c = Contract.objects.get()
+        self.client.post(reverse('data_problem_clear', args=['contract', c.pk]))
+        self.load([self.ROW])
+        self.assertEqual(Contract.objects.get().data_problem, '')
+
+    def test_flagged_contract_with_extra_phone_lists_both_problems(self):
+        self.load([contract(33, **{'№ телефона': '901234567\n123456', 'Класс': 14})])
+        problem = Contract.objects.get().data_problem
+        self.assertIn('Класс', problem)
+        self.assertIn('123456', problem)
+
+
 class ReuploadTests(Base):
     def load(self, contracts, income=(), expense=()):
         return self.confirm(self.upload(self.owner, book(list(contracts), list(income), list(expense))))

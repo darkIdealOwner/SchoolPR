@@ -11,6 +11,7 @@
 - незнакомая статья (имя человека или фирмы) → учредитель: вложение (приход) или выплата ему (расход).
 
 Строка с ошибкой, которую можно внести с заменой (нет срока или года рождения, неправильный телефон или класс,
+лишний неправильный номер рядом с правильным,
 дата не того года), загружается с красной пометкой: в поле data_problem записано, что было в книге и что поставлено.
 Без номера, ФИО, стоимости, даты или суммы строку загрузить нельзя — она остаётся в списке ошибок.
 
@@ -302,10 +303,11 @@ class Item(RowResult):
         self.problems = []          # что не так в книге — строка всё равно загружается, с красной пометкой
         self.instance = None        # договор, собранный вручную из строки с ошибками
         self.clear_problem = None   # уже загруженная запись с пометкой, которую исправленная строка подтверждает
+        self.mark_existing = None   # уже загруженный договор без пометки, в строке которого есть ошибка
 
     @property
     def flagged(self):
-        return self.status == RowResult.OK and bool(self.problems)
+        return (self.status == RowResult.OK or self.mark_existing is not None) and bool(self.problems)
 
     @property
     def fixes_contract(self):
@@ -375,9 +377,12 @@ class WorkbookPlan:
                 values['notes'] = (values['notes'] + ' ' + _("[Телефон из книги не распознан: %(phones)s]")
                                    % {'phones': ', '.join(unknown)}).strip()
                 item.notes.append(_("Телефон «%(phones)s» не распознан — сохранён в примечании.") % {'phones': ', '.join(unknown)})
+                item.problems.append(_("строка %(row)s: «Телефон»: в ячейке есть неправильный номер «%(phones)s» — "
+                                       "взят правильный номер, неправильный сохранён в примечании")
+                                     % {'row': item.number, 'phones': ', '.join(unknown)})
             values = {k: str(v) for k, v in values.items()}
             excel_import.check_contract(values, ctx, item, instance=fixing)
-            if item.errors and fixing:
+            if fixing and (item.errors or item.problems):
                 # В книге ошибка осталась — загруженный договор с пометкой не трогаем
                 item.errors, item.status = [], RowResult.EXISTS
                 item.notes.append(_("Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."))
@@ -385,6 +390,11 @@ class WorkbookPlan:
                 self.flag_contract(item, values, ctx)
             if item.errors:
                 item.status = RowResult.ERROR
+            if (item.status == RowResult.EXISTS and existing and not existing.data_problem and item.problems
+                    and not self.mark_was_cleared(existing)):
+                # Договор загружен раньше, когда такие ошибки ещё не помечались — пометку ставим ему сейчас
+                item.mark_existing = existing
+                item.notes.append(_("Договор уже есть на платформе — ему будет поставлена красная пометка."))
             if not item.summary:
                 item.summary = [number, values['student_full_name']]
             if item.status == RowResult.OK:
@@ -394,6 +404,12 @@ class WorkbookPlan:
             else:
                 self.contract_numbers.setdefault(number, None)
             self.items['contracts'].append(item)
+
+    @staticmethod
+    def mark_was_cleared(contract):
+        """Пометку с договора уже снимали (проверили руками) — повторная загрузка той же книги её не возвращает."""
+        return AuditLog.objects.filter(model_name=Contract._meta.verbose_name, object_id=str(contract.pk),
+                                       action='UPDATE', changes__has_key='data_problem').exists()
 
     def flag_contract(self, item, values, ctx):
         """Договор с ошибками только в заменяемых колонках → собрать вручную и записать в пометку, что не так."""
@@ -429,7 +445,7 @@ class WorkbookPlan:
                     setattr(obj, key, field.get_default())
                     fix = _("оставлено по умолчанию")
             problems.append(_("строка %(row)s: %(error)s — %(fix)s") % {'row': item.number, 'error': error, 'fix': fix})
-        item.problems = problems
+        item.problems += problems
         item.instance = obj
         item.errors = []
         item.notes.append(_("Загрузится с красной пометкой — потом исправьте договор."))
@@ -628,6 +644,13 @@ class WorkbookPlan:
         with db_transaction.atomic():
             contracts = {}
             for item in self.items['contracts']:
+                if item.mark_existing is not None:
+                    record = item.mark_existing
+                    record.data_problem = item.problem_text()
+                    record.save(update_fields=['data_problem', 'updated_at'])
+                    AuditLog.record(self.user, 'UPDATE', record, {'source': 'workbook', 'file': filename[:100],
+                                                                  'row': item.number, 'data_problem': ['', record.data_problem]})
+                    created['flagged'] += 1
                 if item.status == RowResult.OK:
                     if item.instance is not None:
                         obj = item.instance

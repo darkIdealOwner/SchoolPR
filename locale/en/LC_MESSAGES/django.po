@@ -579,6 +579,10 @@ msgid "Договор с таким номером уже существует."
 msgstr "A contract with this number already exists."
 
 #: users/workbook_import.py
+msgid "Договор уже есть на платформе — ему будет поставлена красная пометка."
+msgstr "The contract is already on the platform — it will get a red mark."
+
+#: users/workbook_import.py
 msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
 msgstr "The contract is already loaded with a red mark and the workbook still has the error — skipped."
 
@@ -3307,6 +3311,11 @@ msgstr "reversed, skipped"
 #, python-format
 msgid "строка %(row)s: %(error)s — %(fix)s"
 msgstr "row %(row)s: %(error)s — %(fix)s"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: «Телефон»: в ячейке есть неправильный номер «%(phones)s» — взят правильный номер, неправильный сохранён в примечании"
+msgstr "row %(row)s: “Phone”: the cell has a wrong number “%(phones)s” — the correct number is used, the wrong one is kept in the notes"
 
 #: users/workbook_import.py
 #, python-format

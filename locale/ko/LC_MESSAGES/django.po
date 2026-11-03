@@ -579,6 +579,10 @@ msgid "Договор с таким номером уже существует."
 msgstr "같은 번호의 계약이 이미 있습니다."
 
 #: users/workbook_import.py
+msgid "Договор уже есть на платформе — ему будет поставлена красная пометка."
+msgstr "계약이 이미 플랫폼에 있습니다 — 빨간 표시가 추가됩니다."
+
+#: users/workbook_import.py
 msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
 msgstr "계약이 이미 빨간 표시와 함께 불러와졌고 통합 문서의 오류가 남아 있습니다 — 건너뜀."
 
@@ -3307,6 +3311,11 @@ msgstr "취소, 건너뜀"
 #, python-format
 msgid "строка %(row)s: %(error)s — %(fix)s"
 msgstr "%(row)s행: %(error)s — %(fix)s"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: «Телефон»: в ячейке есть неправильный номер «%(phones)s» — взят правильный номер, неправильный сохранён в примечании"
+msgstr "%(row)s행: «전화»: 셀에 잘못된 번호 «%(phones)s»가 있습니다 — 올바른 번호를 사용하고 잘못된 번호는 메모에 저장"
 
 #: users/workbook_import.py
 #, python-format

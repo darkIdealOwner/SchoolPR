@@ -579,6 +579,10 @@ msgid "Договор с таким номером уже существует."
 msgstr "Bunday raqamli shartnoma allaqachon mavjud."
 
 #: users/workbook_import.py
+msgid "Договор уже есть на платформе — ему будет поставлена красная пометка."
+msgstr "Shartnoma platformada allaqachon bor — unga qizil belgi qo'yiladi."
+
+#: users/workbook_import.py
 msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
 msgstr "Shartnoma allaqachon qizil belgi bilan yuklangan, kitobdagi xato qolgan — o'tkazib yuborildi."
 
@@ -3307,6 +3311,11 @@ msgstr "storno, oʻtkazildi"
 #, python-format
 msgid "строка %(row)s: %(error)s — %(fix)s"
 msgstr "%(row)s-qator: %(error)s — %(fix)s"
+
+#: users/workbook_import.py
+#, python-format
+msgid "строка %(row)s: «Телефон»: в ячейке есть неправильный номер «%(phones)s» — взят правильный номер, неправильный сохранён в примечании"
+msgstr "%(row)s-qator: «Telefon»: katakda noto'g'ri raqam bor «%(phones)s» — to'g'ri raqam olindi, noto'g'risi izohda saqlandi"
 
 #: users/workbook_import.py
 #, python-format
