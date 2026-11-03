@@ -1,0 +1,19 @@
+{% load i18n %}{% if page_obj and page_obj.paginator.count > page_sizes.0 %}
+<div class="pager">
+    {% if is_paginated %}
+    <nav class="pager-pages" aria-label="{% translate "Страницы" %}">
+        {% if page_obj.has_previous %}<a class="pager-link" href="{% querystring page=page_obj.previous_page_number %}" aria-label="{% translate "Предыдущая страница" %}">‹</a>{% endif %}
+        {% for n in page_range %}{% if n == page_obj.paginator.ELLIPSIS %}<span class="pager-gap">…</span>{% elif n == page_obj.number %}<span class="pager-link current" aria-current="page">{{ n }}</span>{% else %}<a class="pager-link" href="{% querystring page=n %}">{{ n }}</a>{% endif %}{% endfor %}
+        {% if page_obj.has_next %}<a class="pager-link" href="{% querystring page=page_obj.next_page_number %}" aria-label="{% translate "Следующая страница" %}">›</a>{% endif %}
+    </nav>
+    {% endif %}
+    <div class="pager-info">{% blocktranslate with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}Показаны {{ start }}–{{ end }} из {{ total }}{% endblocktranslate %}</div>
+    <form method="get" class="pager-size">
+        {% for key, values in request.GET.lists %}{% if key != 'page' and key != 'per_page' %}{% for v in values %}<input type="hidden" name="{{ key }}" value="{{ v }}">{% endfor %}{% endif %}{% endfor %}
+        <label>{% translate "Показывать по" %}
+            <select name="per_page" onchange="this.form.submit()">{% for n in page_sizes %}<option value="{{ n }}"{% if n == page_obj.paginator.per_page %} selected{% endif %}>{{ n }}</option>{% endfor %}</select>
+        </label>
+        <noscript><button type="submit">OK</button></noscript>
+    </form>
+</div>
+{% endif %}

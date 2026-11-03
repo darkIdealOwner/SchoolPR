@@ -107,6 +107,7 @@
     </div>
 </div>
 
+{% if debtors %}<p style="margin: -1rem 0 1rem 0; font-size: 0.875rem; color: var(--text-muted);">{% blocktranslate with count=debtors|length total=debt_total|money %}Должников: {{ count }} · общий долг: {{ total }} сум{% endblocktranslate %}</p>{% endif %}
 <div style="overflow-x: auto; border-radius: 1rem;">
     <table class="debt-table">
         <thead>
@@ -124,7 +125,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for contract in debtors %}
+            {% for contract in debtors_page %}
             <tr{% if contract.data_problem %} class="problem-row"{% endif %}>
                 <td>{{ contract.number }}</td>
                 <td style="color: var(--text-muted);">{{ contract.school.name|default:"—" }}</td>
@@ -158,6 +159,7 @@
         </tbody>
     </table>
 </div>
+{% include 'home/partials/pagination.html' %}
 
 <div style="margin-top: 2rem;">
     <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>

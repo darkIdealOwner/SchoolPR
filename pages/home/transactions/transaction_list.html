@@ -188,19 +188,7 @@
     </table>
 </div>
 
-{% if is_paginated %}
-<div class="pagination">
-    {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
-    {% endif %}
-
-    <span class="page-info">{% blocktranslate with page=page_obj.number pages=page_obj.paginator.num_pages %}Страница {{ page }} из {{ pages }}{% endblocktranslate %}</span>
-
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
-    {% endif %}
-</div>
-{% endif %}
+{% include 'home/partials/pagination.html' %}
 
 <div style="margin-top: 2rem;">
     <a href="{% url 'home' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">{% translate "← Вернуться на главную" %}</a>

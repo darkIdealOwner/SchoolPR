@@ -636,6 +636,11 @@ msgstr "월별 미납:"
 msgid "Должников:"
 msgstr "미납자:"
 
+#: pages/home/debts/debt_list.html
+#, python-format
+msgid "Должников: %(count)s · общий долг: %(total)s сум"
+msgstr "채무자: %(count)s · 총 미납액: %(total)s 숨"
+
 #: pages/home/payouts/staff_list.html users/models.py
 msgid "Должность"
 msgstr "직책"
@@ -1829,6 +1834,11 @@ msgstr "번호, 이름, 전화번호로 검색..."
 msgid "Пока никого нет."
 msgstr "아직 없습니다."
 
+#: pages/home/partials/pagination.html
+#, python-format
+msgid "Показаны %(start)s–%(end)s из %(total)s"
+msgstr "%(total)s개 중 %(start)s–%(end)s 표시"
+
 #: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/_header.html
 msgid "Показать"
 msgstr "보기"
@@ -1836,6 +1846,10 @@ msgstr "보기"
 #: pages/home/contracts/contract_list.html
 msgid "Показать только их"
 msgstr "이것만 보기"
+
+#: pages/home/partials/pagination.html
+msgid "Показывать по"
+msgstr "페이지당"
 
 #: pages/home/owner.html
 msgid "Пользователей"
@@ -1894,6 +1908,10 @@ msgstr "%(month)s 입금"
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
 msgstr "예정"
+
+#: pages/home/partials/pagination.html
+msgid "Предыдущая страница"
+msgstr "이전 페이지"
 
 #: users/forms.py
 msgid "Префикс номеров договоров"
@@ -2295,6 +2313,10 @@ msgstr "할인, 숨"
 msgid "Сколько месяцев начисляется оплата, например 9 или 12"
 msgstr "요금이 부과되는 개월 수, 예: 9 또는 12"
 
+#: pages/home/partials/pagination.html
+msgid "Следующая страница"
+msgstr "다음 페이지"
+
 #: users/excel_import.py
 #, python-format
 msgid "Слишком много строк: за один раз можно загрузить не больше %(max)s."
@@ -2494,10 +2516,9 @@ msgstr "취소"
 msgid "Сторно записи - SchoolPR"
 msgstr "기록 취소 - SchoolPR"
 
-#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
-#, python-format
-msgid "Страница %(page)s из %(pages)s"
-msgstr "%(pages)s페이지 중 %(page)s페이지"
+#: pages/home/partials/pagination.html
+msgid "Страницы"
+msgstr "페이지"
 
 #: pages/home/import/workbook_import.html
 msgid "Строк"

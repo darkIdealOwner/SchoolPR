@@ -636,6 +636,11 @@ msgstr "Debts for month:"
 msgid "Должников:"
 msgstr "Debtors:"
 
+#: pages/home/debts/debt_list.html
+#, python-format
+msgid "Должников: %(count)s · общий долг: %(total)s сум"
+msgstr "Debtors: %(count)s · total debt: %(total)s UZS"
+
 #: pages/home/payouts/staff_list.html users/models.py
 msgid "Должность"
 msgstr "Position"
@@ -1829,6 +1834,11 @@ msgstr "Search by number, name, phone..."
 msgid "Пока никого нет."
 msgstr "Nobody yet."
 
+#: pages/home/partials/pagination.html
+#, python-format
+msgid "Показаны %(start)s–%(end)s из %(total)s"
+msgstr "Showing %(start)s–%(end)s of %(total)s"
+
 #: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/_header.html
 msgid "Показать"
 msgstr "Show"
@@ -1836,6 +1846,10 @@ msgstr "Show"
 #: pages/home/contracts/contract_list.html
 msgid "Показать только их"
 msgstr "Show only them"
+
+#: pages/home/partials/pagination.html
+msgid "Показывать по"
+msgstr "Rows per page"
 
 #: pages/home/owner.html
 msgid "Пользователей"
@@ -1894,6 +1908,10 @@ msgstr "Receipts for %(month)s"
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
 msgstr "Upcoming"
+
+#: pages/home/partials/pagination.html
+msgid "Предыдущая страница"
+msgstr "Previous page"
 
 #: users/forms.py
 msgid "Префикс номеров договоров"
@@ -2295,6 +2313,10 @@ msgstr "Discount, UZS"
 msgid "Сколько месяцев начисляется оплата, например 9 или 12"
 msgstr "How many months fees are charged, e.g. 9 or 12"
 
+#: pages/home/partials/pagination.html
+msgid "Следующая страница"
+msgstr "Next page"
+
 #: users/excel_import.py
 #, python-format
 msgid "Слишком много строк: за один раз можно загрузить не больше %(max)s."
@@ -2494,10 +2516,9 @@ msgstr "Reverse"
 msgid "Сторно записи - SchoolPR"
 msgstr "Reverse record - SchoolPR"
 
-#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
-#, python-format
-msgid "Страница %(page)s из %(pages)s"
-msgstr "Page %(page)s of %(pages)s"
+#: pages/home/partials/pagination.html
+msgid "Страницы"
+msgstr "Pages"
 
 #: pages/home/import/workbook_import.html
 msgid "Строк"

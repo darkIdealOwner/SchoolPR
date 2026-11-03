@@ -636,6 +636,11 @@ msgstr "Oy boʻyicha qarzlar:"
 msgid "Должников:"
 msgstr "Qarzdorlar:"
 
+#: pages/home/debts/debt_list.html
+#, python-format
+msgid "Должников: %(count)s · общий долг: %(total)s сум"
+msgstr "Qarzdorlar: %(count)s · umumiy qarz: %(total)s so'm"
+
 #: pages/home/payouts/staff_list.html users/models.py
 msgid "Должность"
 msgstr "Lavozim"
@@ -1829,6 +1834,11 @@ msgstr "Raqam, F.I.Sh., telefon boʻyicha qidirish..."
 msgid "Пока никого нет."
 msgstr "Hozircha hech kim yoʻq."
 
+#: pages/home/partials/pagination.html
+#, python-format
+msgid "Показаны %(start)s–%(end)s из %(total)s"
+msgstr "%(total)s tadan %(start)s–%(end)s ko'rsatilgan"
+
 #: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/_header.html
 msgid "Показать"
 msgstr "Koʻrsatish"
@@ -1836,6 +1846,10 @@ msgstr "Koʻrsatish"
 #: pages/home/contracts/contract_list.html
 msgid "Показать только их"
 msgstr "Faqat ularni ko'rsatish"
+
+#: pages/home/partials/pagination.html
+msgid "Показывать по"
+msgstr "Har sahifada"
 
 #: pages/home/owner.html
 msgid "Пользователей"
@@ -1894,6 +1908,10 @@ msgstr "%(month)s tushumlari"
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
 msgstr "Kutilmoqda"
+
+#: pages/home/partials/pagination.html
+msgid "Предыдущая страница"
+msgstr "Oldingi sahifa"
 
 #: users/forms.py
 msgid "Префикс номеров договоров"
@@ -2295,6 +2313,10 @@ msgstr "Chegirma, soʻm"
 msgid "Сколько месяцев начисляется оплата, например 9 или 12"
 msgstr "Toʻlov necha oy hisoblanadi, masalan 9 yoki 12"
 
+#: pages/home/partials/pagination.html
+msgid "Следующая страница"
+msgstr "Keyingi sahifa"
+
 #: users/excel_import.py
 #, python-format
 msgid "Слишком много строк: за один раз можно загрузить не больше %(max)s."
@@ -2494,10 +2516,9 @@ msgstr "Storno"
 msgid "Сторно записи - SchoolPR"
 msgstr "Yozuvni storno qilish - SchoolPR"
 
-#: pages/home/contracts/contract_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html pages/home/users/user_list.html
-#, python-format
-msgid "Страница %(page)s из %(pages)s"
-msgstr "%(page)s-sahifa, jami %(pages)s"
+#: pages/home/partials/pagination.html
+msgid "Страницы"
+msgstr "Sahifalar"
 
 #: pages/home/import/workbook_import.html
 msgid "Строк"

@@ -31,6 +31,45 @@ from .finance import (
     build_overview, chart_payload, contract_schedule, account_balances,
 )
 
+PAGE_SIZES = (10, 25, 50, 100)
+
+
+def page_size(request, default=PAGE_SIZES[0]):
+    value = request.GET.get('per_page', '')
+    return int(value) if value.isdigit() and int(value) in PAGE_SIZES else default
+
+
+def add_page_context(context):
+    """Номера страниц с многоточием и выбор «показывать по» для общего шаблона partials/pagination.html."""
+    page = context.get('page_obj')
+    context['page_sizes'] = PAGE_SIZES
+    if page is not None:
+        context['page_range'] = page.paginator.get_elided_page_range(page.number, on_each_side=2, on_ends=1)
+    return context
+
+
+def paginate_list(request, items):
+    """Постраничный вывод готового списка (когда строки считаются в Python, а не запросом)."""
+    from django.core.paginator import Paginator
+    page = Paginator(items, page_size(request)).get_page(request.GET.get('page'))
+    return add_page_context({'page_obj': page, 'is_paginated': page.has_other_pages()})
+
+
+class PageSizeMixin:
+    """Списки по страницам: ?per_page=10|25|50|100, неверный номер страницы — ближайшая страница, а не ошибка."""
+    paginate_by = PAGE_SIZES[0]
+
+    def get_paginate_by(self, queryset):
+        return page_size(self.request, self.paginate_by)
+
+    def paginate_queryset(self, queryset, page_size):
+        paginator = self.get_paginator(queryset, page_size, allow_empty_first_page=True)
+        page = paginator.get_page(self.request.GET.get(self.page_kwarg))
+        return paginator, page, page.object_list, page.has_other_pages()
+
+    def get_context_data(self, **kwargs):
+        return add_page_context(super().get_context_data(**kwargs))
+
 class CustomLoginView(LoginView):
     template_name = 'authorization/login.html'
     authentication_form = PhoneAuthenticationForm
@@ -255,11 +294,10 @@ class DataProblemClearView(LoginRequiredMixin, OwnerOrDirectorMixin, View):
         return redirect(safe_next_url(request) or 'home')
 
 
-class UserListView(LoginRequiredMixin, OwnerOrDirectorMixin, ListView):
+class UserListView(LoginRequiredMixin, OwnerOrDirectorMixin, PageSizeMixin, ListView):
     model = User
     template_name = 'home/users/user_list.html'
     context_object_name = 'users_list'
-    paginate_by = 10
 
     def get_queryset(self):
         from django.db.models import Q, Case, When, IntegerField
@@ -423,11 +461,10 @@ class SchoolDeleteView(LoginRequiredMixin, OwnerOnlyMixin, ProtectedDeleteMixin,
     protected_message = gettext_lazy("Нельзя удалить школу: к ней привязаны договоры, выплаты или транзакции.")
 
 # Contract Management CRUD (Owner, Director, Employee or Investor)
-class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
+class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, PageSizeMixin, ListView):
     model = Contract
     template_name = 'home/contracts/contract_list.html'
     context_object_name = 'contracts_list'
-    paginate_by = 10
     export_filename = 'dogovory'
 
     def get_export_rows(self, context):
@@ -597,7 +634,7 @@ class ContractDeleteView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Pro
         return qs
 
 # Payment Management
-class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
+class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, PageSizeMixin, ListView):
     model = Contract # We list contracts to show their payment status for a month
     template_name = 'home/payments/payment_list.html'
     context_object_name = 'contracts'
@@ -607,7 +644,7 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         headers = [_('Месяц'), _('№ договора'), _('Школа'), _('Ученик'), _('Начислено'), _('Оплачено'), _('Остаток')]
         month = format_russian_month(self.selected_month)
         rows = [[month, c.number, c.school.name if c.school else '', c.student_full_name,
-                 c.total_amount, c.this_month_paid, c.this_month_balance] for c in context['contracts']]
+                 c.total_amount, c.this_month_paid, c.this_month_balance] for c in self.object_list]
         return headers, rows
 
     def get_queryset(self):
@@ -617,7 +654,13 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
             qs = qs.filter(school=self.request.user.school)
         qs = contracts_with_active_payments(qs.filter(date__lt=shift_month(self.selected_month, 1)).order_by('-date'))
         # Только договоры, по которым в этом месяце есть начисление (учитываем срок и отмену)
-        return [c for c in qs if c.is_billable_in(self.selected_month)]
+        contracts = [c for c in qs if c.is_billable_in(self.selected_month)]
+        for contract in contracts:
+            month_payments = [p for p in contract.payments.all() if p.for_month.replace(day=1) == self.selected_month]
+            contract.month_payments = month_payments
+            contract.this_month_paid = sum((p.signed_amount for p in month_payments), Decimal(0))
+            contract.this_month_balance = contract.total_amount - contract.this_month_paid
+        return contracts
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -629,13 +672,6 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         if self.request.user.role in ['DIRECTOR', 'EMPLOYEE']:
             receipts = receipts.filter(school=self.request.user.school)
         context['open_receipts'] = receipts.count()
-
-        for contract in context['contracts']:
-            month_payments = [p for p in contract.payments.all() if p.for_month.replace(day=1) == selected_month]
-            contract.month_payments = month_payments
-            contract.this_month_paid = sum((p.signed_amount for p in month_payments), Decimal(0))
-            contract.this_month_balance = contract.total_amount - contract.this_month_paid
-
         return context
 
 class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin, CsvExportMixin, ListView):
@@ -692,7 +728,10 @@ class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin,
 
         # Sort debtors by debt amount descending
         debtors.sort(key=lambda c: c.total_debt, reverse=True)
-        context['debtors'] = debtors
+        context['debtors'] = debtors        # все — для выгрузки и итога
+        context['debt_total'] = sum((c.total_debt for c in debtors), Decimal(0))
+        context.update(paginate_list(self.request, debtors))
+        context['debtors_page'] = context['page_obj'].object_list
         return context
 
 class PaymentCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, AuditMixin, CreateView):
@@ -754,11 +793,10 @@ class PaymentReverseView(BaseReverseView):
         return safe_next_url(self.request) or f"{reverse_lazy('payment_list')}?month={self.get_object().for_month.strftime('%Y-%m')}"
 
 # Employee Payouts CRUD Views
-class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, CsvExportMixin, ListView):
+class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, CsvExportMixin, PageSizeMixin, ListView):
     model = EmployeePayout
     template_name = 'home/payouts/payout_list.html'
     context_object_name = 'payouts_list'
-    paginate_by = 10
     export_filename = 'vyplaty_sotrudnikam'
 
     def get_export_rows(self, context):
@@ -851,11 +889,10 @@ class EmployeePayoutReverseView(BaseReverseView):
 
 
 # General Transactions CRUD Views
-class TransactionListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, CsvExportMixin, ListView):
+class TransactionListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, CsvExportMixin, PageSizeMixin, ListView):
     model = Transaction
     template_name = 'home/transactions/transaction_list.html'
     context_object_name = 'transactions_list'
-    paginate_by = 10
     export_filename = 'tranzakcii'
 
     def get_export_rows(self, context):
@@ -1070,10 +1107,10 @@ class AccountUpdateView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMi
         return {**super().get_form_kwargs(), 'user': self.request.user}
 
 
-class TransferListView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixin, ListView):
+class TransferListView(LoginRequiredMixin, OwnerOrDirectorMixin, SchoolScopedMixin, PageSizeMixin, ListView):
     template_name = 'home/finance/transfer_list.html'
     context_object_name = 'transfers'
-    paginate_by = 20
+    paginate_by = 25
 
     def get_queryset(self):
         return self.scope(Transfer.objects.select_related('school', 'from_account', 'to_account', 'reversed_by')) \
@@ -1188,10 +1225,10 @@ class RefundCreateView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
         return redirect('contract_detail', pk=self.contract.pk)
 
 
-class ReceiptListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, SchoolScopedMixin, ListView):
+class ReceiptListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, SchoolScopedMixin, PageSizeMixin, ListView):
     template_name = 'home/finance/receipt_list.html'
     context_object_name = 'receipts'
-    paginate_by = 30
+    paginate_by = 25
 
     def scope(self, qs):
         if self.request.user.role != 'OWNER':
