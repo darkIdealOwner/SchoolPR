@@ -132,10 +132,11 @@ class FounderTests(ReportBase):
 
 class ReportPagesTests(ReportBase):
     def test_access(self):
+        money = {'OWNER': 200, 'DIRECTOR': 200, 'EMPLOYEE': 403, 'INVESTOR': 200}
+        everyone = {'OWNER': 200, 'DIRECTOR': 200, 'EMPLOYEE': 200, 'INVESTOR': 200}
         expected = {
-            'report_pl': {'OWNER': 200, 'DIRECTOR': 200, 'EMPLOYEE': 403, 'INVESTOR': 200},
-            'report_cashflow': {'OWNER': 200, 'DIRECTOR': 200, 'EMPLOYEE': 403, 'INVESTOR': 200},
-            'report_payment_control': {'OWNER': 200, 'DIRECTOR': 200, 'EMPLOYEE': 200, 'INVESTOR': 200},
+            'report_dashboard': money, 'report_summary': money, 'report_cash_methods': money, 'report_pivots': money,
+            'report_payment_control': everyone, 'report_debts': everyone, 'report_tariffs': everyone,
             'report_founders': {'OWNER': 200, 'DIRECTOR': 403, 'EMPLOYEE': 403, 'INVESTOR': 200},
         }
         users = {'OWNER': self.owner, 'DIRECTOR': self.director, 'EMPLOYEE': self.employee, 'INVESTOR': self.investor}
@@ -145,27 +146,49 @@ class ReportPagesTests(ReportBase):
                 self.assertEqual(self.client.get(reverse(name)).status_code, code, f'{name} {role}')
         self.client.force_login(self.employee)
         self.assertRedirects(self.client.get(reverse('reports')), reverse('report_payment_control'))
+        self.client.force_login(self.owner)
+        self.assertRedirects(self.client.get(reverse('reports')), reverse('report_dashboard'))
+
+    def test_old_addresses_lead_to_dashboard(self):
+        self.client.force_login(self.owner)
+        for name in ('report_pl', 'report_cashflow'):
+            response = self.client.get(reverse(name) + f'?year={self.year.pk}')
+            self.assertRedirects(response, reverse('report_dashboard') + f'?year={self.year.pk}')
 
     def test_director_cannot_switch_school(self):
         self.client.force_login(self.director)
-        response = self.client.get(reverse('report_pl') + f'?school={self.other.pk}')
+        response = self.client.get(reverse('report_dashboard') + f'?school={self.other.pk}')
         self.assertEqual(response.context['school'], self.school)
-        self.assertEqual(response.context['data']['expense'], D(1300))
+        self.assertEqual(response.context['data']['kpi']['operating'], D(1300))
 
     def test_owner_school_filter_and_pages_render(self):
         self.client.force_login(self.owner)
-        response = self.client.get(reverse('report_pl') + f'?school={self.other.pk}&year={self.year.pk}')
-        self.assertEqual(response.context['data']['expense'], D(99999))
-        self.assertContains(self.client.get(reverse('report_cashflow')), 'Остатки по счетам')
+        response = self.client.get(reverse('report_dashboard') + f'?school={self.other.pk}&year={self.year.pk}')
+        self.assertEqual(response.context['data']['kpi']['operating'], D(99999))
+        self.assertContains(self.client.get(reverse('report_dashboard')), 'Банк и касса')
         body = self.client.get(reverse('report_payment_control')).content.decode()
         self.assertIn('Ученик Десятый', body)
         self.assertContains(self.client.get(reverse('report_founders')), 'Учредитель Два')
 
+    def test_nav_has_all_tabs_and_keeps_filters(self):
+        self.client.force_login(self.owner)
+        body = self.client.get(reverse('report_summary') + f'?year={self.year.pk}&school={self.school.pk}&month=2026-10').content.decode()
+        for name in ('report_dashboard', 'report_summary', 'report_cash_methods', 'report_payment_control', 'report_debts',
+                     'report_tariffs', 'report_pivots', 'report_founders'):
+            self.assertIn(f'{reverse(name)}?year={self.year.pk}&amp;school={self.school.pk}"', body, name)
+        self.client.force_login(self.employee)
+        body = self.client.get(reverse('report_debts')).content.decode()
+        self.assertNotIn(reverse('report_dashboard'), body)
+        self.assertIn(reverse('report_tariffs'), body)
+
     def test_exports(self):
         self.client.force_login(self.owner)
-        pl = self.client.get(reverse('report_pl') + '?export=csv').content.decode('utf-8-sig').splitlines()
-        self.assertIn('Итого', pl[0])
-        self.assertTrue(any(line.startswith('Прибыль;') for line in pl))
+        for name in ('report_dashboard', 'report_summary', 'report_cash_methods', 'report_debts', 'report_tariffs',
+                     'report_pivots', 'report_payment_control', 'report_founders'):
+            response = self.client.get(reverse(name) + f'?year={self.year.pk}&export=csv')
+            self.assertEqual(response['Content-Type'], 'text/csv; charset=utf-8', name)
+        dash = self.client.get(reverse('report_dashboard') + f'?school={self.school.pk}&export=csv').content.decode('utf-8-sig')
+        self.assertIn('Чистая прибыль;100', dash)
         control = self.client.get(reverse('report_payment_control') + '?export=csv').content.decode('utf-8-sig').splitlines()
         self.assertIn('начислено', control[0])
         self.assertTrue(any(line.startswith('10;') for line in control))

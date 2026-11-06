@@ -14,6 +14,12 @@
 .rep td.cell.ok { background: rgba(16,185,129,0.06); }
 .rep td.cell.none { color: rgba(255,255,255,0.2); }
 .rep td:first-child a { color: var(--text); text-decoration: none; font-weight: 600; }
+.pc th.grp { text-align: center; border-left: 1px solid rgba(255,255,255,0.12); }
+.pc .grp-start { border-left: 1px solid rgba(255,255,255,0.12); }
+.pc tr.sub th { font-size: 0.65rem; top: 2rem; }
+.pc th.txt, .pc td.txt { text-align: left; }
+.pc td.paid { color: #10b981; }
+.pc td.debt { background: rgba(239,68,68,0.10); color: #f87171; font-weight: 600; }
 .legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.75rem; color: var(--text-muted); margin: 0 0 0.75rem 0; }
 .legend i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 0.2rem; vertical-align: -0.1rem; margin-right: 0.3rem; }
 {% endblock %}
@@ -28,45 +34,50 @@
 <div class="tabs" style="margin: -0.5rem 0 1rem 0;">
     {% for value, label in status_filters %}<a href="?{% if year %}year={{ year.pk }}&{% endif %}{% if school %}school={{ school.pk }}&{% endif %}status={{ value }}" class="{% if status == value %}on{% endif %}">{{ label }}</a>{% endfor %}
 </div>
-<p class="muted">{% translate "В каждой ячейке: оплачено за месяц и под ним начислено. Остаток — нарастающим итогом: переплата переходит на следующие месяцы." %}</p>
-<div class="legend"><span><i style="background: rgba(239,68,68,0.35);"></i>{% translate "долг на этот месяц" %}</span><span><i style="background: rgba(16,185,129,0.3);"></i>{% translate "оплачено" %}</span></div>
+<p class="muted">{% translate "Как лист «Контроль оплаты»: по каждому месяцу — стоимость, оплачено и остаток нарастающим итогом (минус — долг, плюс — переплата, она переходит на следующие месяцы)." %}</p>
 
-<div class="report-wrap">
-    <table class="rep no-cards">
+<div class="report-wrap pc-wrap">
+    <table class="rep pc no-cards">
         <thead>
             <tr>
-                <th>{% translate "Договор" %}</th>
-                {% for label in data.labels %}<th>{{ label }}</th>{% endfor %}
-                <th>{% translate "Начислено" %}</th>
-                <th>{% translate "Оплачено" %}</th>
-                <th>{% translate "Долг на сегодня" %}</th>
+                <th rowspan="2">{% translate "Договор" %}</th>
+                {% if user.can_view_personal_data %}<th rowspan="2" class="txt">{% translate "Родитель" %}</th><th rowspan="2" class="txt">{% translate "Телефон" %}</th>{% endif %}
+                <th rowspan="2" class="txt">{% translate "Направление" %}</th>
+                <th rowspan="2" class="txt">{% translate "Статус" %}</th>
+                <th colspan="3" class="grp">{% blocktranslate with year=year.name %}Итого {{ year }}{% endblocktranslate %}</th>
+                {% for label in data.labels %}<th colspan="3" class="grp">{{ label }}</th>{% endfor %}
+            </tr>
+            <tr class="sub">
+                {% for group in data.groups %}<th class="grp-start">{% translate "Стоимость" %}</th><th>{% translate "Оплачено" %}</th><th>{% translate "Остаток" %}</th>{% endfor %}
             </tr>
         </thead>
         <tbody>
-            {% for r in data.rows %}
-            <tr>
-                <td><a href="{% url 'contract_detail' r.contract.pk %}">№ {{ r.contract.number }}</a> <span class="muted">{{ r.contract.student_full_name }}</span>{% if r.contract.is_cancelled %} <span style="color: #f87171; font-size: 0.7rem;">{% translate "отменён" %}</span>{% endif %}</td>
-                {% for c in r.cells %}
-                <td class="cell {% if not c.accrued and not c.paid %}none{% elif c.due and c.balance < 0 %}debt{% elif c.paid %}ok{% endif %}">
-                    {% if c.accrued or c.paid %}{{ c.paid|money }}<small>{{ c.accrued|money }}</small>{% else %}—{% endif %}
-                </td>
-                {% endfor %}
-                <td>{{ r.accrued|money }}</td>
-                <td>{{ r.paid|money }}</td>
-                <td class="sum {% if r.debt_now %}neg{% endif %}">{% if r.debt_now %}{{ r.debt_now|money }}{% else %}—{% endif %}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="{{ data.labels|length|add:4 }}" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Договоров этого учебного года нет." %}</td></tr>
-            {% endfor %}
             {% if data.rows %}
             <tr class="total">
                 <td>{% translate "Итого" %}</td>
-                {% for c in data.total.cells %}<td>{{ c.paid|money }}<small style="display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 400;">{{ c.accrued|money }}</small></td>{% endfor %}
-                <td>{{ data.total.accrued|money }}</td>
-                <td>{{ data.total.paid|money }}</td>
-                <td class="{% if data.total.debt_now %}neg{% endif %}">{{ data.total.debt_now|money }}</td>
+                {% if user.can_view_personal_data %}<td></td><td></td>{% endif %}<td></td><td></td>
+                <td class="grp-start">{{ data.total.accrued|money }}</td><td>{{ data.total.paid|money }}</td><td class="{% if data.total.balance < 0 %}neg{% endif %}">{{ data.total.balance|money }}</td>
+                {% for c in data.total.cells %}<td class="grp-start">{{ c.accrued|money }}</td><td>{{ c.paid|money }}</td><td class="{% if c.running < 0 %}neg{% endif %}">{{ c.running|money }}</td>{% endfor %}
             </tr>
             {% endif %}
+            {% for r in data.rows %}
+            <tr{% if r.contract.data_problem %} class="problem-row"{% endif %}>
+                <td><a href="{% url 'contract_detail' r.contract.pk %}">№ {{ r.contract.number }}</a> <span class="muted">{{ r.contract.student_full_name }}</span></td>
+                {% if user.can_view_personal_data %}<td class="txt">{{ r.contract.parents_full_name }}</td><td class="txt">{{ r.contract.phone_number|phone }}</td>{% endif %}
+                <td class="txt">{{ r.contract.get_specialization_display }}</td>
+                <td class="txt">{% if r.contract.is_cancelled %}<span style="color: #f87171;">{% translate "Отменён" %}</span>{% else %}{% translate "Актуальный" %}{% endif %}</td>
+                <td class="grp-start">{{ r.accrued|money }}</td><td>{{ r.paid|money }}</td><td class="sum {% if r.balance < 0 %}neg{% elif r.balance > 0 %}pos{% endif %}">{{ r.balance|money }}</td>
+                {% for c in r.cells %}
+                {% if c.accrued or c.paid %}
+                <td class="grp-start">{{ c.accrued|money }}</td><td class="{% if c.paid %}paid{% else %}zero{% endif %}">{% if c.paid %}{{ c.paid|money }}{% else %}—{% endif %}</td><td class="{% if c.due and c.balance < 0 %}debt{% elif c.balance < 0 %}neg{% endif %}">{{ c.balance|money }}</td>
+                {% else %}
+                <td class="grp-start zero">—</td><td class="zero">—</td><td class="zero">—</td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Договоров этого учебного года нет." %}</td></tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>

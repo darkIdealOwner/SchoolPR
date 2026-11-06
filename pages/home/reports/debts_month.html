@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Задолженность за учёбу" %} - SchoolPR{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{% translate "Задолженность за учёбу" %}</h1>
+{% include 'home/reports/_header.html' %}
+
+{% if not data %}
+<p class="rep-note">{% translate "Сначала добавьте учебный год." %}</p>
+{% else %}
+<p class="rep-note">{% blocktranslate with month=data.month_label %}Как лист «Задолженность за учебу»: договоры с долгом на конец месяца {{ month }} — начислено и оплачено с начала учебного года.{% endblocktranslate %}</p>
+<div class="kpis">
+    <div class="kpi"><span>{% translate "Должников" %}</span><strong>{{ data.rows|length }}</strong></div>
+    <div class="kpi"><span>{% translate "Задолженность" %}</span><strong style="color: #f87171;">{{ data.total.debt|money }}</strong></div>
+</div>
+<div class="report-wrap">
+    <table class="rep no-cards">
+        <thead>
+            <tr>
+                <th>{% translate "Договор" %}</th>
+                {% if user.can_view_personal_data %}<th>{% translate "Родитель" %}</th><th>{% translate "Телефон" %}</th>{% endif %}
+                <th>{% translate "Платёж в месяц" %}</th><th>{% translate "Начислено" %}</th><th>{% translate "Оплачено" %}</th><th>{% translate "Задолженность" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="total">
+                <td>{% translate "Итого" %}</td>
+                {% if user.can_view_personal_data %}<td></td><td></td>{% endif %}
+                <td></td><td>{{ data.total.accrued|money }}</td><td>{{ data.total.paid|money }}</td><td class="neg">{{ data.total.debt|money }}</td>
+            </tr>
+            {% for r in data.rows %}
+            <tr{% if r.contract.data_problem %} class="problem-row"{% endif %}>
+                <td><a href="{% url 'contract_detail' r.contract.pk %}" style="color: var(--text); text-decoration: none; font-weight: 600;">№ {{ r.contract.number }}</a> <span style="color: var(--text-muted);">{{ r.contract.student_full_name }}</span>{% if r.contract.is_cancelled %} <span style="color: #f87171; font-size: 0.7rem;">{% translate "отменён" %}</span>{% endif %}</td>
+                {% if user.can_view_personal_data %}<td style="text-align: left;">{{ r.contract.parents_full_name }}</td><td style="text-align: left;">{{ r.contract.phone_number|phone }}</td>{% endif %}
+                <td>{{ r.contract.total_amount|money }}</td><td>{{ r.accrued|money }}</td><td>{{ r.paid|money }}</td><td class="sum neg">{{ r.debt|money }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Долгов на этот месяц нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

@@ -15,7 +15,8 @@ from .views import (
     CounterpartyListView, CounterpartyCreateView, CounterpartyUpdateView,
     RefundCreateView, ReceiptListView, ReceiptCreateView, ReceiptResolveView, ReceiptReverseView,
     StaffListView, StaffCreateView, StaffUpdateView,
-    ReportIndexView, ProfitLossReportView, CashFlowReportView, PaymentControlReportView, FounderReportView,
+    ReportIndexView, OldReportRedirectView, DashboardReportView, ContractSummaryReportView, CashByMethodReportView,
+    PaymentControlReportView, DebtsMonthReportView, TariffReportView, MoneyPivotReportView, FounderReportView,
     WorkbookImportView, DataProblemClearView,
 )
 
@@ -63,8 +64,14 @@ urlpatterns = [
 
     path('contracts/<int:pk>/refund/', RefundCreateView.as_view(), name='refund_create'),
     path('reports/', ReportIndexView.as_view(), name='reports'),
-    path('reports/profit-loss/', ProfitLossReportView.as_view(), name='report_pl'),
-    path('reports/cash-flow/', CashFlowReportView.as_view(), name='report_cashflow'),
+    path('reports/dashboard/', DashboardReportView.as_view(), name='report_dashboard'),
+    path('reports/summary/', ContractSummaryReportView.as_view(), name='report_summary'),
+    path('reports/cash-methods/', CashByMethodReportView.as_view(), name='report_cash_methods'),
+    path('reports/debts/', DebtsMonthReportView.as_view(), name='report_debts'),
+    path('reports/active-tariffs/', TariffReportView.as_view(), name='report_tariffs'),
+    path('reports/money/', MoneyPivotReportView.as_view(), name='report_pivots'),
+    path('reports/profit-loss/', OldReportRedirectView.as_view(), name='report_pl'),
+    path('reports/cash-flow/', OldReportRedirectView.as_view(), name='report_cashflow'),
     path('reports/payment-control/', PaymentControlReportView.as_view(), name='report_payment_control'),
     path('reports/founders/', FounderReportView.as_view(), name='report_founders'),
     path('staff/', StaffListView.as_view(), name='staff_list'),

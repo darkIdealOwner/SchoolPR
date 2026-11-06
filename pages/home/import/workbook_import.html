@@ -90,7 +90,7 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
 {% endif %}
 <div class="sticky-actions">
     <a href="{% url 'report_payment_control' %}?year={{ year.pk }}&school={{ school.pk }}" class="btn-add">{% translate "Открыть контроль оплаты" %}</a>
-    <a href="{% url 'report_pl' %}?year={{ year.pk }}&school={{ school.pk }}" class="btn-plain">{% translate "Прибыль и убытки" %}</a>
+    <a href="{% url 'report_dashboard' %}?year={{ year.pk }}&school={{ school.pk }}" class="btn-plain">{% translate "Дашборд" %}</a>
 </div>
 
 {% elif preview %}

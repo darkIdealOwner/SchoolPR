@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Дашборд" %} - SchoolPR{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{% translate "Дашборд" %}</h1>
+{% include 'home/reports/_header.html' %}
+<p class="rep-note">{% translate "Как лист DASHBOARD книги школы: за финансовый год июль–июнь, по дате оплат и расходов. Переводы между своими счетами (в том числе снятие наличных из банка) не доход и не расход." %}</p>
+
+{% with k=data.kpi %}
+<div class="kpis">
+    <div class="kpi"><span>{% translate "Доход" %}</span><strong>{{ k.income|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Операционные расходы" %}</span><strong>{{ k.operating|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Операционная прибыль" %}</span><strong class="{% if k.operating_profit < 0 %}neg{% endif %}">{{ k.operating_profit|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Налоги" %}</span><strong>{{ k.tax|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Чистая прибыль" %}</span><strong style="color: {% if k.net < 0 %}#f87171{% else %}#10b981{% endif %};">{{ k.net|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Маржа чистой прибыли" %}</span><strong>{% if k.margin is not None %}{{ k.margin|floatformat:1 }}%{% else %}—{% endif %}</strong></div>
+    <div class="kpi"><span>{% translate "Операционный денежный поток" %}</span><strong>{{ k.operating_cf|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Инвестиционный денежный поток" %}</span><strong>{{ k.investing_cf|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Финансовый денежный поток" %}</span><strong>{{ k.financing_cf|money_round }}</strong></div>
+    <div class="kpi"><span>{% translate "Чистый денежный поток" %}</span><strong>{{ k.net_cf|money_round }}</strong></div>
+</div>
+{% endwith %}
+
+<div class="rep-grid">
+    <section class="rep-block">
+        <h2>{% translate "Прибыль и убытки" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Показатель" %}</th><th>{% translate "Сумма" %}</th><th>{% translate "% от дохода" %}</th></tr></thead>
+                <tbody>
+                    {% for r in data.pl %}
+                    <tr class="{{ r.style }}"><td>{{ r.label }}</td><td class="{% if r.amount < 0 %}neg{% endif %}">{{ r.amount|money }}</td><td class="pct">{% if r.pct is not None %}{{ r.pct|floatformat:1 }}%{% else %}—{% endif %}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="rep-block wide">
+        <h2>{% translate "Доходы и расходы по месяцам" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Месяц" %}</th><th>{% translate "Доход" %}</th><th>{% translate "Расходы" %}</th><th>{% translate "Прибыль" %}</th><th>{% translate "Маржа" %}</th><th>{% translate "Поступило денег" %}</th></tr></thead>
+                <tbody>
+                    {% for m in data.monthly %}
+                    <tr><td>{{ m.label }}</td><td class="{% if not m.income %}zero{% endif %}">{{ m.income|money }}</td><td class="{% if not m.expense %}zero{% endif %}">{{ m.expense|money }}</td>
+                        <td class="{% if m.profit < 0 %}neg{% elif not m.profit %}zero{% endif %}">{{ m.profit|money }}</td><td class="pct">{% if m.margin is not None %}{{ m.margin|floatformat:1 }}%{% else %}—{% endif %}</td><td class="{% if not m.inflow %}zero{% endif %}">{{ m.inflow|money }}</td></tr>
+                    {% endfor %}
+                    {% with t=data.monthly_total %}
+                    <tr class="total"><td>{% translate "Итого" %}</td><td>{{ t.income|money }}</td><td>{{ t.expense|money }}</td><td class="{% if t.profit < 0 %}neg{% endif %}">{{ t.profit|money }}</td><td class="pct">{% if t.margin is not None %}{{ t.margin|floatformat:1 }}%{% else %}—{% endif %}</td><td>{{ t.inflow|money }}</td></tr>
+                    {% endwith %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="rep-block">
+        <h2>{% translate "Доходы по источникам" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Источник" %}</th><th>{% translate "Сумма" %}</th></tr></thead>
+                <tbody>
+                    {% for r in data.sources %}<tr><td>{{ r.label }}</td><td>{{ r.amount|money }}</td></tr>{% empty %}<tr><td colspan="2" class="zero">—</td></tr>{% endfor %}
+                    <tr class="total"><td>{% translate "Всего поступило" %}</td><td>{{ data.sources_total|money }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="rep-block">
+        <h2>{% translate "Расходы по статьям" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Статья" %}</th><th>{% translate "Сумма" %}</th></tr></thead>
+                <tbody>
+                    {% for r in data.articles %}<tr><td>{{ r.label }}</td><td>{{ r.amount|money }}</td></tr>{% empty %}<tr><td colspan="2" class="zero">—</td></tr>{% endfor %}
+                    <tr class="total"><td>{% translate "Всего выплачено" %}</td><td>{{ data.articles_total|money }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="rep-block">
+        <h2>{% translate "Движение денег по разделам" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <tbody>
+                    {% for r in data.cash_flow %}
+                    {% if r.style == 'section' %}<tr class="section"><td colspan="2">{{ r.label }}</td></tr>
+                    {% else %}<tr class="{{ r.style }}"><td>{% if r.negative %}− {% endif %}{{ r.label }}</td><td class="{% if r.style == 'total' or r.style == 'subtotal' %}{% if r.amount < 0 %}neg{% endif %}{% endif %}">{{ r.amount|money }}</td></tr>{% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="rep-block">
+        <h2>{% translate "Банк и касса" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Счёт" %}</th><th>{% translate "На начало" %}</th><th>{% translate "Приход" %}</th><th>{% translate "Расход" %}</th><th>{% translate "На конец" %}</th></tr></thead>
+                <tbody>
+                    {% for r in data.bank_cash.rows %}<tr><td>{{ r.label }}</td><td>{{ r.opening|money }}</td><td>{{ r.in|money }}</td><td>{{ r.out|money }}</td><td class="sum {% if r.closing < 0 %}neg{% endif %}">{{ r.closing|money }}</td></tr>{% endfor %}
+                    {% with t=data.bank_cash.total %}<tr class="total"><td>{% translate "Итого" %}</td><td>{{ t.opening|money }}</td><td>{{ t.in|money }}</td><td>{{ t.out|money }}</td><td>{{ t.closing|money }}</td></tr>{% endwith %}
+                </tbody>
+            </table>
+        </div>
+        <p class="rep-note" style="margin-top: 0.5rem;">{% translate "Приход и расход здесь — со всеми переводами между своими счетами." %}</p>
+    </section>
+
+    {% if user.role == 'OWNER' or user.role == 'INVESTOR' %}
+    <section class="rep-block">
+        <h2>{% translate "Расчёты с учредителями" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Учредитель" %}</th><th>{% translate "Вложено" %}</th><th>{% translate "Выплачено" %}</th><th>{% translate "Сальдо" %}</th></tr></thead>
+                <tbody>
+                    {% for r in data.founders.rows %}<tr><td>{{ r.counterparty.display_name }}</td><td>{{ r.invested|money }}</td><td>{{ r.paid|money }}</td><td class="sum">{{ r.balance|money }}</td></tr>{% empty %}<tr><td colspan="4" class="zero">—</td></tr>{% endfor %}
+                    {% with t=data.founders.totals %}<tr class="total"><td>{% translate "Итого" %}</td><td>{{ t.invested|money }}</td><td>{{ t.paid|money }}</td><td>{{ t.balance|money }}</td></tr>{% endwith %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

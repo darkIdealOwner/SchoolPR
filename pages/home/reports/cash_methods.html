@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Движение ДС" %} - SchoolPR{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{% translate "Движение денежных средств" %}</h1>
+{% include 'home/reports/_header.html' %}
+<p class="rep-note">{% translate "Как лист «Движение ДС» книги школы: поступления, расходы и остаток по способу — перечисление, терминал, наличные. Переводы между своими счетами входят: снятие наличных — расход банка и приход кассы." %}</p>
+
+<div class="kpis">
+    {% for r in data.opening %}<div class="kpi"><span>{% blocktranslate with name=r.label day=data.opening_day|date:"d.m.Y" %}{{ name }}: остаток на {{ day }}{% endblocktranslate %}</span><strong>{{ r.amount|money }}</strong></div>{% endfor %}
+    <div class="kpi"><span>{% blocktranslate with day=data.opening_day|date:"d.m.Y" %}Всего на {{ day }}{% endblocktranslate %}</span><strong>{{ data.opening_total|money }}</strong></div>
+</div>
+
+{% translate "Вид движения" as first_header %}
+{% translate "Всего" as total_header %}
+{% include 'home/reports/_rows_table.html' with rows=data.rows labels=data.labels first_header=first_header total_header=total_header %}
+<p class="rep-note" style="margin-top: 0.5rem;">{% translate "В разделе «Остаток» колонка «Всего» — остаток на конец периода." %}</p>
+{% endblock %}

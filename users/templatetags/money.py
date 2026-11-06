@@ -28,6 +28,15 @@ def money(value):
 
 
 @register.filter
+def money_round(value):
+    """Крупные итоги без тийинов: 1255919194.56 -> «1 255 919 195»."""
+    try:
+        return money(Decimal(value).quantize(Decimal(1)))
+    except (InvalidOperation, TypeError, ValueError):
+        return money(value)
+
+
+@register.filter
 def phone(value):
     """+998500022131 -> «+998 (50)-002-21-31»."""
     from users.phone import format_phone

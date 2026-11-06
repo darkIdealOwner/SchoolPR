@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Свод" %} - SchoolPR{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{% translate "Свод" %}</h1>
+{% translate "Весь год" as month_total_label %}
+{% include 'home/reports/_header.html' %}
+
+{% if not data %}
+<p class="rep-note">{% translate "Сначала добавьте учебный год." %}</p>
+{% else %}
+<p class="rep-note">{% translate "Как лист СВОД книги школы: договоры учебного года по статусу и классу, по месяцу заключения договора." %}</p>
+
+<section class="rep-block" style="margin-top: 0;">
+    <h2>{% translate "Оплачено за учёбу и долги" %} — {% if data.month %}{% for value, label in data.month_options %}{% if value == data.month %}{{ label }}{% endif %}{% endfor %}{% else %}{% translate "весь год" %}{% endif %}</h2>
+    <div class="kpis">
+        <div class="kpi"><span>{% translate "Оплачено" %}</span><strong>{{ data.paid|money_round }}</strong></div>
+        <div class="kpi"><span>{% translate "Долги" %}</span><strong style="color: #f87171;">{{ data.debts|money_round }}</strong></div>
+        <div class="kpi"><span>{% translate "Долги актуальных договоров" %}</span><strong style="color: #f87171;">{{ data.active_debts|money_round }}</strong></div>
+        <div class="kpi"><span>{% translate "Переплаты" %}</span><strong>{{ data.overpaid|money_round }}</strong></div>
+        <div class="kpi"><span>{% translate "Итог (переплаты − долги)" %}</span><strong class="{% if data.net < 0 %}neg{% endif %}">{{ data.net|money_round }}</strong></div>
+    </div>
+    <p class="rep-note">{% translate "Долг и переплата — остаток нарастающим итогом на конец выбранного месяца, как в «Контроле оплаты». «Весь год» — на сегодня." %}</p>
+</section>
+
+<section class="rep-block">
+    <h2>{% translate "Количество составленных договоров" %}</h2>
+    {% translate "Статус и класс" as first_header %}
+    {% include 'home/reports/_rows_table.html' with rows=data.count labels=data.labels count=True first_header=first_header %}
+</section>
+
+<section class="rep-block">
+    <h2>{% translate "Сумма составленных договоров (в месяц)" %}</h2>
+    {% include 'home/reports/_rows_table.html' with rows=data.sum labels=data.labels first_header=first_header %}
+</section>
+{% endif %}
+{% endblock %}

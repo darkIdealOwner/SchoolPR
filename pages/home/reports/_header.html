@@ -1,14 +1,22 @@
 {% load i18n %}
+{% with nav="?"|add:nav_query %}
 <nav class="rep-nav" aria-label="{% translate "Отчёты" %}">
     {% if user.role != 'EMPLOYEE' %}
-    <a href="{% url 'report_pl' %}?{{ query }}" class="{% if report == 'pl' %}on{% endif %}">{% translate "Прибыль и убытки" %}</a>
-    <a href="{% url 'report_cashflow' %}?{{ query }}" class="{% if report == 'cashflow' %}on{% endif %}">{% translate "Движение денег" %}</a>
+    <a href="{% url 'report_dashboard' %}{{ nav }}" class="{% if report == 'dashboard' %}on{% endif %}">{% translate "Дашборд" %}</a>
+    <a href="{% url 'report_summary' %}{{ nav }}" class="{% if report == 'summary' %}on{% endif %}">{% translate "Свод" %}</a>
+    <a href="{% url 'report_cash_methods' %}{{ nav }}" class="{% if report == 'cash_methods' %}on{% endif %}">{% translate "Движение ДС" %}</a>
     {% endif %}
-    <a href="{% url 'report_payment_control' %}?{{ query }}" class="{% if report == 'control' %}on{% endif %}">{% translate "Контроль оплаты" %}</a>
+    <a href="{% url 'report_payment_control' %}{{ nav }}" class="{% if report == 'control' %}on{% endif %}">{% translate "Контроль оплаты" %}</a>
+    <a href="{% url 'report_debts' %}{{ nav }}" class="{% if report == 'debts' %}on{% endif %}">{% translate "Задолженность за учёбу" %}</a>
+    <a href="{% url 'report_tariffs' %}{{ nav }}" class="{% if report == 'tariffs' %}on{% endif %}">{% translate "Свод по актуальным договорам" %}</a>
+    {% if user.role != 'EMPLOYEE' %}
+    <a href="{% url 'report_pivots' %}{{ nav }}" class="{% if report == 'pivots' %}on{% endif %}">{% translate "Поступления и расходы" %}</a>
+    {% endif %}
     {% if user.role == 'OWNER' or user.role == 'INVESTOR' %}
-    <a href="{% url 'report_founders' %}?{{ query }}" class="{% if report == 'founders' %}on{% endif %}">{% translate "Расчёты с учредителями" %}</a>
+    <a href="{% url 'report_founders' %}{{ nav }}" class="{% if report == 'founders' %}on{% endif %}">{% translate "Расчёты с учредителями" %}</a>
     {% endif %}
 </nav>
+{% endwith %}
 
 <form method="get" class="rep-filters">
     {% if report != 'founders' %}
@@ -26,8 +34,15 @@
         </select>
     </label>
     {% endif %}
-    {% block extra_filters %}{% endblock %}
-    {% for key, value in request.GET.items %}{% if key != 'year' and key != 'school' and key != 'export' and key != 'status' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+    {% if data.month_options %}
+    <label>{% translate "Месяц" %}
+        <select name="month" class="input-field" onchange="this.form.submit()">
+            {% if month_total_label %}<option value="">{{ month_total_label }}</option>{% endif %}
+            {% for value, label in data.month_options %}<option value="{{ value }}" {% if data.month == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+    </label>
+    {% endif %}
+    {% for key, value in request.GET.items %}{% if key != 'year' and key != 'school' and key != 'export' and key != 'status' and key != 'month' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
     <noscript><button type="submit" class="btn-excel">{% translate "Показать" %}</button></noscript>
     <a href="?{% if query %}{{ query }}&{% endif %}export=csv" class="btn-excel rep-export">⬇ Excel</a>
 </form>
@@ -53,5 +68,20 @@
 .rep td.pos { color: #10b981; }
 .rep td.zero { color: rgba(255,255,255,0.25); }
 .rep td.sum { font-weight: 600; }
+.rep tr.subtotal td:first-child { font-weight: 700; }
+.rep-block { margin-top: 1.75rem; }
+.rep-block > h2 { font-size: 1.05rem; margin: 0 0 0.75rem 0; }
+.rep-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 1.25rem; align-items: start; }
+.rep-grid .rep-block { margin-top: 0; }
+.rep.compact td:first-child, .rep.compact th:first-child { min-width: 0; }
+.rep.compact td:first-child { white-space: nowrap; }
+.rep-grid .rep-block.wide { grid-column: 1 / -1; }
+.rep td.pct { color: var(--text-muted); font-size: 0.75rem; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
+.kpi { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.85rem 1rem; min-width: 0; }
+.kpi span { color: var(--text-muted); font-size: 0.75rem; }
+.kpi strong { display: block; font-size: 1.2rem; margin-top: 0.2rem; overflow-wrap: anywhere; }
+.kpi strong.neg { color: #f87171; }
+.rep-note { color: var(--text-muted); font-size: 0.8125rem; margin: -0.5rem 0 1rem 0; }
 @media (max-width: 640px) { .rep-export { margin-left: 0; } .rep th:first-child, .rep td:first-child { min-width: 8.5rem; max-width: 9rem; } }
 </style>

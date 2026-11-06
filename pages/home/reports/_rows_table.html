@@ -1,0 +1,23 @@
+{% load i18n money %}{# Таблица строк Row по месяцам: rows, labels; count=True — количества, а не деньги #}
+<div class="report-wrap">
+    <table class="rep no-cards">
+        <thead>
+            <tr><th>{{ first_header|default:"" }}</th>{% for label in labels %}<th>{{ label }}</th>{% endfor %}<th>{{ total_header|default:_("Итого") }}</th></tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            {% if row.style == 'section' %}
+            <tr class="section"><td>{{ row.label }}</td>{% for label in labels %}<td></td>{% endfor %}<td></td></tr>
+            {% else %}
+            <tr class="{{ row.style }}">
+                <td>{{ row.label }}</td>
+                {% for value in row.values %}<td class="{% if not value %}zero{% elif value < 0 %}neg{% endif %}">{% if value %}{% if count %}{{ value|floatformat:0 }}{% else %}{{ value|money }}{% endif %}{% else %}—{% endif %}</td>{% endfor %}
+                <td class="sum {% if row.total < 0 %}neg{% endif %}">{% if count %}{{ row.total|floatformat:0 }}{% else %}{{ row.total|money }}{% endif %}</td>
+            </tr>
+            {% endif %}
+            {% empty %}
+            <tr><td colspan="{{ labels|length|add:2 }}" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Данных за этот период нет." %}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

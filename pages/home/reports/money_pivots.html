@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Поступления и расходы" %} - SchoolPR{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{% translate "Поступления и расходы" %}</h1>
+{% include 'home/reports/_header.html' %}
+<p class="rep-note">{% translate "Как сводные таблицы на листах «Поступление ДС» и «Расходы ДС»: по способу, внутри — по статье, по месяцам." %}</p>
+
+{% translate "Способ и статья" as first_header %}
+<section class="rep-block" style="margin-top: 0;">
+    <h2>{% translate "Поступления" %}</h2>
+    {% include 'home/reports/_rows_table.html' with rows=data.income labels=data.labels first_header=first_header %}
+</section>
+<section class="rep-block">
+    <h2>{% translate "Расходы" %}</h2>
+    {% include 'home/reports/_rows_table.html' with rows=data.expense labels=data.labels first_header=first_header %}
+</section>
+{% endblock %}

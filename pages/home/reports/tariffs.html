@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Свод по актуальным договорам" %} - SchoolPR{% endblock %}
+
+{% block content %}
+<h1 style="margin: 0 0 1rem 0;">{% translate "Свод по актуальным договорам" %}</h1>
+{% include 'home/reports/_header.html' %}
+
+{% if not data %}
+<p class="rep-note">{% translate "Сначала добавьте учебный год." %}</p>
+{% else %}
+<p class="rep-note">{% translate "Сколько действующих (не отменённых) договоров учебного года на каждую сумму в месяц." %}</p>
+<div class="report-wrap" style="max-width: 640px;">
+    <table class="rep compact no-cards">
+        <thead><tr><th>{% translate "Сумма в месяц" %}</th><th>{% translate "Договоров" %}</th><th>{% translate "Сумма" %}</th></tr></thead>
+        <tbody>
+            {% for r in data.rows %}<tr><td>{{ r.amount|money }}</td><td>{{ r.count }}</td><td>{{ r.sum|money }}</td></tr>
+            {% empty %}<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 2rem;">{% translate "Действующих договоров нет." %}</td></tr>{% endfor %}
+            <tr class="total"><td>{% translate "Итого" %}</td><td>{{ data.count }}</td><td>{{ data.sum|money }}</td></tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

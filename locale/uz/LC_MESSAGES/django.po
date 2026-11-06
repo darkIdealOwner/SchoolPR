@@ -6,6 +6,10 @@ msgstr ""
 "Language: uz\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: pages/home/reports/dashboard.html
+msgid "%% от дохода"
+msgstr "daromaddan %%"
+
 #: users/excel_import.py
 #, python-format
 msgid "%(amount)s сум"
@@ -26,7 +30,7 @@ msgstr "%(employee)s - %(amount)s, %(month)s uchun"
 msgid "%(entity)s: всего %(total)s, создано %(created)s, обновлено %(updated)s, сторнировано %(reversed)s, без изменений %(skipped)s, ошибок %(failed)s."
 msgstr "%(entity)s: jami %(total)s, yaratildi %(created)s, yangilandi %(updated)s, storno %(reversed)s, oʻzgarishsiz %(skipped)s, xatolar %(failed)s."
 
-#: pages/home/contracts/contract_detail.html
+#: pages/home/contracts/contract_detail.html users/reports.py
 #, python-format
 msgid "%(grade)s класс"
 msgstr "%(grade)s-sinf"
@@ -35,6 +39,11 @@ msgstr "%(grade)s-sinf"
 #, python-format
 msgid "%(month)s %(year)s"
 msgstr "%(month)s %(year)s"
+
+#: pages/home/reports/cash_methods.html
+#, python-format
+msgid "%(name)s: остаток на %(day)s"
+msgstr "%(name)s: %(day)s holatiga qoldiq"
 
 #: pages/home/integrations/integration.html
 msgid "(пробный)"
@@ -80,6 +89,10 @@ msgstr "API (1C oʻzi yubordi)"
 #: pages/home/integrations/integration.html
 msgid "API для 1С:"
 msgstr "1C uchun API:"
+
+#: users/reports.py
+msgid "EBITDA"
+msgstr "EBITDA"
 
 #: users/models.py
 msgid "ID в 1С"
@@ -139,6 +152,14 @@ msgstr "Faol shartnomalar"
 msgid "Активных договоров вашей школы"
 msgstr "Maktabingizdagi faol shartnomalar"
 
+#: users/reports.py
+msgid "Актуальные"
+msgstr "Amaldagilar"
+
+#: pages/home/reports/payment_control.html
+msgid "Актуальный"
+msgstr "Amalda"
+
 #: users/models.py
 msgid "Апрель"
 msgstr "Aprel"
@@ -146,6 +167,10 @@ msgstr "Aprel"
 #: users/models.py
 msgid "Банк"
 msgstr "Bank"
+
+#: pages/home/reports/dashboard.html users/views.py
+msgid "Банк и касса"
+msgstr "Bank va kassa"
 
 #: integrations/models.py
 msgid "Без изменений"
@@ -163,10 +188,6 @@ msgstr "Maktabsiz"
 msgid "Будут добавлены учредители:"
 msgstr "Taʼsischilar qoʻshiladi:"
 
-#: pages/home/reports/payment_control.html
-msgid "В каждой ячейке: оплачено за месяц и под ним начислено. Остаток — нарастающим итогом: переплата переходит на следующие месяцы."
-msgstr "Har bir katakda: oy uchun toʻlangan va ostida hisoblangan summa. Qoldiq — oʻsib boruvchi: ortiqcha toʻlov keyingi oylarga oʻtadi."
-
 #: pages/home/import/workbook_import.html
 msgid "В книге"
 msgstr "Kitobda"
@@ -183,6 +204,10 @@ msgstr "Kitobda qator tuzatilgan — qizil belgi olib tashlanadi."
 #: pages/home/finance/category_list.html
 msgid "В прибыли и убытках"
 msgstr "Foyda va zararda"
+
+#: pages/home/reports/cash_methods.html
+msgid "В разделе «Остаток» колонка «Всего» — остаток на конец периода."
+msgstr "«Qoldiq» bo'limida «Jami» ustuni — davr oxiridagi qoldiq."
 
 #: integrations/views.py
 msgid "В файле должен быть список записей или {\"records\": [...]}"
@@ -213,15 +238,23 @@ msgstr "SchoolPR dagi investitsiya sharhingiz. Bu yerda barcha boʻlinmalar boʻ
 msgid "Введите номер в формате +998 (XX)-XXX-XX-XX."
 msgstr "Raqamni +998 (XX)-XXX-XX-XX formatida kiriting."
 
+#: pages/home/reports/summary.html
+msgid "Весь год"
+msgstr "Butun yil"
+
 #: pages/home/finance/account_list.html pages/home/finance/counterparty_list.html users/models.py
 msgid "Вид"
 msgstr "Turi"
+
+#: pages/home/reports/cash_methods.html
+msgid "Вид движения"
+msgstr "Harakat turi"
 
 #: users/models.py
 msgid "Владелец"
 msgstr "Egasi"
 
-#: pages/home/reports/founders.html users/views.py
+#: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Вложено"
 msgstr "Kiritilgan"
 
@@ -254,10 +287,6 @@ msgstr "Kirish"
 msgid "Все"
 msgstr "Hammasi"
 
-#: users/views.py
-msgid "Все поступления и выплаты по разделам. Переводы между своими счетами не меняют общий остаток."
-msgstr "Barcha tushum va toʻlovlar boʻlimlar boʻyicha. Oʻz hisoblari orasidagi oʻtkazmalar umumiy qoldiqni oʻzgartirmaydi."
-
 #: pages/home/contracts/contract_list.html
 msgid "Все учебные годы"
 msgstr "Barcha oʻquv yillari"
@@ -266,9 +295,22 @@ msgstr "Barcha oʻquv yillari"
 msgid "Все, кому школа платит зарплату. Входить на платформу им не нужно; у сотрудников с доступом карточка создаётся сама."
 msgstr "Maktab ish haqi toʻlaydigan barcha xodimlar. Ularga platformaga kirish shart emas; kirish huquqi bor xodimlarning kartasi oʻzi yaratiladi."
 
-#: pages/home/integrations/integration.html
+#: pages/home/integrations/integration.html pages/home/reports/cash_methods.html
 msgid "Всего"
 msgstr "Jami"
+
+#: pages/home/reports/dashboard.html
+msgid "Всего выплачено"
+msgstr "Jami to'langan"
+
+#: pages/home/reports/cash_methods.html
+#, python-format
+msgid "Всего на %(day)s"
+msgstr "%(day)s holatiga jami"
+
+#: pages/home/reports/dashboard.html
+msgid "Всего поступило"
+msgstr "Jami tushum"
 
 #: pages/home/partials/finance_overview.html pages/home/reports/_header.html
 msgid "Вся сеть"
@@ -358,7 +400,7 @@ msgstr "Xodimlarga toʻlovlar"
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "Xodimlarga toʻlovlar - SchoolPR"
 
-#: pages/home/reports/founders.html users/views.py
+#: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Выплачено"
 msgstr "Toʻlangan"
 
@@ -409,6 +451,10 @@ msgstr "Maʼlumotlar"
 #: pages/home/contracts/contract_detail.html
 msgid "Данные договора"
 msgstr "Shartnoma maʼlumotlari"
+
+#: pages/home/reports/_rows_table.html
+msgid "Данных за этот период нет."
+msgstr "Bu davr uchun ma'lumot yo'q."
 
 #: pages/home/partials/finance_overview.html
 msgid "Данных пока нет."
@@ -462,9 +508,25 @@ msgstr "Shartnoma imzolangan sana. Masalan: 01.06.2026"
 msgid "Дата сторно"
 msgstr "Storno sanasi"
 
-#: pages/home/reports/_header.html users/views.py
+#: pages/home/import/workbook_import.html pages/home/reports/_header.html pages/home/reports/dashboard.html
+msgid "Дашборд"
+msgstr "Dashboard"
+
+#: pages/home/reports/_header.html pages/home/reports/cash_methods.html
+msgid "Движение ДС"
+msgstr "Pul harakati"
+
+#: users/views.py
 msgid "Движение денег"
 msgstr "Pul harakati"
+
+#: pages/home/reports/dashboard.html
+msgid "Движение денег по разделам"
+msgstr "Bo'limlar bo'yicha pul oqimi"
+
+#: pages/home/reports/cash_methods.html
+msgid "Движение денежных средств"
+msgstr "Pul mablag'lari harakati"
 
 #: users/models.py
 msgid "Действие"
@@ -481,6 +543,10 @@ msgstr "Amalda"
 #: users/views.py
 msgid "Действующие"
 msgstr "Amaldagi"
+
+#: pages/home/reports/tariffs.html
+msgid "Действующих договоров нет."
+msgstr "Amaldagi shartnomalar yo'q."
 
 #: users/models.py
 msgid "Декабрь"
@@ -566,7 +632,7 @@ msgstr "Xodim ish maydoniga xush kelibsiz. Maktabingiz boʻyicha qisqa maʼlumot
 msgid "Добро пожаловать в систему."
 msgstr "Tizimga xush kelibsiz."
 
-#: pages/home/reports/payment_control.html users/forms.py users/models.py
+#: pages/home/reports/debts_month.html pages/home/reports/payment_control.html users/forms.py users/models.py
 msgid "Договор"
 msgstr "Shartnoma"
 
@@ -591,7 +657,7 @@ msgstr "Shartnoma allaqachon qizil belgi bilan yuklangan, kitobdagi xato qolgan 
 msgid "Договор № %(number)s от %(date)s"
 msgstr "%(date)s sanadagi %(number)s-sonli shartnoma"
 
-#: pages/home/import/workbook_import.html pages/home/owner.html pages/home/schools/academic_year_list.html users/workbook_import.py
+#: pages/home/import/workbook_import.html pages/home/owner.html pages/home/reports/tariffs.html pages/home/schools/academic_year_list.html users/views.py users/workbook_import.py
 msgid "Договоров"
 msgstr "Shartnomalar"
 
@@ -628,7 +694,11 @@ msgstr "1C hujjati: 1C da tuzatiladi"
 msgid "Долг"
 msgstr "Qarz"
 
-#: pages/home/contracts/contract_detail.html pages/home/reports/payment_control.html users/views.py
+#: pages/home/reports/summary.html
+msgid "Долг и переплата — остаток нарастающим итогом на конец выбранного месяца, как в «Контроле оплаты». «Весь год» — на сегодня."
+msgstr "Qarz va ortiqcha to'lov — tanlangan oy oxiridagi yig'ma qoldiq, «To'lov nazorati»dagidek. «Butun yil» — bugungi holatga."
+
+#: pages/home/contracts/contract_detail.html users/views.py
 msgid "Долг на сегодня"
 msgstr "Bugungi qarz"
 
@@ -644,13 +714,25 @@ msgstr "Qarz: avval kattasi"
 msgid "Долг: меньше сначала"
 msgstr "Qarz: avval kichigi"
 
-#: pages/base.html
+#: pages/base.html pages/home/reports/summary.html
 msgid "Долги"
 msgstr "Qarzlar"
+
+#: pages/home/reports/summary.html
+msgid "Долги актуальных договоров"
+msgstr "Amaldagi shartnomalar qarzlari"
 
 #: pages/home/debts/debt_list.html
 msgid "Долги за месяц:"
 msgstr "Oy boʻyicha qarzlar:"
+
+#: pages/home/reports/debts_month.html
+msgid "Долгов на этот месяц нет."
+msgstr "Bu oy uchun qarz yo'q."
+
+#: pages/home/reports/debts_month.html
+msgid "Должников"
+msgstr "Qarzdorlar"
 
 #: pages/home/partials/finance_overview.html
 msgid "Должников:"
@@ -673,9 +755,21 @@ msgstr "Qoʻshimcha telefon"
 msgid "Доплатить"
 msgstr "Qoʻshimcha toʻlash"
 
+#: pages/home/reports/dashboard.html users/reports.py users/views.py
+msgid "Доход"
+msgstr "Daromad"
+
 #: pages/home/reports/matrix.html users/reports.py
 msgid "Доходы"
 msgstr "Daromadlar"
+
+#: pages/home/reports/dashboard.html
+msgid "Доходы и расходы по месяцам"
+msgstr "Oylar bo'yicha daromad va xarajatlar"
+
+#: pages/home/reports/dashboard.html users/views.py
+msgid "Доходы по источникам"
+msgstr "Manbalar bo'yicha daromadlar"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Другие дети этого родителя"
@@ -816,6 +910,14 @@ msgstr "Qarzlar"
 #: pages/home/debts/debt_list.html
 msgid "Задолженности - SchoolPR"
 msgstr "Qarzlar - SchoolPR"
+
+#: pages/home/reports/debts_month.html users/views.py
+msgid "Задолженность"
+msgstr "Qarzdorlik"
+
+#: pages/home/reports/_header.html pages/home/reports/debts_month.html
+msgid "Задолженность за учёбу"
+msgstr "O'qish uchun qarzdorlik"
 
 #: pages/home/import/excel_import.html
 msgid "Замечания"
@@ -965,6 +1067,10 @@ msgstr "Investitsiyalar va boshqa tushumlar"
 msgid "Инвестиционная деятельность"
 msgstr "Investitsiya faoliyati"
 
+#: pages/home/reports/dashboard.html
+msgid "Инвестиционный денежный поток"
+msgstr "Investitsion pul oqimi"
+
 #: pages/home/investor.html
 msgid "Инвестиционный портфель - SchoolPR"
 msgstr "Investitsiya portfeli - SchoolPR"
@@ -1013,9 +1119,13 @@ msgstr "Maydonlarni tuzating va forma pastidagi belgini qo'ying — qizil belgi 
 msgid "История оплат"
 msgstr "Toʻlovlar tarixi"
 
-#: users/models.py
+#: pages/home/reports/dashboard.html users/models.py
 msgid "Источник"
 msgstr "Manba"
+
+#: pages/home/reports/summary.html
+msgid "Итог (переплаты − долги)"
+msgstr "Natija (ortiqcha to'lov − qarz)"
 
 #: pages/home/partials/finance_overview.html
 msgid "Итоги за 12 месяцев"
@@ -1025,9 +1135,14 @@ msgstr "12 oy yakunlari"
 msgid "Итоги платформы совпадают с книгой."
 msgstr "Platforma natijalari kitob bilan mos."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/reports/founders.html pages/home/reports/matrix.html pages/home/reports/payment_control.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/reports/_rows_table.html pages/home/reports/dashboard.html pages/home/reports/debts_month.html pages/home/reports/founders.html pages/home/reports/matrix.html pages/home/reports/payment_control.html pages/home/reports/tariffs.html users/reports.py users/views.py
 msgid "Итого"
 msgstr "Jami"
+
+#: pages/home/reports/payment_control.html
+#, python-format
+msgid "Итого %(year)s"
+msgstr "Jami %(year)s"
 
 #: users/views.py
 msgid "Итого в месяц"
@@ -1066,9 +1181,34 @@ msgstr "Qanday qaytarildi"
 msgid "Как заполнять"
 msgstr "Qanday toʻldirish"
 
+#: pages/home/reports/dashboard.html
+msgid "Как лист DASHBOARD книги школы: за финансовый год июль–июнь, по дате оплат и расходов. Переводы между своими счетами (в том числе снятие наличных из банка) не доход и не расход."
+msgstr "Maktab kitobidagi DASHBOARD varag'i kabi: iyul–iyun moliya yili, to'lov va xarajat sanasi bo'yicha. O'z hisoblari orasidagi o'tkazmalar (bankdan naqd pul olish ham) daromad ham, xarajat ham emas."
+
+#: pages/home/reports/cash_methods.html
+msgid "Как лист «Движение ДС» книги школы: поступления, расходы и остаток по способу — перечисление, терминал, наличные. Переводы между своими счетами входят: снятие наличных — расход банка и приход кассы."
+msgstr "Maktab kitobidagi pul harakati varag'i kabi: o'tkazma, terminal, naqd bo'yicha tushum, xarajat va qoldiq. O'z hisoblari orasidagi o'tkazmalar kiradi: naqd pul olish — bank xarajati va kassa tushumi."
+
+#: pages/home/reports/debts_month.html
+#, python-format
+msgid "Как лист «Задолженность за учебу»: договоры с долгом на конец месяца %(month)s — начислено и оплачено с начала учебного года."
+msgstr "Qarzdorlik varag'i kabi: %(month)s oyi oxirida qarzi bor shartnomalar — o'quv yili boshidan hisoblangan va to'langan."
+
+#: pages/home/reports/payment_control.html
+msgid "Как лист «Контроль оплаты»: по каждому месяцу — стоимость, оплачено и остаток нарастающим итогом (минус — долг, плюс — переплата, она переходит на следующие месяцы)."
+msgstr "To'lov nazorati varag'i kabi: har oy — narx, to'langan va yig'ma qoldiq (minus — qarz, plyus — ortiqcha to'lov, keyingi oylarga o'tadi)."
+
+#: pages/home/reports/summary.html
+msgid "Как лист СВОД книги школы: договоры учебного года по статусу и классу, по месяцу заключения договора."
+msgstr "Maktab kitobidagi SVOD varag'i kabi: o'quv yili shartnomalari holat va sinf bo'yicha, tuzilgan oyi bo'yicha."
+
 #: pages/home/import/workbook_import.html
 msgid "Как разносятся статьи книги"
 msgstr "Kitob moddalari qanday taqsimlanadi"
+
+#: pages/home/reports/money_pivots.html
+msgid "Как сводные таблицы на листах «Поступление ДС» и «Расходы ДС»: по способу, внутри — по статье, по месяцам."
+msgstr "Kitobning tushum va xarajat varaqlaridagi yig'ma jadvallar kabi: usul bo'yicha, ichida — modda bo'yicha, oylar bo'yicha."
 
 #: integrations/models.py pages/home/integrations/integration.html
 msgid "Канал"
@@ -1089,6 +1229,10 @@ msgstr "Kassa, hisob raqami yoki terminal («naqd», «oʻtkazma» deb yozsa ham
 #: pages/home/contracts/contract_list.html users/excel_import.py users/models.py users/views.py
 msgid "Класс"
 msgstr "Sinf"
+
+#: users/reports.py
+msgid "Класс не указан"
+msgstr "Sinf ko'rsatilmagan"
 
 #: users/forms.py
 msgid "Класс — от 0 до 11."
@@ -1119,6 +1263,14 @@ msgstr "Qachon"
 #: users/models.py
 msgid "Когда разобрано"
 msgstr "Qachon ajratildi"
+
+#: users/views.py
+msgid "Количество договоров"
+msgstr "Shartnomalar soni"
+
+#: pages/home/reports/summary.html
+msgid "Количество составленных договоров"
+msgstr "Tuzilgan shartnomalar soni"
 
 #: users/excel_import.py
 msgid "Колонка"
@@ -1176,9 +1328,13 @@ msgstr "Imtiyoz"
 msgid "Май"
 msgstr "May"
 
-#: pages/home/reports/matrix.html
+#: pages/home/reports/dashboard.html pages/home/reports/matrix.html
 msgid "Маржа"
 msgstr "Marja"
+
+#: pages/home/reports/dashboard.html
+msgid "Маржа чистой прибыли"
+msgstr "Sof foyda marjasi"
 
 #: users/models.py
 msgid "Март"
@@ -1188,7 +1344,7 @@ msgstr "Mart"
 msgid "Меню"
 msgstr "Menyu"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/models.py users/views.py
 msgid "Месяц"
 msgstr "Oy"
 
@@ -1212,7 +1368,7 @@ msgstr "Ularni kitobda tuzatib, qayta yuklash mumkin: yuklangan qatorlar qayta q
 msgid "Можно оставить пустым — договор будет помечен «неполные данные»."
 msgstr "Boʻsh qoldirsa boʻladi — shartnoma «toʻliq boʻlmagan maʼlumot» deb belgilanadi."
 
-#: pages/home/reports/matrix.html
+#: pages/home/reports/dashboard.html pages/home/reports/matrix.html users/views.py
 msgid "На конец"
 msgstr "Oxirida"
 
@@ -1221,7 +1377,7 @@ msgstr "Oxirida"
 msgid "На листе «%(sheet)s» нет колонок: %(columns)s."
 msgstr "«%(sheet)s» varagʻida ustunlar yoʻq: %(columns)s."
 
-#: pages/home/reports/matrix.html
+#: pages/home/reports/dashboard.html pages/home/reports/matrix.html users/views.py
 msgid "На начало"
 msgstr "Boshida"
 
@@ -1269,7 +1425,11 @@ msgstr "Naqd pul"
 msgid "Наличные, карта, Click, Payme, Uzum или перечисление. Пусто — наличные."
 msgstr "Naqd, karta, Click, Payme, Uzum yoki oʻtkazma. Boʻsh boʻlsa — naqd."
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/reports/dashboard.html users/reports.py
+msgid "Налоги"
+msgstr "Soliqlar"
+
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/payment_control.html users/excel_import.py users/models.py users/views.py
 msgid "Направление"
 msgstr "Yoʻnalish"
 
@@ -1317,7 +1477,7 @@ msgstr "Boshlanishi"
 msgid "Начисления по"
 msgstr "Hisoblash oyi (gacha)"
 
-#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/reports/payment_control.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/reports/debts_month.html users/views.py
 msgid "Начислено"
 msgstr "Hisoblangan"
 
@@ -1529,6 +1689,18 @@ msgstr "Operatsiyalar"
 msgid "Операционная деятельность"
 msgstr "Operatsion faoliyat"
 
+#: pages/home/reports/dashboard.html users/reports.py
+msgid "Операционная прибыль"
+msgstr "Operatsion foyda"
+
+#: pages/home/reports/dashboard.html users/reports.py
+msgid "Операционные расходы"
+msgstr "Operatsion xarajatlar"
+
+#: pages/home/reports/dashboard.html
+msgid "Операционный денежный поток"
+msgstr "Operatsion pul oqimi"
+
 #: pages/home/partials/finance_overview.html
 msgid "Операционный результат"
 msgstr "Operatsion natija"
@@ -1595,7 +1767,7 @@ msgstr "Shartnomalar boʻyicha toʻlovlar mos emas"
 msgid "Оплаты родителей"
 msgstr "Ota-onalar toʻlovlari"
 
-#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/reports/payment_control.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/payments/payment_list.html pages/home/reports/debts_month.html pages/home/reports/payment_control.html pages/home/reports/summary.html users/views.py
 msgid "Оплачено"
 msgstr "Toʻlangan"
 
@@ -1606,6 +1778,10 @@ msgstr "Jami toʻlangan"
 #: users/views.py
 msgid "Оплачено за год"
 msgstr "Yil uchun toʻlangan"
+
+#: pages/home/reports/summary.html
+msgid "Оплачено за учёбу и долги"
+msgstr "O'qish uchun to'langan va qarzlar"
 
 #: pages/home/users/user_form.html
 msgid "Оставьте пустым, если не хотите менять."
@@ -1619,7 +1795,7 @@ msgstr "Oʻzgartirmaslik uchun boʻsh qoldiring"
 msgid "Остатки по счетам"
 msgstr "Hisoblar boʻyicha qoldiqlar"
 
-#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html pages/home/reports/payment_control.html users/views.py
 msgid "Остаток"
 msgstr "Qoldiq"
 
@@ -1644,6 +1820,10 @@ msgstr "%(day)s holatiga qoldiq"
 #, python-format
 msgid "Остаток на %(day)s: остаток на начало + оплаты и приходы − расходы и выплаты ± переводы."
 msgstr "%(day)s holatiga qoldiq: boshlangʻich qoldiq + toʻlovlar va kirimlar − xarajatlar va toʻlovlar ± oʻtkazmalar."
+
+#: users/reports.py
+msgid "Остаток на конец месяца"
+msgstr "Oy oxiridagi qoldiq"
 
 #: pages/home/finance/account_list.html users/models.py
 msgid "Остаток на начало"
@@ -1673,11 +1853,11 @@ msgstr "Qayerdan"
 msgid "Отмена"
 msgstr "Bekor qilish"
 
-#: users/excel_import.py users/models.py users/views.py
+#: pages/home/reports/payment_control.html users/excel_import.py users/models.py users/views.py
 msgid "Отменён"
 msgstr "Bekor qilingan"
 
-#: users/views.py
+#: users/reports.py users/views.py
 msgid "Отменённые"
 msgstr "Bekor qilinganlar"
 
@@ -1757,6 +1937,11 @@ msgstr "Oʻqishning birinchi oyi"
 msgid "Перевод между счетами"
 msgstr "Hisoblar orasida oʻtkazma"
 
+#: users/reports.py
+#, python-format
+msgid "Перевод: %(from)s → %(to)s"
+msgstr "O'tkazma: %(from)s → %(to)s"
+
 #: users/forms.py
 msgid "Переводить можно только между счетами одной школы."
 msgstr "Faqat bitta maktab hisoblari orasida oʻtkazish mumkin."
@@ -1785,6 +1970,10 @@ msgstr "Saqlashdan oldin sayt nima yuklanishini va xatolar qayerdaligini koʻrsa
 msgid "Перенесите данные из своей таблицы, а не вводите их по одному. Перед сохранением сайт покажет, что будет загружено и в каких строках ошибки."
 msgstr "Maʼlumotlarni bittalab kiritmasdan, oʻz jadvalingizdan koʻchiring. Saqlashdan oldin sayt nima yuklanishini va qaysi qatorlarda xato borligini koʻrsatadi."
 
+#: pages/home/reports/summary.html
+msgid "Переплаты"
+msgstr "Ortiqcha to'lovlar"
+
 #: users/forms.py
 #, python-format
 msgid "Пересекается с учебным годом «%(name)s»."
@@ -1810,13 +1999,9 @@ msgstr "Toʻlovchi / toʻlov maqsadi"
 msgid "Платформа"
 msgstr "Platforma"
 
-#: pages/home/contracts/contract_detail.html users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/reports/debts_month.html users/views.py
 msgid "Платёж в месяц"
 msgstr "Oylik toʻlov"
-
-#: users/views.py
-msgid "По дате оплат и расходов. Вложения учредителей, кредиты и покупка основных средств сюда не входят — они в движении денег."
-msgstr "Toʻlovlar va xarajatlar sanasi boʻyicha. Taʼsischilar mablagʻi, kreditlar va asosiy vositalar xaridi bu yerga kirmaydi — ular pul harakatida."
 
 #: pages/home/contracts/contract_detail.html
 msgid "По договору нет начислений."
@@ -1871,6 +2056,10 @@ msgstr "Hozircha hech kim yoʻq."
 msgid "Показаны %(start)s–%(end)s из %(total)s"
 msgstr "%(total)s tadan %(start)s–%(end)s ko'rsatilgan"
 
+#: pages/home/reports/dashboard.html users/views.py
+msgid "Показатель"
+msgstr "Ko'rsatkich"
+
 #: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/_header.html
 msgid "Показать"
 msgstr "Koʻrsatish"
@@ -1923,12 +2112,16 @@ msgstr "Oxirgi toʻlov"
 msgid "Поставщик"
 msgstr "Yetkazib beruvchi"
 
+#: pages/home/reports/dashboard.html users/views.py
+msgid "Поступило денег"
+msgstr "Pul tushdi"
+
 #: users/views.py
 #, python-format
 msgid "Поступление привязано к договору № %(number)s."
 msgstr "Tushum № %(number)s shartnomaga bogʻlandi."
 
-#: pages/home/import/workbook_import.html users/views.py
+#: pages/home/import/workbook_import.html pages/home/reports/money_pivots.html users/reports.py users/views.py
 msgid "Поступления"
 msgstr "Tushumlar"
 
@@ -1936,6 +2129,10 @@ msgstr "Tushumlar"
 #, python-format
 msgid "Поступления за %(month)s"
 msgstr "%(month)s tushumlari"
+
+#: pages/home/reports/_header.html pages/home/reports/money_pivots.html
+msgid "Поступления и расходы"
+msgstr "Tushum va xarajatlar"
 
 #: pages/home/contracts/contract_detail.html
 msgid "Предстоит"
@@ -1957,11 +2154,11 @@ msgstr "Kitobdan yuklashda shartnomada xato bo'lgan — tekshiring:"
 msgid "При загрузке из книги в договоре была ошибка:"
 msgstr "Kitobdan yuklashda shartnomada xato bo'lgan:"
 
-#: pages/home/reports/matrix.html users/reports.py
+#: pages/home/reports/dashboard.html pages/home/reports/matrix.html users/reports.py users/views.py
 msgid "Прибыль"
 msgstr "Foyda"
 
-#: pages/home/import/workbook_import.html pages/home/reports/_header.html users/views.py
+#: pages/home/reports/dashboard.html users/views.py
 msgid "Прибыль и убытки"
 msgstr "Foyda va zarar"
 
@@ -1994,13 +2191,17 @@ msgstr "Qabul qilgan"
 msgid "Приняты на платформе и ещё не проведены в 1С:"
 msgstr "Platformada qabul qilingan, hali 1C da oʻtkazilmagan:"
 
-#: users/models.py
+#: pages/home/reports/dashboard.html users/models.py users/views.py
 msgid "Приход"
 msgstr "Kirim"
 
 #: pages/home/transactions/transaction_list.html users/models.py
 msgid "Приход / Инвестиция"
 msgstr "Kirim / Investitsiya"
+
+#: pages/home/reports/dashboard.html
+msgid "Приход и расход здесь — со всеми переводами между своими счетами."
+msgstr "Bu yerda tushum va xarajat — o'z hisoblari orasidagi barcha o'tkazmalar bilan."
 
 #: users/excel_import.py
 msgid "Приход или Расход. Можно не заполнять, если указана статья."
@@ -2083,9 +2284,21 @@ msgstr "Muddati o'tgan oylar: avval ko'pi"
 msgid "Профиль - SchoolPR"
 msgstr "Profil - SchoolPR"
 
+#: users/reports.py
+msgid "Проценты по кредиту"
+msgstr "Kredit foizlari"
+
+#: users/reports.py
+msgid "Прочие поступления"
+msgstr "Boshqa tushumlar"
+
 #: integrations/models.py
 msgid "Прочие приходы и расходы"
 msgstr "Boshqa kirim va chiqimlar"
+
+#: users/reports.py
+msgid "Прочие расходы"
+msgstr "Boshqa xarajatlar"
 
 #: pages/home/partials/finance_overview.html
 msgid "Прошлый месяц:"
@@ -2136,7 +2349,7 @@ msgstr "Ajratish"
 msgid "Разобрать поступление: %(amount)s от %(date)s"
 msgstr "Tushumni ajratish: %(amount)s, %(date)s"
 
-#: users/models.py
+#: pages/home/reports/dashboard.html users/models.py users/views.py
 msgid "Расход"
 msgstr "Chiqim"
 
@@ -2148,7 +2361,7 @@ msgstr "Chiqim / Kutilmagan xarajatlar"
 msgid "Расход / Траты"
 msgstr "Chiqim / Xarajatlar"
 
-#: pages/home/import/workbook_import.html pages/home/reports/matrix.html users/reports.py users/views.py
+#: pages/home/import/workbook_import.html pages/home/reports/dashboard.html pages/home/reports/matrix.html pages/home/reports/money_pivots.html users/reports.py users/views.py
 msgid "Расходы"
 msgstr "Xarajatlar"
 
@@ -2156,6 +2369,10 @@ msgstr "Xarajatlar"
 #, python-format
 msgid "Расходы за %(month)s"
 msgstr "%(month)s xarajatlari"
+
+#: pages/home/reports/dashboard.html users/views.py
+msgid "Расходы по статьям"
+msgstr "Moddalar bo'yicha xarajatlar"
 
 #: users/forms.py
 msgid "Расходы по этой статье считаются зарплатой вместе с выплатами сотрудникам."
@@ -2165,7 +2382,7 @@ msgstr "Bu modda boʻyicha xarajatlar xodimlarga toʻlovlar bilan birga ish haqi
 msgid "Расчётный счёт"
 msgstr "Hisob raqami"
 
-#: pages/home/reports/_header.html pages/home/reports/founders.html
+#: pages/home/reports/_header.html pages/home/reports/dashboard.html pages/home/reports/founders.html
 msgid "Расчёты с учредителями"
 msgstr "Taʼsischilar bilan hisob-kitob"
 
@@ -2213,7 +2430,7 @@ msgstr "Oy natijasi"
 msgid "Родители"
 msgstr "Ota-onalar"
 
-#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/views.py
+#: pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/debts_month.html pages/home/reports/payment_control.html users/views.py
 msgid "Родитель"
 msgstr "Ota-ona"
 
@@ -2257,7 +2474,7 @@ msgstr "Kitobdagi xatolar bilan"
 msgid "С этой даты считается остаток. Движения раньше неё не учитываются."
 msgstr "Qoldiq shu sanadan hisoblanadi. Undan oldingi harakatlar hisobga olinmaydi."
 
-#: pages/home/reports/founders.html users/views.py
+#: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Сальдо"
 msgstr "Saldo"
 
@@ -2268,6 +2485,14 @@ msgstr "Qidiruvni tozalash"
 #: pages/home/import/workbook_import.html
 msgid "Сверка с книгой"
 msgstr "Kitob bilan solishtirish"
+
+#: pages/home/reports/_header.html pages/home/reports/summary.html
+msgid "Свод"
+msgstr "Yig'ma"
+
+#: pages/home/reports/_header.html pages/home/reports/tariffs.html
+msgid "Свод по актуальным договорам"
+msgstr "Amaldagi shartnomalar yig'masi"
 
 #: integrations/models.py
 msgid "Связка договоров"
@@ -2349,6 +2574,10 @@ msgstr "Chegirma, %"
 msgid "Скидка, сум"
 msgstr "Chegirma, soʻm"
 
+#: pages/home/reports/tariffs.html
+msgid "Сколько действующих (не отменённых) договоров учебного года на каждую сумму в месяц."
+msgstr "Har bir oylik summa bo'yicha o'quv yilining amaldagi (bekor qilinmagan) shartnomalari soni."
+
 #: users/excel_import.py
 msgid "Сколько месяцев начисляется оплата, например 9 или 12"
 msgstr "Toʻlov necha oy hisoblanadi, masalan 9 yoki 12"
@@ -2374,7 +2603,7 @@ msgstr "Parolni almashtirish - SchoolPR"
 msgid "Сменить пароль"
 msgstr "Parolni almashtirish"
 
-#: pages/home/reports/payment_control.html
+#: pages/home/reports/debts_month.html pages/home/reports/payment_control.html pages/home/reports/summary.html pages/home/reports/tariffs.html
 msgid "Сначала добавьте учебный год."
 msgstr "Avval oʻquv yilini qoʻshing."
 
@@ -2476,6 +2705,10 @@ msgstr "Roʻyxatlar"
 msgid "Способ"
 msgstr "Usul"
 
+#: pages/home/reports/money_pivots.html
+msgid "Способ и статья"
+msgstr "Usul va modda"
+
 #: users/excel_import.py users/models.py
 msgid "Способ оплаты"
 msgstr "Toʻlov usuli"
@@ -2496,9 +2729,13 @@ msgstr "Muddat, oy"
 msgid "Старый формат .xls не поддерживается. Откройте файл в Excel и сохраните как «Книга Excel (.xlsx)»."
 msgstr "Eski .xls formati qoʻllab-quvvatlanmaydi. Faylni Excelda oching va «Excel kitobi (.xlsx)» sifatida saqlang."
 
-#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html users/views.py
+#: integrations/models.py pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/import/excel_import.html pages/home/integrations/integration.html pages/home/reports/payment_control.html users/views.py
 msgid "Статус"
 msgstr "Holat"
+
+#: pages/home/reports/summary.html
+msgid "Статус и класс"
+msgstr "Holat va sinf"
 
 #: pages/home/finance/_finance_nav.html users/models.py
 msgid "Статьи"
@@ -2508,7 +2745,7 @@ msgstr "Moddalar"
 msgid "Статьи приходов и расходов"
 msgstr "Kirim va chiqim moddalari"
 
-#: pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/reports/dashboard.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Статья"
 msgstr "Modda"
 
@@ -2524,7 +2761,7 @@ msgstr "Maʼlumotnomadagi modda, masalan: Ijara, Ish haqi, Taʼsischilar mablag�
 msgid "Статья определяет, куда операция попадёт в отчётах: в прибыль и убытки и в какой раздел денежного потока. Оплаты родителей и выплаты сотрудникам статей не требуют."
 msgstr "Modda operatsiya hisobotlarda qayerga tushishini belgilaydi: foyda va zararga hamda pul oqimining qaysi boʻlimiga. Ota-onalar toʻlovlari va xodimlarga toʻlovlar uchun modda kerak emas."
 
-#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html users/excel_import.py users/views.py
+#: pages/home/contracts/contract_list.html pages/home/debts/debt_list.html pages/home/payments/payment_list.html pages/home/reports/payment_control.html users/excel_import.py users/views.py
 msgid "Стоимость"
 msgstr "Narx"
 
@@ -2594,13 +2831,17 @@ msgstr "Xatoli qatorlar (%(count)s) — yuklanmaydi"
 msgid "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся."
 msgstr "Xatoli qatorlar saqlanmaydi. Ularni faylda tuzatib, qayta yuklash mumkin — yuklangan qatorlar ikkinchi marta qoʻshilmaydi."
 
-#: pages/home/contracts/contract_detail.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/reports/dashboard.html pages/home/reports/tariffs.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сумма"
 msgstr "Summa"
 
 #: pages/home/transactions/transaction_form.html
 msgid "Сумма (сум)"
 msgstr "Summa (soʻm)"
+
+#: pages/home/reports/tariffs.html users/views.py
+msgid "Сумма в месяц"
+msgstr "Oylik summa"
 
 #: users/workbook_import.py
 msgid "Сумма в месяц по действующим договорам"
@@ -2622,6 +2863,10 @@ msgstr "Qaytarish summasi"
 msgid "Сумма выплат (сум)"
 msgstr "Toʻlov summasi (soʻm)"
 
+#: users/views.py
+msgid "Сумма договоров"
+msgstr "Shartnomalar summasi"
+
 #: pages/home/debts/debt_list.html users/views.py
 msgid "Сумма долга"
 msgstr "Qarz summasi"
@@ -2638,6 +2883,10 @@ msgstr "Toʻlov summasi"
 msgid "Сумма оплаты должна быть больше нуля."
 msgstr "Toʻlov summasi noldan katta boʻlishi kerak."
 
+#: pages/home/reports/summary.html
+msgid "Сумма составленных договоров (в месяц)"
+msgstr "Tuzilgan shartnomalar summasi (oyiga)"
+
 #: users/models.py
 msgid "Счета"
 msgstr "Hisoblar"
@@ -2650,7 +2899,7 @@ msgstr "Hisoblar va qoldiqlar"
 msgid "Счетов пока нет."
 msgstr "Hozircha hisoblar yoʻq."
 
-#: pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/payouts/payout_form.html pages/home/reports/matrix.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/finance/account_list.html pages/home/finance/receipt_list.html pages/home/payouts/payout_form.html pages/home/reports/dashboard.html pages/home/reports/matrix.html pages/home/transactions/transaction_form.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Счёт"
 msgstr "Hisob"
 
@@ -2674,7 +2923,7 @@ msgstr "Bunday tranzaksiya allaqachon bor — takrorlanmasligi uchun qator oʻtk
 msgid "Таких поступлений нет."
 msgstr "Bunday tushumlar yoʻq."
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/staff_list.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/payouts/staff_list.html pages/home/reports/debts_month.html pages/home/reports/payment_control.html pages/home/users/user_list.html users/excel_import.py users/models.py users/views.py
 msgid "Телефон"
 msgstr "Telefon"
 
@@ -2843,7 +3092,7 @@ msgstr "Taʼsischilar va kontragentlar"
 msgid "Учредители, банк, поставщики. Вложения и выплаты учредителям отмечаются в транзакциях — по ним строятся расчёты с учредителями."
 msgstr "Taʼsischilar, bank, yetkazib beruvchilar. Taʼsischilar mablagʻi va ularga toʻlovlar tranzaksiyalarda belgilanadi — shular asosida hisob-kitob tuziladi."
 
-#: pages/home/reports/founders.html users/views.py
+#: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Учредитель"
 msgstr "Taʼsischi"
 
@@ -2912,6 +3161,10 @@ msgstr "Fevral"
 msgid "Финансовая деятельность"
 msgstr "Moliyaviy faoliyat"
 
+#: pages/home/reports/dashboard.html
+msgid "Финансовый денежный поток"
+msgstr "Moliyaviy pul oqimi"
+
 #: pages/home/finance/_finance_nav.html
 msgid "Финансы"
 msgstr "Moliya"
@@ -2933,7 +3186,11 @@ msgstr "Qisman"
 msgid "Число в сумах, например 1500000"
 msgstr "Soʻmdagi son, masalan 1500000"
 
-#: users/reports.py
+#: pages/home/reports/dashboard.html users/reports.py
+msgid "Чистая прибыль"
+msgstr "Sof foyda"
+
+#: pages/home/reports/dashboard.html users/reports.py
 msgid "Чистый денежный поток"
 msgstr "Sof pul oqimi"
 
@@ -3014,6 +3271,10 @@ msgstr "hisoblashsiz"
 msgid "будут загружены"
 msgstr "yuklanadi"
 
+#: pages/home/reports/summary.html
+msgid "весь год"
+msgstr "butun yil"
+
 #: pages/home/integrations/integration.html
 msgid "включено"
 msgstr "yoqilgan"
@@ -3060,10 +3321,6 @@ msgstr "«%(number)s» shartnomasi topilmadi"
 #, python-format
 msgid "договор № %(number)s не загружается или не найден"
 msgstr "№ %(number)s shartnoma yuklanmaydi yoki topilmadi"
-
-#: pages/home/reports/payment_control.html
-msgid "долг на этот месяц"
-msgstr "shu oy uchun qarz"
 
 #: pages/home/payouts/staff_list.html
 msgid "доступ"
@@ -3210,7 +3467,7 @@ msgstr "operatsiyalar"
 msgid "оплата за обучение"
 msgstr "oʻqish uchun toʻlov"
 
-#: pages/home/reports/payment_control.html users/views.py
+#: users/views.py
 msgid "оплачено"
 msgstr "toʻlangan"
 
@@ -3226,7 +3483,7 @@ msgstr "bo'sh qoldirildi"
 msgid "остаток"
 msgstr "qoldiq"
 
-#: pages/home/debts/debt_list.html pages/home/reports/payment_control.html
+#: pages/home/debts/debt_list.html pages/home/reports/debts_month.html
 msgid "отменён"
 msgstr "bekor qilingan"
 

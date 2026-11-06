@@ -16,7 +16,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.utils.translation import gettext as _, gettext_lazy
 from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
     EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
@@ -1456,6 +1456,7 @@ class ReportMixin(LoginRequiredMixin, UserPassesTestMixin):
             'report': self.report, 'years': AcademicYear.objects.all(), 'year': self.year, 'school': self.school,
             'schools': School.objects.order_by('name') if self.request.user.role in ('OWNER', 'INVESTOR') else [],
             'query': self.request.GET.urlencode(),
+            'nav_query': '&'.join(f'{key}={obj.pk}' for key, obj in (('year', self.year), ('school', self.school)) if obj),
         })
         return context
 
@@ -1488,40 +1489,137 @@ class ReportIndexView(LoginRequiredMixin, View):
         if request.user.role == 'EMPLOYEE':
             return redirect('report_payment_control')
         if request.user.role in ('OWNER', 'DIRECTOR', 'INVESTOR'):
-            return redirect('report_pl')
+            return redirect('report_dashboard')
         raise Http404
 
 
-class ProfitLossReportView(ReportMixin, TemplateView):
-    template_name = 'home/reports/matrix.html'
-    report = 'pl'
+class OldReportRedirectView(LoginRequiredMixin, View):
+    """Старые адреса «Прибыль и убытки» / «Движение денег» — теперь это блоки дашборда."""
+    def get(self, request):
+        query = request.GET.urlencode()
+        return redirect(reverse('report_dashboard') + (f'?{query}' if query else ''))
+
+
+def _rows_csv(rows, labels):
+    """Строки Row → строки CSV: подпись, значения по месяцам, итог."""
+    result = []
+    for r in rows:
+        result.append([r.label] + (r.values + [r.total] if r.style != 'section' else []))
+    return [''] + list(labels) + [_('Итого')], result
+
+
+class DashboardReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/dashboard.html'
+    report = 'dashboard'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['data'] = reports.profit_and_loss(reports.financial_months(self.year), self.school)
-        context['title'] = _('Прибыль и убытки')
-        context['note'] = _('По дате оплат и расходов. Вложения учредителей, кредиты и покупка основных средств сюда не входят — они в движении денег.')
-        context['month_labels'] = [format_russian_month(m) for m in context['data']['months']]
+        investor = self.request.user if self.request.user.role == 'INVESTOR' else None
+        context['data'] = reports.dashboard(self.year, self.school, investor)
         return context
 
     def export(self, context):
-        return self.matrix_csv('pribyl_i_ubytki', context['data'])
+        data = context['data']
+        rows = [[_('Прибыль и убытки')]] + [[r['label'], r['amount']] for r in data['pl']]
+        rows += [[], [_('Месяц'), _('Доход'), _('Расходы'), _('Прибыль'), _('Поступило денег')]]
+        rows += [[label, m['income'], m['expense'], m['profit'], m['inflow']] for label, m in zip(data['labels'], data['monthly'])]
+        rows += [[], [_('Доходы по источникам')]] + [[r['label'], r['amount']] for r in data['sources']]
+        rows += [[], [_('Расходы по статьям')]] + [[r['label'], r['amount']] for r in data['articles']]
+        rows += [[], [_('Движение денег')]] + [[r['label'], r['amount']] for r in data['cash_flow']]
+        rows += [[], [_('Банк и касса'), _('На начало'), _('Приход'), _('Расход'), _('На конец')]]
+        rows += [[r['label'], r['opening'], r['in'], r['out'], r['closing']] for r in data['bank_cash']['rows']]
+        return self.csv_response('dashboard', [_('Показатель'), _('Сумма')], rows)
 
 
-class CashFlowReportView(ReportMixin, TemplateView):
-    template_name = 'home/reports/matrix.html'
-    report = 'cashflow'
+class ContractSummaryReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/summary.html'
+    report = 'summary'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['data'] = reports.cash_flow(reports.financial_months(self.year), self.school)
-        context['title'] = _('Движение денег')
-        context['note'] = _('Все поступления и выплаты по разделам. Переводы между своими счетами не меняют общий остаток.')
-        context['month_labels'] = [format_russian_month(m) for m in context['data']['months']]
+        context['data'] = reports.contract_summary(self.year, self.school, self.request.GET.get('month', '')) if self.year else None
         return context
 
     def export(self, context):
-        return self.matrix_csv('dvizhenie_deneg', context['data'])
+        data = context['data']
+        if data is None:
+            raise Http404
+        headers, rows = _rows_csv(data['count'], data['labels'])
+        _h, sums = _rows_csv(data['sum'], data['labels'])
+        return self.csv_response('svod_dogovorov', headers, [[_('Количество договоров')]] + rows + [[], [_('Сумма договоров')]] + sums)
+
+
+class CashByMethodReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/cash_methods.html'
+    report = 'cash_methods'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data'] = reports.cash_by_method(self.year, self.school)
+        return context
+
+    def export(self, context):
+        headers, rows = _rows_csv(context['data']['rows'], context['data']['labels'])
+        return self.csv_response('dvizhenie_ds', headers, rows)
+
+
+class DebtsMonthReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/debts_month.html'
+    report = 'debts'
+    roles = ('OWNER', 'DIRECTOR', 'EMPLOYEE', 'INVESTOR')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data'] = reports.debts_for_month(self.year, self.school, self.request.GET.get('month', '')) if self.year else None
+        return context
+
+    def export(self, context):
+        data = context['data']
+        if data is None:
+            raise Http404
+        personal = self.request.user.can_view_personal_data
+        headers = [_('№ договора'), _('Ученик')] + ([_('Родитель'), _('Телефон')] if personal else []) + \
+            [_('Платёж в месяц'), _('Начислено'), _('Оплачено'), _('Задолженность')]
+        rows = []
+        for r in data['rows']:
+            c = r['contract']
+            rows.append([c.number, c.student_full_name] + ([c.parents_full_name, c.phone_number] if personal else []) +
+                        [c.total_amount, r['accrued'], r['paid'], r['debt']])
+        return self.csv_response('zadolzhennost', headers, rows)
+
+
+class TariffReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/tariffs.html'
+    report = 'tariffs'
+    roles = ('OWNER', 'DIRECTOR', 'EMPLOYEE', 'INVESTOR')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data'] = reports.active_by_tariff(self.year, self.school) if self.year else None
+        return context
+
+    def export(self, context):
+        data = context['data']
+        if data is None:
+            raise Http404
+        rows = [[r['amount'], r['count'], r['sum']] for r in data['rows']] + [[_('Итого'), data['count'], data['sum']]]
+        return self.csv_response('svod_po_tarifam', [_('Сумма в месяц'), _('Договоров'), _('Сумма')], rows)
+
+
+class MoneyPivotReportView(ReportMixin, TemplateView):
+    template_name = 'home/reports/money_pivots.html'
+    report = 'pivots'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data'] = reports.money_pivots(self.year, self.school)
+        return context
+
+    def export(self, context):
+        data = context['data']
+        headers, income = _rows_csv(data['income'], data['labels'])
+        _h, expense = _rows_csv(data['expense'], data['labels'])
+        return self.csv_response('postupleniya_i_rashody', headers, [[_('Поступления')]] + income + [[], [_('Расходы')]] + expense)
 
 
 class PaymentControlReportView(ReportMixin, TemplateView):
