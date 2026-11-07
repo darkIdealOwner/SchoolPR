@@ -60,7 +60,7 @@
     <form method="get" style="display: flex; gap: 0.5rem;">
         <input type="month" name="month" value="{{ month_str }}" class="input-field" style="margin: 0; width: auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 0.5rem; padding: 0.5rem;">
         <button type="submit" class="btn-action">{% translate "Показать" %}</button>
-        <a href="{% querystring month=month_str export="csv" page=None %}" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
+        <a href="{% querystring month=month_str export="xlsx" page=None %}" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
         {% if user.role != 'INVESTOR' %}<a href="{% url 'receipt_list' %}" class="btn-excel" title="{% translate "Деньги без номера договора" %}">{% translate "Нераспознанные" %}{% if open_receipts %} ({{ open_receipts }}){% endif %}</a>{% endif %}
         {% if user.role != 'INVESTOR' %}<a href="{% url 'excel_import' 'payments' %}" class="btn-excel" title="{% translate "Загрузить из таблицы Excel" %}">⬆ {% translate "Из Excel" %}</a>{% endif %}
     </form>

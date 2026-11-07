@@ -11,6 +11,10 @@ msgstr ""
 msgid " Правки, сделанные на платформе вручную (%(count)s), не меняются."
 msgstr " 플랫폼에서 직접 입력한 수정(%(count)s)은 바뀌지 않습니다."
 
+#: users/views.py
+msgid "% от дохода"
+msgstr "수입 대비 %"
+
 #: pages/home/reports/dashboard.html
 msgid "%% от дохода"
 msgstr "수입 대비 %%"
@@ -316,7 +320,7 @@ msgstr "학교가 급여를 지급하는 모든 사람. 플랫폼에 로그인�
 msgid "Всего"
 msgstr "전체"
 
-#: pages/home/reports/dashboard.html
+#: pages/home/reports/dashboard.html users/views.py
 msgid "Всего выплачено"
 msgstr "총 지출"
 
@@ -325,11 +329,11 @@ msgstr "총 지출"
 msgid "Всего на %(day)s"
 msgstr "%(day)s 합계"
 
-#: pages/home/reports/dashboard.html
+#: pages/home/reports/dashboard.html users/views.py
 msgid "Всего поступило"
 msgstr "총 수입"
 
-#: pages/home/partials/finance_overview.html pages/home/reports/_header.html
+#: pages/home/partials/finance_overview.html pages/home/reports/_header.html users/views.py
 msgid "Вся сеть"
 msgstr "전체 네트워크"
 
@@ -409,7 +413,7 @@ msgstr "급여"
 msgid "Выплаты не зафиксированы."
 msgstr "기록된 급여가 없습니다."
 
-#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html users/excel_import.py users/models.py
+#: integrations/models.py pages/home/director.html pages/home/investor.html pages/home/owner.html pages/home/payouts/payout_list.html pages/home/payouts/staff_list.html users/excel_import.py users/models.py users/views.py
 msgid "Выплаты сотрудникам"
 msgstr "직원 급여"
 
@@ -550,7 +554,7 @@ msgstr "계약 체결일. 예: 01.06.2026"
 msgid "Дата сторно"
 msgstr "취소일"
 
-#: pages/home/import/workbook_import.html pages/home/reports/_header.html pages/home/reports/dashboard.html
+#: pages/home/import/workbook_import.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/views.py
 msgid "Дашборд"
 msgstr "대시보드"
 
@@ -558,15 +562,11 @@ msgstr "대시보드"
 msgid "Движение ДС"
 msgstr "자금 흐름"
 
-#: users/views.py
-msgid "Движение денег"
-msgstr "현금 흐름"
-
-#: pages/home/reports/dashboard.html
+#: pages/home/reports/dashboard.html users/views.py
 msgid "Движение денег по разделам"
 msgstr "구역별 현금 흐름"
 
-#: pages/home/reports/cash_methods.html
+#: pages/home/reports/cash_methods.html users/views.py
 msgid "Движение денежных средств"
 msgstr "자금 흐름"
 
@@ -810,7 +810,7 @@ msgstr "수입"
 msgid "Доходы"
 msgstr "수입"
 
-#: pages/home/reports/dashboard.html
+#: pages/home/reports/dashboard.html users/views.py
 msgid "Доходы и расходы по месяцам"
 msgstr "월별 수입 및 지출"
 
@@ -954,7 +954,7 @@ msgstr "빨간 표시와 함께 불러옴 (%(count)s)"
 msgid "Задолженностей не найдено. Прекрасно!"
 msgstr "미납이 없습니다. 좋습니다!"
 
-#: pages/home/debts/debt_list.html pages/home/director.html pages/home/employee.html pages/home/investor.html pages/home/owner.html
+#: pages/home/debts/debt_list.html pages/home/director.html pages/home/employee.html pages/home/investor.html pages/home/owner.html users/views.py
 msgid "Задолженности"
 msgstr "미납"
 
@@ -966,7 +966,7 @@ msgstr "미납 - SchoolPR"
 msgid "Задолженность"
 msgstr "미납액"
 
-#: pages/home/reports/_header.html pages/home/reports/debts_month.html
+#: pages/home/reports/_header.html pages/home/reports/debts_month.html users/views.py
 msgid "Задолженность за учёбу"
 msgstr "수업료 미납"
 
@@ -1339,7 +1339,7 @@ msgstr "거래처"
 msgid "Контрагенты"
 msgstr "거래처"
 
-#: pages/home/reports/_header.html pages/home/reports/payment_control.html
+#: pages/home/reports/_header.html pages/home/reports/payment_control.html users/views.py
 msgid "Контроль оплаты"
 msgstr "납부 관리"
 
@@ -1824,7 +1824,7 @@ msgstr "납부 - SchoolPR"
 msgid "Оплаты за %(month)s"
 msgstr "%(month)s 납부"
 
-#: pages/home/payments/payment_list.html
+#: pages/home/payments/payment_list.html users/views.py
 msgid "Оплаты за месяц"
 msgstr "월별 납부"
 
@@ -2215,7 +2215,7 @@ msgstr "입금"
 msgid "Поступления за %(month)s"
 msgstr "%(month)s 입금"
 
-#: pages/home/reports/_header.html pages/home/reports/money_pivots.html
+#: pages/home/reports/_header.html pages/home/reports/money_pivots.html users/views.py
 msgid "Поступления и расходы"
 msgstr "수입 및 지출"
 
@@ -2479,7 +2479,7 @@ msgstr "유형별 학교 비용"
 msgid "Расчётный счёт"
 msgstr "은행 계좌"
 
-#: pages/home/reports/_header.html pages/home/reports/dashboard.html pages/home/reports/founders.html
+#: pages/home/reports/_header.html pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Расчёты с учредителями"
 msgstr "설립자 정산"
 
@@ -2583,11 +2583,11 @@ msgstr "검색 초기화"
 msgid "Сверка с книгой"
 msgstr "통합 문서와 대조"
 
-#: pages/home/reports/_header.html pages/home/reports/summary.html
+#: pages/home/reports/_header.html pages/home/reports/summary.html users/views.py
 msgid "Свод"
 msgstr "요약"
 
-#: pages/home/reports/_header.html pages/home/reports/tariffs.html
+#: pages/home/reports/_header.html pages/home/reports/tariffs.html users/views.py
 msgid "Свод по актуальным договорам"
 msgstr "유효 계약 요약"
 
@@ -3097,7 +3097,7 @@ msgstr "거래 내역이 없습니다."
 msgid "Транзакции школ"
 msgstr "학교 거래"
 
-#: pages/home/director.html pages/home/transactions/transaction_list.html
+#: pages/home/director.html pages/home/transactions/transaction_list.html users/views.py
 msgid "Транзакции школы"
 msgstr "학교 거래"
 
@@ -3432,11 +3432,16 @@ msgstr "수동"
 msgid "всё верно — снять пометку"
 msgstr "모두 맞음 — 표시 해제"
 
+#: users/views.py
+#, python-format
+msgid "выгружено %(date)s"
+msgstr "%(date)s 내보냄"
+
 #: pages/home/integrations/integration.html
 msgid "выключено"
 msgstr "사용 안 함"
 
-#: pages/home/finance/category_list.html users/excel_import.py users/views.py
+#: pages/home/finance/category_list.html users/excel_export.py users/excel_import.py users/views.py
 msgid "да"
 msgstr "예"
 
@@ -3466,6 +3471,11 @@ msgstr "계약 “%(number)s”을(를) 찾을 수 없습니다"
 #, python-format
 msgid "договор № %(number)s не загружается или не найден"
 msgstr "계약 번호 %(number)s을(를) 가져오지 못했거나 찾을 수 없습니다"
+
+#: users/views.py
+#, python-format
+msgid "долги за %(month)s"
+msgstr "%(month)s 미납"
 
 #: pages/home/payouts/staff_list.html
 msgid "доступ"
@@ -3584,7 +3594,7 @@ msgstr "없음"
 msgid "несколько сотрудников с именем «%(name)s» — укажите телефон"
 msgstr "“%(name)s” 이름의 직원이 여러 명입니다. 전화번호를 입력하세요"
 
-#: pages/home/finance/category_list.html users/views.py
+#: pages/home/finance/category_list.html users/excel_export.py users/views.py
 msgid "нет"
 msgstr "아니요"
 
@@ -3607,6 +3617,10 @@ msgstr "“%(value)s” 대신 정수를 입력하세요"
 #, python-format
 msgid "обучение с %(month)s"
 msgstr "%(month)s부터 수업"
+
+#: users/views.py
+msgid "общий долг на сегодня"
+msgstr "오늘 기준 총 미납"
 
 #: pages/home/reports/founders.html
 msgid "операции"
@@ -3760,6 +3774,11 @@ msgstr "이미 플랫폼에 있음"
 #: users/excel_import.py
 msgid "укажите тип или статью"
 msgstr "종류나 항목을 입력하세요"
+
+#: users/views.py
+#, python-format
+msgid "учебный год %(name)s"
+msgstr "%(name)s 학년도"
 
 #: users/excel_import.py
 #, python-format

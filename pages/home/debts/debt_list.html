@@ -95,7 +95,7 @@
     </div>
     
     <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-        <a href="{% querystring mode=view_mode month=month_str export="csv" page=None %}" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
+        <a href="{% querystring mode=view_mode month=month_str export="xlsx" page=None %}" class="btn-excel" title="{% translate "Скачать таблицу для Excel" %}">⬇ Excel</a>
         <div class="mode-tabs">
             <a href="?mode=general" class="mode-tab {% if view_mode == 'general' %}active{% endif %}">{% translate "Общий долг" %}</a>
             <a href="?mode=monthly&month={{ month_str }}" class="mode-tab {% if view_mode == 'monthly' %}active{% endif %}">{% translate "По месяцам" %}</a>

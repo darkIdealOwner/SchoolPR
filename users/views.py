@@ -24,6 +24,7 @@ from .forms import (
     WorkbookUploadForm, MonthPriceForm,
 )
 from . import excel_import, reports, workbook_import
+from .excel_export import Line, Percent, xlsx_response
 from .templatetags.money import money as format_money
 from .models import Account, Category, Counterparty, MonthPrice, Transfer, UnidentifiedReceipt, Staff
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
@@ -216,17 +217,32 @@ def _csv_value(value):
     return str(value)
 
 
+def export_subtitle(user, *parts):
+    """Подзаголовок выгрузки: школа (или вся сеть), уточнения отчёта и дата выгрузки."""
+    school = user.school.name if user.role in ('DIRECTOR', 'EMPLOYEE') and user.school else _('Вся сеть')
+    stamp = _('выгружено %(date)s') % {'date': timezone.localtime().strftime('%d.%m.%Y %H:%M')}
+    return ' · '.join(str(p) for p in (school, *parts, stamp) if p)
+
+
 class CsvExportMixin:
-    """?export=csv отдаёт таблицу файлом, который открывается в Excel (UTF-8 с BOM, разделитель «;»)."""
+    """?export=xlsx — оформленный файл Excel, ?export=csv — простая таблица (UTF-8 с BOM, разделитель «;»)."""
     export_filename = 'export'
+    export_title = ''
 
     def get_export_rows(self, context):
         raise NotImplementedError
 
+    def get_export_subtitle(self, context):
+        return export_subtitle(self.request.user)
+
     def render_to_response(self, context, **response_kwargs):
-        if self.request.GET.get('export') != 'csv':
+        kind = self.request.GET.get('export')
+        if kind not in ('csv', 'xlsx'):
             return super().render_to_response(context, **response_kwargs)
         headers, rows = self.get_export_rows(context)
+        if kind == 'xlsx':
+            return xlsx_response(self.export_filename, self.export_title, self.get_export_subtitle(context), headers, rows,
+                                 autofilter=True)
         response = HttpResponse(content_type='text/csv; charset=utf-8')
         stamp = timezone.localdate().strftime('%Y-%m-%d')
         response['Content-Disposition'] = f'attachment; filename="{self.export_filename}_{stamp}.csv"'
@@ -529,6 +545,7 @@ class ContractListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMi
         'total': (gettext_lazy('Сумма в месяц: меньше сначала'), ['total_amount', 'pk']),
     }
     export_filename = 'dogovory'
+    export_title = gettext_lazy('Договоры')
 
     def get_export_rows(self, context):
         personal = self.request.user.can_view_personal_data
@@ -761,6 +778,7 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
     template_name = 'home/payments/payment_list.html'
     context_object_name = 'contracts'
     export_filename = 'oplaty'
+    export_title = gettext_lazy('Оплаты за месяц')
     SORTS = {
         '': (gettext_lazy('Сначала новые договоры'), lambda c: (c.date, c.pk), True),
         'number': (gettext_lazy('№ по возрастанию'), lambda c: number_key(c.number), False),
@@ -770,6 +788,9 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         '-balance': (gettext_lazy('Остаток к оплате: больше сначала'), lambda c: c.this_month_balance, True),
         'balance': (gettext_lazy('Остаток к оплате: меньше сначала'), lambda c: c.this_month_balance, False),
     }
+
+    def get_export_subtitle(self, context):
+        return export_subtitle(self.request.user, format_russian_month(self.selected_month))
 
     def get_export_rows(self, context):
         headers = [_('Месяц'), _('№ договора'), _('Школа'), _('Ученик'), _('Начислено'), _('Оплачено'), _('Остаток')]
@@ -815,6 +836,7 @@ class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin,
     template_name = 'home/debts/debt_list.html'
     context_object_name = 'contracts'
     export_filename = 'dolgi'
+    export_title = gettext_lazy('Задолженности')
     SORTS = {
         '': (gettext_lazy('Долг: больше сначала'), lambda c: c.total_debt, True),
         'debt': (gettext_lazy('Долг: меньше сначала'), lambda c: c.total_debt, False),
@@ -824,6 +846,11 @@ class DebtListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMixin,
         'student': (gettext_lazy('ФИО ученика: А → Я'), lambda c: c.student_full_name.lower(), False),
         '-student': (gettext_lazy('ФИО ученика: Я → А'), lambda c: c.student_full_name.lower(), True),
     }
+
+    def get_export_subtitle(self, context):
+        if context['view_mode'] == 'general':
+            return export_subtitle(self.request.user, _('общий долг на сегодня'))
+        return export_subtitle(self.request.user, _('долги за %(month)s') % {'month': context['target_month_label']})
 
     def get_export_rows(self, context):
         personal = self.request.user.can_view_personal_data
@@ -944,6 +971,7 @@ class EmployeePayoutListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin,
     template_name = 'home/payouts/payout_list.html'
     context_object_name = 'payouts_list'
     export_filename = 'vyplaty_sotrudnikam'
+    export_title = gettext_lazy('Выплаты сотрудникам')
 
     def get_export_rows(self, context):
         headers = [_('Дата выплаты'), _('За месяц'), _('Сотрудник'), _('Школа'), _('Сумма'), _('Примечание'), _('Сторно'), _('Причина сторно')]
@@ -1040,6 +1068,7 @@ class TransactionListView(LoginRequiredMixin, OwnerOrDirectorOrInvestorMixin, Cs
     template_name = 'home/transactions/transaction_list.html'
     context_object_name = 'transactions_list'
     export_filename = 'tranzakcii'
+    export_title = gettext_lazy('Транзакции школы')
 
     def get_export_rows(self, context):
         headers = [_('Дата'), _('Школа'), _('Тип'), _('Статья'), _('Счёт'), _('Контрагент'), _('Сумма'), _('Примечание'),
@@ -1530,11 +1559,25 @@ class ReportMixin(LoginRequiredMixin, UserPassesTestMixin):
     def get(self, request, *args, **kwargs):
         self.get_filters()
         context = self.get_context_data(**kwargs)
-        if request.GET.get('export') == 'csv':
+        self.context_for_export = context
+        if request.GET.get('export') in ('csv', 'xlsx'):
             return self.export(context)
         return self.render_to_response(context)
 
+    def export_subtitle(self, context):
+        school = self.school.name if self.school else _('Вся сеть')
+        year = (_('учебный год %(name)s') % {'name': self.year.name}) if self.year and self.report != 'founders' else ''
+        month = ''
+        data = context.get('data') or {}
+        if isinstance(data, dict) and data.get('month') and data.get('month_options'):
+            month = dict(data['month_options']).get(data['month'], '')
+        stamp = _('выгружено %(date)s') % {'date': timezone.localtime().strftime('%d.%m.%Y %H:%M')}
+        return ' · '.join(str(p) for p in (school, year, month, stamp) if p)
+
     def csv_response(self, filename, headers, rows):
+        """Выгрузка отчёта: оформленный .xlsx (кнопка на странице) или простой CSV (?export=csv)."""
+        if self.request.GET.get('export') == 'xlsx':
+            return xlsx_response(filename, self.export_title, self.export_subtitle(self.context_for_export), headers, rows)
         response = HttpResponse(content_type='text/csv; charset=utf-8')
         stamp = timezone.localdate().strftime('%Y-%m-%d')
         response['Content-Disposition'] = f'attachment; filename="{filename}_{stamp}.csv"'
@@ -1568,14 +1611,15 @@ class OldReportRedirectView(LoginRequiredMixin, View):
 
 
 def _rows_csv(rows, labels):
-    """Строки Row → строки CSV: подпись, значения по месяцам, итог."""
+    """Строки Row → строки выгрузки: подпись, значения по месяцам, итог (вид строки — как на странице)."""
     result = []
     for r in rows:
-        result.append([r.label] + (r.values + [r.total] if r.style != 'section' else []))
+        result.append(Line([r.label] + (r.values + [r.total] if r.style != 'section' else []), r.style))
     return [''] + list(labels) + [_('Итого')], result
 
 
 class DashboardReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Дашборд')
     template_name = 'home/reports/dashboard.html'
     report = 'dashboard'
 
@@ -1587,18 +1631,31 @@ class DashboardReportView(ReportMixin, TemplateView):
 
     def export(self, context):
         data = context['data']
-        rows = [[_('Прибыль и убытки')]] + [[r['label'], r['amount']] for r in data['pl']]
-        rows += [[], [_('Месяц'), _('Доход'), _('Расходы'), _('Прибыль'), _('Поступило денег')]]
-        rows += [[label, m['income'], m['expense'], m['profit'], m['inflow']] for label, m in zip(data['labels'], data['monthly'])]
-        rows += [[], [_('Доходы по источникам')]] + [[r['label'], r['amount']] for r in data['sources']]
-        rows += [[], [_('Расходы по статьям')]] + [[r['label'], r['amount']] for r in data['articles']]
-        rows += [[], [_('Движение денег')]] + [[r['label'], r['amount']] for r in data['cash_flow']]
-        rows += [[], [_('Банк и касса'), _('На начало'), _('Приход'), _('Расход'), _('На конец')]]
+        section = lambda label: Line([label], 'section')
+        rows = [section(_('Прибыль и убытки'))]
+        rows += [Line([r['label'], r['amount'], (Percent(r['pct'] / 100) if r['pct'] is not None else None)], r['style']) for r in data['pl']]
+        rows += [[], section(_('Доходы и расходы по месяцам')),
+                 Line([_('Месяц'), _('Доход'), _('Расходы'), _('Прибыль'), _('Поступило денег')], 'subheader')]
+        rows += [[m['label'], m['income'], m['expense'], m['profit'], m['inflow']] for m in data['monthly']]
+        t = data['monthly_total']
+        rows += [Line([_('Итого'), t['income'], t['expense'], t['profit'], t['inflow']], 'total')]
+        rows += [[], section(_('Доходы по источникам'))] + [[r['label'], r['amount']] for r in data['sources']]
+        rows += [Line([_('Всего поступило'), data['sources_total']], 'total')]
+        rows += [[], section(_('Расходы по статьям'))] + [[r['label'], r['amount']] for r in data['articles']]
+        rows += [Line([_('Всего выплачено'), data['articles_total']], 'total')]
+        rows += [[], section(_('Движение денег по разделам'))]
+        rows += [Line([('− ' if r['negative'] else '') + str(r['label'])] + ([] if r['style'] == 'section' else [r['amount']]),
+                      'subheader' if r['style'] == 'section' else r['style']) for r in data['cash_flow']]
+        rows += [[], section(_('Банк и касса')),
+                 Line([_('Счёт'), _('На начало'), _('Приход'), _('Расход'), _('На конец')], 'subheader')]
         rows += [[r['label'], r['opening'], r['in'], r['out'], r['closing']] for r in data['bank_cash']['rows']]
-        return self.csv_response('dashboard', [_('Показатель'), _('Сумма')], rows)
+        b = data['bank_cash']['total']
+        rows += [Line([_('Итого'), b['opening'], b['in'], b['out'], b['closing']], 'total')]
+        return self.csv_response('dashboard', [_('Показатель'), _('Сумма'), _('% от дохода')], rows)
 
 
 class ContractSummaryReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Свод')
     template_name = 'home/reports/summary.html'
     report = 'summary'
 
@@ -1613,10 +1670,12 @@ class ContractSummaryReportView(ReportMixin, TemplateView):
             raise Http404
         headers, rows = _rows_csv(data['count'], data['labels'])
         _h, sums = _rows_csv(data['sum'], data['labels'])
-        return self.csv_response('svod_dogovorov', headers, [[_('Количество договоров')]] + rows + [[], [_('Сумма договоров')]] + sums)
+        return self.csv_response('svod_dogovorov', headers, [Line([_('Количество договоров')], 'section')] + rows + [[],
+                                 Line([_('Сумма договоров')], 'section')] + sums)
 
 
 class CashByMethodReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Движение денежных средств')
     template_name = 'home/reports/cash_methods.html'
     report = 'cash_methods'
 
@@ -1631,6 +1690,7 @@ class CashByMethodReportView(ReportMixin, TemplateView):
 
 
 class DebtsMonthReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Задолженность за учёбу')
     template_name = 'home/reports/debts_month.html'
     report = 'debts'
     roles = ('OWNER', 'DIRECTOR', 'EMPLOYEE', 'INVESTOR')
@@ -1656,6 +1716,7 @@ class DebtsMonthReportView(ReportMixin, TemplateView):
 
 
 class TariffReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Свод по актуальным договорам')
     template_name = 'home/reports/tariffs.html'
     report = 'tariffs'
     roles = ('OWNER', 'DIRECTOR', 'EMPLOYEE', 'INVESTOR')
@@ -1674,6 +1735,7 @@ class TariffReportView(ReportMixin, TemplateView):
 
 
 class MoneyPivotReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Поступления и расходы')
     template_name = 'home/reports/money_pivots.html'
     report = 'pivots'
 
@@ -1686,10 +1748,12 @@ class MoneyPivotReportView(ReportMixin, TemplateView):
         data = context['data']
         headers, income = _rows_csv(data['income'], data['labels'])
         _h, expense = _rows_csv(data['expense'], data['labels'])
-        return self.csv_response('postupleniya_i_rashody', headers, [[_('Поступления')]] + income + [[], [_('Расходы')]] + expense)
+        return self.csv_response('postupleniya_i_rashody', headers, [Line([_('Поступления')], 'section')] + income + [[],
+                                 Line([_('Расходы')], 'section')] + expense)
 
 
 class PaymentControlReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Контроль оплаты')
     template_name = 'home/reports/payment_control.html'
     report = 'control'
     roles = ('OWNER', 'DIRECTOR', 'EMPLOYEE', 'INVESTOR')
@@ -1721,6 +1785,7 @@ class PaymentControlReportView(ReportMixin, TemplateView):
 
 
 class FounderReportView(ReportMixin, TemplateView):
+    export_title = gettext_lazy('Расчёты с учредителями')
     template_name = 'home/reports/founders.html'
     report = 'founders'
     roles = ('OWNER', 'INVESTOR')

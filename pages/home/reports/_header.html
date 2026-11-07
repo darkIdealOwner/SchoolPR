@@ -44,7 +44,7 @@
     {% endif %}
     {% for key, value in request.GET.items %}{% if key != 'year' and key != 'school' and key != 'export' and key != 'status' and key != 'month' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
     <noscript><button type="submit" class="btn-excel">{% translate "Показать" %}</button></noscript>
-    <a href="?{% if query %}{{ query }}&{% endif %}export=csv" class="btn-excel rep-export">⬇ Excel</a>
+    <a href="?{% if query %}{{ query }}&{% endif %}export=xlsx" class="btn-excel rep-export">⬇ Excel</a>
 </form>
 
 <style>
