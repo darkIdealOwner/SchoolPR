@@ -74,6 +74,15 @@ class BuilderTests(SimpleTestCase):
         self.assertFalse(ws['A6'].font.b)
         self.assertTrue(ws['A7'].font.b and ws['B7'].font.b)
 
+    def test_grid_borders_for_print(self):
+        ws = self.build(['', 'Июль', 'Итого'], [['Поступления'], ['Касса', D(5)], [], ['Итого', D(5), D(5)]])
+        for ref in ('A4', 'C4', 'A5', 'C5', 'A6', 'B6', 'C6', 'A8', 'C8'):
+            border = ws[ref].border
+            self.assertTrue(all((border.left.style, border.right.style, border.top.style, border.bottom.style)), ref)
+        self.assertEqual(ws['B8'].border.top.style, 'medium')        # над «Итого» — черта толще
+        self.assertIsNone(ws['A7'].border.left.style)                # пустая строка-отступ без сетки
+        self.assertIsNone(ws['A2'].border.left.style)                # подзаголовок над таблицей без сетки
+
     def test_blank_row_is_empty(self):
         ws = self.build(['', 'Сумма'], [['А', D(1)], [], ['Б', D(2)]])
         self.assertIsNone(ws['A6'].value)

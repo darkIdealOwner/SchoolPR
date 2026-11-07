@@ -4,7 +4,7 @@
 - Line(..., style=...) задаёт его явно: section (заголовок раздела), subheader (подписи колонок внутри таблицы),
   subtotal, total, info;
 - иначе: строка из одной подписи — раздел, пустая — отступ, «Итого…» / «Всего…» / «Чистый…» в первой ячейке — итог.
-Суммы (Decimal) — целыми, с разделителями разрядов (тийины остаются в ячейке), минус красным, ноль — «–»;
+Вся таблица в тонкой сетке (для печати). Суммы (Decimal) — целыми, с разделителями разрядов (тийины остаются в ячейке), минус красным, ноль — «–»;
 целые числа (год, срок, количество) — как есть; даты — ДД.ММ.ГГГГ.
 """
 import io
@@ -90,7 +90,9 @@ def build_workbook(title, subtitle, headers, rows, autofilter=False):
     ws = wb.active
     ws.title = re.sub(r'[\[\]:*?/\\]', ' ', str(title))[:31] or 'SchoolPR'
     columns = max([len(headers)] + [len(r) for r in rows] + [1])
-    thin = Side(style='thin', color='BFBFBF')
+    thin = Side(style='thin', color='A6A6A6')
+    # Сетка на всю таблицу — чтобы при печати строки и колонки не сливались
+    grid = Border(left=thin, right=thin, top=thin, bottom=thin)
     widths = [0] * columns
 
     ws.cell(row=1, column=1, value=str(title)).font = Font(bold=True, size=14)
@@ -102,7 +104,7 @@ def build_workbook(title, subtitle, headers, rows, autofilter=False):
         cell.font = Font(bold=True, color='FFFFFF')
         cell.fill = PatternFill('solid', fgColor=HEADER_FILL)
         cell.alignment = Alignment(horizontal='center' if col > 1 else 'left', vertical='center', wrap_text=True)
-        cell.border = Border(bottom=thin)
+        cell.border = grid
         widths[col - 1] = max(widths[col - 1], min(len(str(label or '')) + 2, 24))
     ws.row_dimensions[header_row].height = 30
 
@@ -117,6 +119,7 @@ def build_workbook(title, subtitle, headers, rows, autofilter=False):
             cell = ws.cell(row=r, column=col, value=value if value != '' else None)
             if fmt:
                 cell.number_format = fmt
+            cell.border = grid
             if value != '' and not (style == 'section' and col == 1):
                 widths[col - 1] = max(widths[col - 1], _width(value, fmt))
             if style == 'section':
@@ -125,16 +128,14 @@ def build_workbook(title, subtitle, headers, rows, autofilter=False):
             elif style == 'subheader':
                 cell.font = Font(bold=True)
                 cell.fill = PatternFill('solid', fgColor=SUBHEADER_FILL)
-                cell.border = Border(bottom=thin)
                 if col > 1:
                     cell.alignment = Alignment(horizontal='center', wrap_text=True)
             elif style == 'total':
                 cell.font = Font(bold=True)
                 cell.fill = PatternFill('solid', fgColor=TOTAL_FILL)
-                cell.border = Border(top=Side(style='medium', color='808080'))
+                cell.border = Border(left=thin, right=thin, bottom=thin, top=Side(style='medium', color='595959'))
             elif style == 'subtotal':
                 cell.font = Font(bold=True)
-                cell.border = Border(top=thin)
             elif style == 'info':
                 cell.font = Font(italic=True, color='595959')
 
