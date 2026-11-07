@@ -169,6 +169,10 @@ msgstr "Amalda"
 msgid "Апрель"
 msgstr "Aprel"
 
+#: pages/home/partials/finance_overview.html
+msgid "Аренда и содержание"
+msgstr "Ijara va saqlash"
+
 #: users/models.py
 msgid "Банк"
 msgstr "Bank"
@@ -259,6 +263,10 @@ msgstr "Harakat turi"
 msgid "Владелец"
 msgstr "Egasi"
 
+#: pages/home/partials/finance_overview.html
+msgid "Вложения и кредиты"
+msgstr "Investitsiyalar va kreditlar"
+
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Вложено"
 msgstr "Kiritilgan"
@@ -304,7 +312,7 @@ msgstr "Barcha oʻquv yillari"
 msgid "Все, кому школа платит зарплату. Входить на платформу им не нужно; у сотрудников с доступом карточка создаётся сама."
 msgstr "Maktab ish haqi toʻlaydigan barcha xodimlar. Ularga platformaga kirish shart emas; kirish huquqi bor xodimlarning kartasi oʻzi yaratiladi."
 
-#: pages/home/integrations/integration.html pages/home/reports/cash_methods.html
+#: pages/home/integrations/integration.html pages/home/partials/finance_overview.html pages/home/reports/cash_methods.html
 msgid "Всего"
 msgstr "Jami"
 
@@ -409,6 +417,14 @@ msgstr "Xodimlarga toʻlovlar"
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "Xodimlarga toʻlovlar - SchoolPR"
 
+#: pages/home/partials/finance_overview.html
+msgid "Выплаты учредителям"
+msgstr "Ta'sischilarga to'lovlar"
+
+#: pages/home/partials/finance_overview.html
+msgid "Выплаты учредителям, погашение кредитов и покупка основных средств — не расходы школы: они на отдельном графике и не уменьшают прибыль."
+msgstr "Ta'sischilarga to'lovlar, kreditni qaytarish va asosiy vositalar xaridi maktab xarajati emas: ular alohida grafikda va foydani kamaytirmaydi."
+
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Выплачено"
 msgstr "Toʻlangan"
@@ -451,8 +467,20 @@ msgid "График оплат"
 msgstr "Toʻlov jadvali"
 
 #: pages/home/partials/finance_overview.html
-msgid "График: собрано, расходы и начислено по месяцам"
-msgstr "Grafik: oylar boʻyicha yigʻilgan, xarajatlar va hisoblangan"
+msgid "График: вложения, выплаты учредителям, кредиты и основные средства по месяцам"
+msgstr "Grafik: oylar bo'yicha investitsiyalar, ta'sischilarga to'lovlar, kreditlar va asosiy vositalar"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: прибыль и убыток по месяцам"
+msgstr "Grafik: oylar bo'yicha foyda va zarar"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: расходы школы по видам и месяцам"
+msgstr "Grafik: oylar bo'yicha maktab xarajatlari turlari"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: собрано оплат и начислено по месяцам"
+msgstr "Grafik: oylar bo'yicha yig'ilgan to'lovlar va hisoblangan"
 
 #: pages/home/contracts/contract_confirm_delete.html
 msgid "Да, удалить"
@@ -980,7 +1008,7 @@ msgstr "«%(sheet)s» varagʻini ikkinchi qatordan boshlab toʻldiring. Majburiy
 msgid "Запустил"
 msgstr "Ishga tushirgan"
 
-#: users/models.py users/reports.py
+#: pages/home/partials/finance_overview.html users/models.py users/reports.py
 msgid "Зарплата"
 msgstr "Ish haqi"
 
@@ -1456,7 +1484,7 @@ msgstr "Naqd pul"
 msgid "Наличные, карта, Click, Payme, Uzum или перечисление. Пусто — наличные."
 msgstr "Naqd, karta, Click, Payme, Uzum yoki oʻtkazma. Boʻsh boʻlsa — naqd."
 
-#: pages/home/reports/dashboard.html users/reports.py
+#: pages/home/partials/finance_overview.html pages/home/reports/dashboard.html users/reports.py
 msgid "Налоги"
 msgstr "Soliqlar"
 
@@ -1801,6 +1829,10 @@ msgid "Оплаты за месяц"
 msgstr "Oylik toʻlovlar"
 
 #: pages/home/partials/finance_overview.html
+msgid "Оплаты за обучение"
+msgstr "O'qish uchun to'lovlar"
+
+#: pages/home/partials/finance_overview.html
 msgid "Оплаты минус зарплаты и расходы"
 msgstr "Toʻlovlar minus ish haqi va xarajatlar"
 
@@ -1827,6 +1859,10 @@ msgstr "Yil uchun toʻlangan"
 #: pages/home/reports/summary.html
 msgid "Оплачено за учёбу и долги"
 msgstr "O'qish uchun to'langan va qarzlar"
+
+#: pages/home/partials/finance_overview.html
+msgid "Основные средства"
+msgstr "Asosiy vositalar"
 
 #: pages/home/users/user_form.html
 msgid "Оставьте пустым, если не хотите менять."
@@ -2028,7 +2064,7 @@ msgstr "«%(name)s» oʻquv yili bilan kesishadi."
 msgid "Перечисление на счёт"
 msgstr "Hisob raqamiga oʻtkazma"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/excel_import.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html users/excel_import.py users/views.py
 msgid "Питание"
 msgstr "Ovqatlanish"
 
@@ -2063,6 +2099,10 @@ msgstr "Xodimlar boʻyicha"
 #: pages/home/partials/finance_overview.html
 msgid "По школам"
 msgstr "Maktablar boʻyicha"
+
+#: pages/home/partials/finance_overview.html
+msgid "Погашение кредитов"
+msgstr "Kreditlarni qaytarish"
 
 #: pages/home/integrations/integration.html
 msgid "Подключение"
@@ -2199,13 +2239,17 @@ msgstr "Kitobdan yuklashda shartnomada xato bo'lgan — tekshiring:"
 msgid "При загрузке из книги в договоре была ошибка:"
 msgstr "Kitobdan yuklashda shartnomada xato bo'lgan:"
 
-#: pages/home/reports/dashboard.html pages/home/reports/matrix.html users/reports.py users/views.py
+#: pages/home/partials/finance_overview.html pages/home/reports/dashboard.html pages/home/reports/matrix.html users/reports.py users/views.py
 msgid "Прибыль"
 msgstr "Foyda"
 
 #: pages/home/reports/dashboard.html users/views.py
 msgid "Прибыль и убытки"
 msgstr "Foyda va zarar"
+
+#: pages/home/partials/finance_overview.html
+msgid "Прибыль по месяцам"
+msgstr "Oylar bo'yicha foyda"
 
 #: pages/home/director.html pages/home/employee.html pages/home/home.html pages/home/investor.html
 #, python-format
@@ -2345,7 +2389,7 @@ msgstr "Boshqa tushumlar"
 msgid "Прочие приходы и расходы"
 msgstr "Boshqa kirim va chiqimlar"
 
-#: users/reports.py
+#: pages/home/partials/finance_overview.html users/reports.py
 msgid "Прочие расходы"
 msgstr "Boshqa xarajatlar"
 
@@ -2426,6 +2470,10 @@ msgstr "Moddalar bo'yicha xarajatlar"
 #: users/forms.py
 msgid "Расходы по этой статье считаются зарплатой вместе с выплатами сотрудникам."
 msgstr "Bu modda boʻyicha xarajatlar xodimlarga toʻlovlar bilan birga ish haqi hisoblanadi."
+
+#: pages/home/partials/finance_overview.html
+msgid "Расходы школы по видам"
+msgstr "Maktab xarajatlari turlari bo'yicha"
 
 #: users/models.py
 msgid "Расчётный счёт"
@@ -3065,6 +3113,10 @@ msgstr "Oiladagi 3-farzand"
 msgid "Убрано правок стоимости месяца"
 msgstr "Olib tashlangan oy narxi tuzatishlari"
 
+#: pages/home/partials/finance_overview.html
+msgid "Убыток"
+msgstr "Zarar"
+
 #: users/models.py
 msgid "Удаление"
 msgstr "Oʻchirish"
@@ -3176,6 +3228,10 @@ msgstr "Taʼsischilar va kontragentlar"
 #: pages/home/finance/counterparty_list.html
 msgid "Учредители, банк, поставщики. Вложения и выплаты учредителям отмечаются в транзакциях — по ним строятся расчёты с учредителями."
 msgstr "Taʼsischilar, bank, yetkazib beruvchilar. Taʼsischilar mablagʻi va ularga toʻlovlar tranzaksiyalarda belgilanadi — shular asosida hisob-kitob tuziladi."
+
+#: pages/home/partials/finance_overview.html
+msgid "Учредители, кредиты, основные средства"
+msgstr "Ta'sischilar, kreditlar, asosiy vositalar"
 
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Учредитель"

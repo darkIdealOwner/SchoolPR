@@ -17,12 +17,15 @@ show_debtors (список должников с именами), show_period (�
 .kpi-note .up { color: #10b981; }
 .kpi-note .down { color: #f87171; }
 .kpi.alert .kpi-value { color: #f87171; }
-.chart-card { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; }
-.chart-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+.chart-card { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; min-width: 0; }
+.chart-card h3 { font-size: 0.95rem; font-weight: 600; margin: 0 0 0.6rem 0; }
+.chart-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 1000px) { .chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .chart-grid.single { grid-template-columns: 1fr; } }
+.chart-legend { display: flex; gap: 0.5rem 1rem; flex-wrap: wrap; font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.75rem; }
 .chart-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
 .chart-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
 .chart-legend i.line { height: 2px; border-radius: 0; }
-.chart-box { position: relative; height: 280px; }
+.chart-box { position: relative; height: 260px; }
 .fin-table-wrap { overflow-x: auto; background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
 .fin-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .fin-table th, .fin-table td { padding: 0.75rem 1rem; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05); white-space: nowrap; }
@@ -100,15 +103,49 @@ show_debtors (список должников с именами), show_period (�
 {% endif %}
 
 <div class="fin-section">
-    <h2>{% translate "Динамика по месяцам" %} <span class="fin-sub">{{ overview.period_label }}</span></h2>
-    <div class="chart-card">
-        <div class="chart-legend">
-            <span><i style="background: #3987e5;"></i>{% translate "Собрано оплат" %}</span>
-            {% if show_spending %}<span><i style="background: #d95926;"></i>{% translate "Зарплаты и расходы" %}</span>{% endif %}
-            <span><i class="line" style="background: #199e70;"></i>{% translate "Начислено" %}</span>
+    <h2>{% translate "Динамика по месяцам" %} <span class="fin-sub" id="chart-period">{{ overview.period_label }}</span></h2>
+    <div class="chart-grid{% if not show_spending %} single{% endif %}">
+        <div class="chart-card">
+            <h3>{% translate "Оплаты за обучение" %}</h3>
+            <div class="chart-legend">
+                <span><i style="background: #3987e5;"></i>{% translate "Собрано оплат" %}</span>
+                <span><i class="line" style="background: #199e70;"></i>{% translate "Начислено" %}</span>
+            </div>
+            <div class="chart-box"><canvas id="chart-tuition" aria-label="{% translate "График: собрано оплат и начислено по месяцам" %}" role="img"></canvas></div>
         </div>
-        <div class="chart-box"><canvas id="finance-chart" aria-label="{% translate "График: собрано, расходы и начислено по месяцам" %}" role="img"></canvas></div>
+        {% if show_spending %}
+        <div class="chart-card">
+            <h3>{% translate "Расходы школы по видам" %}</h3>
+            <div class="chart-legend">
+                <span><i style="background: #3987e5;"></i>{% translate "Зарплата" %}</span>
+                <span><i style="background: #d95926;"></i>{% translate "Налоги" %}</span>
+                <span><i style="background: #199e70;"></i>{% translate "Питание" %}</span>
+                <span><i style="background: #c98500;"></i>{% translate "Аренда и содержание" %}</span>
+                <span><i style="background: #d55181;"></i>{% translate "Прочие расходы" %}</span>
+            </div>
+            <div class="chart-box"><canvas id="chart-expenses" aria-label="{% translate "График: расходы школы по видам и месяцам" %}" role="img"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <h3>{% translate "Прибыль по месяцам" %}</h3>
+            <div class="chart-legend">
+                <span><i style="background: #3987e5;"></i>{% translate "Прибыль" %}</span>
+                <span><i style="background: #e66767;"></i>{% translate "Убыток" %}</span>
+            </div>
+            <div class="chart-box"><canvas id="chart-profit" aria-label="{% translate "График: прибыль и убыток по месяцам" %}" role="img"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <h3>{% translate "Учредители, кредиты, основные средства" %}</h3>
+            <div class="chart-legend">
+                <span><i style="background: #3987e5;"></i>{% translate "Вложения и кредиты" %}</span>
+                <span><i style="background: #d95926;"></i>{% translate "Выплаты учредителям" %}</span>
+                <span><i style="background: #199e70;"></i>{% translate "Погашение кредитов" %}</span>
+                <span><i style="background: #c98500;"></i>{% translate "Основные средства" %}</span>
+            </div>
+            <div class="chart-box"><canvas id="chart-capital" aria-label="{% translate "График: вложения, выплаты учредителям, кредиты и основные средства по месяцам" %}" role="img"></canvas></div>
+        </div>
+        {% endif %}
     </div>
+    {% if show_spending %}<p class="kpi-note" style="margin-top: 0.75rem;">{% translate "Выплаты учредителям, погашение кредитов и покупка основных средств — не расходы школы: они на отдельном графике и не уменьшают прибыль." %}</p>{% endif %}
 </div>
 
 {% if show_schools %}
@@ -194,42 +231,84 @@ show_debtors (список должников с именами), show_period (�
 <script>
 (function () {
     const data = JSON.parse(document.getElementById('finance-chart-data').textContent);
+    // Пустые месяцы в начале (школа ещё не работала) не показываем, но оставляем не меньше 6 месяцев
+    const series = Object.keys(data).filter((k) => k !== 'labels');
+    const firstUsed = data.labels.findIndex((_, i) => series.some((k) => data[k][i]));
+    const from = Math.max(0, Math.min(firstUsed < 0 ? 0 : firstUsed, data.labels.length - 6));
+    Object.keys(data).forEach((k) => { data[k] = data[k].slice(from); });
+    if (from > 0) document.getElementById('chart-period').textContent = `${data.labels[0]} — ${data.labels[data.labels.length - 1]}`;
     const locale = '{{ LANGUAGE_CODE|default:"ru"|escapejs }}';
     const t = {
         collected: '{% translate "Собрано оплат" as s %}{{ s|escapejs }}',
-        {% if show_spending %}spent: '{% translate "Зарплаты и расходы" as s %}{{ s|escapejs }}',{% endif %}
         accrued: '{% translate "Начислено" as s %}{{ s|escapejs }}',
         currency: '{% translate "сум" as s %}{{ s|escapejs }}',
         million: '{% translate "млн" as s %}{{ s|escapejs }}',
+        {% if show_spending %}
+        salary: '{% translate "Зарплата" as s %}{{ s|escapejs }}',
+        tax: '{% translate "Налоги" as s %}{{ s|escapejs }}',
+        food: '{% translate "Питание" as s %}{{ s|escapejs }}',
+        upkeep: '{% translate "Аренда и содержание" as s %}{{ s|escapejs }}',
+        other: '{% translate "Прочие расходы" as s %}{{ s|escapejs }}',
+        profit: '{% translate "Прибыль" as s %}{{ s|escapejs }}',
+        foundersIn: '{% translate "Вложения и кредиты" as s %}{{ s|escapejs }}',
+        foundersOut: '{% translate "Выплаты учредителям" as s %}{{ s|escapejs }}',
+        loansOut: '{% translate "Погашение кредитов" as s %}{{ s|escapejs }}',
+        assets: '{% translate "Основные средства" as s %}{{ s|escapejs }}',
+        total: '{% translate "Всего" as s %}{{ s|escapejs }}',
+        {% endif %}
     };
     const fmt = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
     const fmtMln = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
-    const datasets = [
-        { type: 'bar', label: t.collected, data: data.collected, backgroundColor: '#3987e5', borderRadius: 4, maxBarThickness: 18, order: 2 },
-    ];
-    {% if show_spending %}
-    datasets.push({ type: 'bar', label: t.spent, data: data.spent, backgroundColor: '#d95926', borderRadius: 4, maxBarThickness: 18, order: 2 });
-    {% endif %}
-    datasets.push({ type: 'line', label: t.accrued, data: data.accrued, borderColor: '#199e70', backgroundColor: '#199e70', borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0, order: 1 });
+    const CARD = '#0f172a';
+    const C = { blue: '#3987e5', orange: '#d95926', aqua: '#199e70', yellow: '#c98500', magenta: '#d55181', red: '#e66767' };
+    const tick = (v) => Math.abs(v) >= 1e6 ? fmtMln.format(v / 1e6) + ' ' + t.million : fmt.format(v);
+    const bar = (label, values, color, extra) => Object.assign({ type: 'bar', label, data: values, backgroundColor: color,
+        borderColor: CARD, borderWidth: 1, borderRadius: 4, borderSkipped: false, maxBarThickness: 22, order: 2 }, extra || {});
 
-    new Chart(document.getElementById('finance-chart'), {
-        data: { labels: data.labels, datasets: datasets },
-        options: {
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt.format(ctx.parsed.y)} ${t.currency}` } },
-            },
-            scales: {
-                x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(255,255,255,0.06)' },
-                    ticks: { color: '#94a3b8', callback: (v) => v >= 1e6 ? fmtMln.format(v / 1e6) + ' ' + t.million : fmt.format(v) },
+    function draw(id, datasets, opts) {
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
+        opts = opts || {};
+        new Chart(canvas, {
+            data: { labels: data.labels, datasets },
+            options: {
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: {
+                        label: (ctx) => ` ${ctx.dataset.label}: ${fmt.format(ctx.parsed.y)} ${t.currency}`,
+                        footer: opts.stacked ? (items) => `${t.total}: ${fmt.format(items.reduce((a, i) => a + i.parsed.y, 0))} ${t.currency}` : undefined,
+                    } },
+                },
+                scales: {
+                    x: { stacked: !!opts.stacked, grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    y: { stacked: !!opts.stacked, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.06)' },
+                         ticks: { color: '#94a3b8', callback: tick } },
                 },
             },
-        },
-    });
+        });
+    }
+
+    draw('chart-tuition', [
+        bar(t.collected, data.collected, C.blue),
+        { type: 'line', label: t.accrued, data: data.accrued, borderColor: C.aqua, backgroundColor: C.aqua, borderWidth: 2,
+          pointRadius: 4, pointHoverRadius: 6, pointBorderColor: CARD, pointBorderWidth: 2, tension: 0, order: 1 },
+    ]);
+    {% if show_spending %}
+    if (data.mb_salary) {
+        draw('chart-expenses', [
+            bar(t.salary, data.mb_salary, C.blue), bar(t.tax, data.mb_tax, C.orange), bar(t.food, data.mb_food, C.aqua),
+            bar(t.upkeep, data.mb_upkeep, C.yellow), bar(t.other, data.mb_other, C.magenta),
+        ], { stacked: true });
+        draw('chart-profit', [
+            bar(t.profit, data.mb_profit, data.mb_profit.map((v) => v < 0 ? C.red : C.blue)),
+        ]);
+        draw('chart-capital', [
+            bar(t.foundersIn, data.mb_founders_in, C.blue), bar(t.foundersOut, data.mb_founders_out, C.orange),
+            bar(t.loansOut, data.mb_loans_out, C.aqua), bar(t.assets, data.mb_assets, C.yellow),
+        ]);
+    }
+    {% endif %}
 })();
 </script>

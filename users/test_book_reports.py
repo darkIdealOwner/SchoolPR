@@ -309,3 +309,77 @@ class PaymentControlLayoutTests(ReportBase):
         self.assertContains(response, 'Родитель Видимый')
         self.client.force_login(self.investor)
         self.assertNotContains(self.client.get(reverse('report_payment_control')), 'Родитель Видимый')
+
+
+class MonthlyBreakdownTests(ReportBase):
+    """Разбивка по месяцам для графиков главной: расходы по видам, прибыль, деньги учредителей, кредиты, основные средства."""
+
+    def data(self, school='own'):
+        months = reports.financial_months(self.year)
+        result = reports.monthly_breakdown(months, self.school if school == 'own' else school)
+        index = {m: i for i, m in enumerate(months)}
+        return lambda key, month: result[f'mb_{key}'][index[month]]
+
+    def test_expense_groups(self):
+        get = self.data()
+        october = date(2026, 10, 1)
+        self.assertEqual((get('salary', october), get('upkeep', october), get('tax', october), get('other', october)),
+                         (1000, 300, 0, 0))
+
+    def test_capital_is_not_expense(self):
+        get = self.data()
+        self.assertEqual((get('founders_in', date(2026, 9, 1)), get('founders_out', date(2026, 10, 1)),
+                          get('assets', date(2026, 10, 1)), get('loans_out', date(2026, 10, 1))), (5700, 1000, 2000, 0))
+
+    def test_loan_repayment(self):
+        Transaction.objects.create(school=self.school, category=Category.objects.get(name='Погашение кредита'), amount=D(150),
+                                   date=date(2026, 11, 2))
+        self.assertEqual(self.data()('loans_out', date(2026, 11, 1)), 150)
+
+    def test_tax_and_food(self):
+        for name, amount in (('Налоги', 70), ('Питание', 30)):
+            Transaction.objects.create(school=self.school, category=Category.objects.get(name=name), amount=D(amount),
+                                       date=date(2026, 11, 3))
+        get = self.data()
+        self.assertEqual((get('tax', date(2026, 11, 1)), get('food', date(2026, 11, 1))), (70, 30))
+
+    def test_profit_matches_pl(self):
+        get = self.data()
+        self.assertEqual((get('profit', date(2026, 8, 1)), get('profit', date(2026, 10, 1))), (1000, -900))
+
+    def test_floats_for_json(self):
+        months = reports.financial_months(self.year)
+        data = reports.monthly_breakdown(months, self.school)
+        self.assertTrue(all(isinstance(v, float) for values in data.values() for v in values))
+        self.assertTrue(all(len(values) == 12 for values in data.values()))
+
+
+class HomeChartTests(ReportBase):
+    def chart(self, user):
+        self.client.force_login(user)
+        return self.client.get(reverse('home')).context['chart_data']
+
+    def test_owner_gets_all_charts(self):
+        data = self.chart(self.owner)
+        for key in ('collected', 'accrued', 'spent', 'mb_salary', 'mb_tax', 'mb_profit', 'mb_founders_out', 'mb_assets'):
+            self.assertIn(key, data)
+        self.assertContains(self.client.get(reverse('home')), 'chart-capital')
+
+    def test_employee_sees_only_tuition_chart(self):
+        data = self.chart(self.employee)
+        self.assertEqual(set(data), {'labels', 'collected', 'accrued'})
+        body = self.client.get(reverse('home')).content.decode()
+        self.assertNotIn('chart-expenses', body)
+        self.assertIn('chart-tuition', body)
+
+    def test_director_sees_own_school_breakdown(self):
+        data = self.chart(self.director)
+        self.assertEqual(max(data['mb_upkeep']), 300.0)     # аренда 99 999 другой школы сюда не попадает
+
+    def test_founder_payouts_are_not_school_spending(self):
+        from users.finance import build_overview
+        series = {row['month']: row for row in build_overview(school=self.school, today=date(2026, 11, 6))['series']}
+        october = series[date(2026, 10, 1)]
+        self.assertEqual(october['expenses'], D(700))           # аренда 300 + зарплата одной суммой 400
+        self.assertEqual(october['capital_out'], D(3000))       # выплата учредителю 1000 + основные средства 2000
+        self.assertEqual(october['spent'], D(1300))             # + выплата сотруднику 600

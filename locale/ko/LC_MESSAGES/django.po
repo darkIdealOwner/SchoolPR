@@ -169,6 +169,10 @@ msgstr "유효"
 msgid "Апрель"
 msgstr "4월"
 
+#: pages/home/partials/finance_overview.html
+msgid "Аренда и содержание"
+msgstr "임대 및 유지"
+
 #: users/models.py
 msgid "Банк"
 msgstr "은행"
@@ -259,6 +263,10 @@ msgstr "이동 유형"
 msgid "Владелец"
 msgstr "소유자"
 
+#: pages/home/partials/finance_overview.html
+msgid "Вложения и кредиты"
+msgstr "투자 및 대출"
+
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Вложено"
 msgstr "출자액"
@@ -304,7 +312,7 @@ msgstr "전체 학년도"
 msgid "Все, кому школа платит зарплату. Входить на платформу им не нужно; у сотрудников с доступом карточка создаётся сама."
 msgstr "학교가 급여를 지급하는 모든 사람. 플랫폼에 로그인할 필요는 없으며, 접근 권한이 있는 직원의 카드는 자동으로 만들어집니다."
 
-#: pages/home/integrations/integration.html pages/home/reports/cash_methods.html
+#: pages/home/integrations/integration.html pages/home/partials/finance_overview.html pages/home/reports/cash_methods.html
 msgid "Всего"
 msgstr "전체"
 
@@ -409,6 +417,14 @@ msgstr "직원 급여"
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "직원 급여 - SchoolPR"
 
+#: pages/home/partials/finance_overview.html
+msgid "Выплаты учредителям"
+msgstr "설립자 지급"
+
+#: pages/home/partials/finance_overview.html
+msgid "Выплаты учредителям, погашение кредитов и покупка основных средств — не расходы школы: они на отдельном графике и не уменьшают прибыль."
+msgstr "설립자 지급, 대출 상환, 고정자산 구매는 학교 비용이 아닙니다: 별도 차트에 있으며 이익을 줄이지 않습니다."
+
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Выплачено"
 msgstr "지급액"
@@ -451,8 +467,20 @@ msgid "График оплат"
 msgstr "납부 일정"
 
 #: pages/home/partials/finance_overview.html
-msgid "График: собрано, расходы и начислено по месяцам"
-msgstr "차트: 월별 수납, 지출, 청구액"
+msgid "График: вложения, выплаты учредителям, кредиты и основные средства по месяцам"
+msgstr "차트: 월별 투자, 설립자 지급, 대출 및 고정자산"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: прибыль и убыток по месяцам"
+msgstr "차트: 월별 이익과 손실"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: расходы школы по видам и месяцам"
+msgstr "차트: 유형별·월별 학교 비용"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: собрано оплат и начислено по месяцам"
+msgstr "차트: 월별 수납액과 청구액"
 
 #: pages/home/contracts/contract_confirm_delete.html
 msgid "Да, удалить"
@@ -980,7 +1008,7 @@ msgstr "“%(sheet)s” 시트를 두 번째 행부터 작성하세요. 필수 �
 msgid "Запустил"
 msgstr "실행자"
 
-#: users/models.py users/reports.py
+#: pages/home/partials/finance_overview.html users/models.py users/reports.py
 msgid "Зарплата"
 msgstr "급여"
 
@@ -1456,7 +1484,7 @@ msgstr "현금"
 msgid "Наличные, карта, Click, Payme, Uzum или перечисление. Пусто — наличные."
 msgstr "현금, 카드, Click, Payme, Uzum 또는 계좌 이체. 비워 두면 현금입니다."
 
-#: pages/home/reports/dashboard.html users/reports.py
+#: pages/home/partials/finance_overview.html pages/home/reports/dashboard.html users/reports.py
 msgid "Налоги"
 msgstr "세금"
 
@@ -1801,6 +1829,10 @@ msgid "Оплаты за месяц"
 msgstr "월별 납부"
 
 #: pages/home/partials/finance_overview.html
+msgid "Оплаты за обучение"
+msgstr "수업료 납부"
+
+#: pages/home/partials/finance_overview.html
 msgid "Оплаты минус зарплаты и расходы"
 msgstr "납부액 - 급여 및 지출"
 
@@ -1827,6 +1859,10 @@ msgstr "연간 납부액"
 #: pages/home/reports/summary.html
 msgid "Оплачено за учёбу и долги"
 msgstr "납부된 수업료와 미납"
+
+#: pages/home/partials/finance_overview.html
+msgid "Основные средства"
+msgstr "고정자산"
 
 #: pages/home/users/user_form.html
 msgid "Оставьте пустым, если не хотите менять."
@@ -2028,7 +2064,7 @@ msgstr "“%(name)s” 학년도와 겹칩니다."
 msgid "Перечисление на счёт"
 msgstr "계좌 이체"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/excel_import.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html users/excel_import.py users/views.py
 msgid "Питание"
 msgstr "급식"
 
@@ -2063,6 +2099,10 @@ msgstr "직원별"
 #: pages/home/partials/finance_overview.html
 msgid "По школам"
 msgstr "학교별"
+
+#: pages/home/partials/finance_overview.html
+msgid "Погашение кредитов"
+msgstr "대출 상환"
 
 #: pages/home/integrations/integration.html
 msgid "Подключение"
@@ -2199,13 +2239,17 @@ msgstr "통합 문서에서 불러올 때 계약에 오류가 있었습니다 �
 msgid "При загрузке из книги в договоре была ошибка:"
 msgstr "통합 문서에서 불러올 때 계약에 오류가 있었습니다:"
 
-#: pages/home/reports/dashboard.html pages/home/reports/matrix.html users/reports.py users/views.py
+#: pages/home/partials/finance_overview.html pages/home/reports/dashboard.html pages/home/reports/matrix.html users/reports.py users/views.py
 msgid "Прибыль"
 msgstr "이익"
 
 #: pages/home/reports/dashboard.html users/views.py
 msgid "Прибыль и убытки"
 msgstr "손익"
+
+#: pages/home/partials/finance_overview.html
+msgid "Прибыль по месяцам"
+msgstr "월별 이익"
 
 #: pages/home/director.html pages/home/employee.html pages/home/home.html pages/home/investor.html
 #, python-format
@@ -2345,7 +2389,7 @@ msgstr "기타 수입"
 msgid "Прочие приходы и расходы"
 msgstr "기타 수입 및 지출"
 
-#: users/reports.py
+#: pages/home/partials/finance_overview.html users/reports.py
 msgid "Прочие расходы"
 msgstr "기타 지출"
 
@@ -2426,6 +2470,10 @@ msgstr "항목별 지출"
 #: users/forms.py
 msgid "Расходы по этой статье считаются зарплатой вместе с выплатами сотрудникам."
 msgstr "이 항목의 지출은 직원 지급액과 함께 급여로 계산됩니다."
+
+#: pages/home/partials/finance_overview.html
+msgid "Расходы школы по видам"
+msgstr "유형별 학교 비용"
 
 #: users/models.py
 msgid "Расчётный счёт"
@@ -3065,6 +3113,10 @@ msgstr "가정의 셋째 자녀"
 msgid "Убрано правок стоимости месяца"
 msgstr "삭제된 월 금액 수정"
 
+#: pages/home/partials/finance_overview.html
+msgid "Убыток"
+msgstr "손실"
+
 #: users/models.py
 msgid "Удаление"
 msgstr "삭제"
@@ -3176,6 +3228,10 @@ msgstr "설립자와 거래처"
 #: pages/home/finance/counterparty_list.html
 msgid "Учредители, банк, поставщики. Вложения и выплаты учредителям отмечаются в транзакциях — по ним строятся расчёты с учредителями."
 msgstr "설립자, 은행, 공급업체. 설립자 출자와 지급은 거래에 표시되며, 이를 바탕으로 설립자 정산이 만들어집니다."
+
+#: pages/home/partials/finance_overview.html
+msgid "Учредители, кредиты, основные средства"
+msgstr "설립자, 대출, 고정자산"
 
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Учредитель"

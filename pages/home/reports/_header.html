@@ -76,6 +76,16 @@
 .rep.compact td:first-child, .rep.compact th:first-child { min-width: 0; }
 .rep.compact td:first-child { white-space: nowrap; }
 .rep-grid .rep-block.wide { grid-column: 1 / -1; }
+/* Дашборд на ПК: короткие блоки парой, длинные списки — двумя колонками без пустот под короткими */
+.rep-pair { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: start; }
+.rep-pair .rep-block { margin-top: 0; }
+.rep-columns { margin-top: 1.75rem; display: grid; grid-template-columns: 1fr; gap: 0 1.25rem; align-items: start; }
+.rep-columns .rep-block { margin: 0 0 1.25rem 0; }
+@media (min-width: 1000px) {
+    .rep-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+    .rep-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.rep.compact th, .rep.compact td { padding: 0.5rem 0.65rem; }
 .rep td.pct { color: var(--text-muted); font-size: 0.75rem; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
 .kpi { background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.85rem 1rem; min-width: 0; }

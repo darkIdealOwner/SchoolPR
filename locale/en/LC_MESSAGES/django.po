@@ -169,6 +169,10 @@ msgstr "Active"
 msgid "Апрель"
 msgstr "April"
 
+#: pages/home/partials/finance_overview.html
+msgid "Аренда и содержание"
+msgstr "Rent and upkeep"
+
 #: users/models.py
 msgid "Банк"
 msgstr "Bank"
@@ -259,6 +263,10 @@ msgstr "Movement type"
 msgid "Владелец"
 msgstr "Owner"
 
+#: pages/home/partials/finance_overview.html
+msgid "Вложения и кредиты"
+msgstr "Investments and loans"
+
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Вложено"
 msgstr "Invested"
@@ -304,7 +312,7 @@ msgstr "All academic years"
 msgid "Все, кому школа платит зарплату. Входить на платформу им не нужно; у сотрудников с доступом карточка создаётся сама."
 msgstr "Everyone the school pays a salary to. They do not need to sign in; for employees with access the card is created automatically."
 
-#: pages/home/integrations/integration.html pages/home/reports/cash_methods.html
+#: pages/home/integrations/integration.html pages/home/partials/finance_overview.html pages/home/reports/cash_methods.html
 msgid "Всего"
 msgstr "Total"
 
@@ -409,6 +417,14 @@ msgstr "Staff payouts"
 msgid "Выплаты сотрудникам - SchoolPR"
 msgstr "Staff payouts - SchoolPR"
 
+#: pages/home/partials/finance_overview.html
+msgid "Выплаты учредителям"
+msgstr "Payments to founders"
+
+#: pages/home/partials/finance_overview.html
+msgid "Выплаты учредителям, погашение кредитов и покупка основных средств — не расходы школы: они на отдельном графике и не уменьшают прибыль."
+msgstr "Payments to founders, loan repayments and fixed asset purchases are not school expenses: they are on a separate chart and do not reduce profit."
+
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Выплачено"
 msgstr "Paid out"
@@ -451,8 +467,20 @@ msgid "График оплат"
 msgstr "Payment schedule"
 
 #: pages/home/partials/finance_overview.html
-msgid "График: собрано, расходы и начислено по месяцам"
-msgstr "Chart: collected, expenses and billed by month"
+msgid "График: вложения, выплаты учредителям, кредиты и основные средства по месяцам"
+msgstr "Chart: investments, payments to founders, loans and fixed assets by month"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: прибыль и убыток по месяцам"
+msgstr "Chart: profit and loss by month"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: расходы школы по видам и месяцам"
+msgstr "Chart: school expenses by type and month"
+
+#: pages/home/partials/finance_overview.html
+msgid "График: собрано оплат и начислено по месяцам"
+msgstr "Chart: payments collected and accrued by month"
 
 #: pages/home/contracts/contract_confirm_delete.html
 msgid "Да, удалить"
@@ -980,7 +1008,7 @@ msgstr "Fill in the “%(sheet)s” sheet starting from the second row. Required
 msgid "Запустил"
 msgstr "Started by"
 
-#: users/models.py users/reports.py
+#: pages/home/partials/finance_overview.html users/models.py users/reports.py
 msgid "Зарплата"
 msgstr "Salary"
 
@@ -1456,7 +1484,7 @@ msgstr "Cash"
 msgid "Наличные, карта, Click, Payme, Uzum или перечисление. Пусто — наличные."
 msgstr "Cash, card, Click, Payme, Uzum or bank transfer. Empty — cash."
 
-#: pages/home/reports/dashboard.html users/reports.py
+#: pages/home/partials/finance_overview.html pages/home/reports/dashboard.html users/reports.py
 msgid "Налоги"
 msgstr "Taxes"
 
@@ -1801,6 +1829,10 @@ msgid "Оплаты за месяц"
 msgstr "Payments for the month"
 
 #: pages/home/partials/finance_overview.html
+msgid "Оплаты за обучение"
+msgstr "Tuition payments"
+
+#: pages/home/partials/finance_overview.html
 msgid "Оплаты минус зарплаты и расходы"
 msgstr "Payments minus salaries and expenses"
 
@@ -1827,6 +1859,10 @@ msgstr "Paid for the year"
 #: pages/home/reports/summary.html
 msgid "Оплачено за учёбу и долги"
 msgstr "Tuition paid and debts"
+
+#: pages/home/partials/finance_overview.html
+msgid "Основные средства"
+msgstr "Fixed assets"
 
 #: pages/home/users/user_form.html
 msgid "Оставьте пустым, если не хотите менять."
@@ -2028,7 +2064,7 @@ msgstr "Overlaps with academic year “%(name)s”."
 msgid "Перечисление на счёт"
 msgstr "Bank transfer"
 
-#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html users/excel_import.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/contract_list.html pages/home/partials/finance_overview.html users/excel_import.py users/views.py
 msgid "Питание"
 msgstr "Meals"
 
@@ -2063,6 +2099,10 @@ msgstr "By employee"
 #: pages/home/partials/finance_overview.html
 msgid "По школам"
 msgstr "By school"
+
+#: pages/home/partials/finance_overview.html
+msgid "Погашение кредитов"
+msgstr "Loan repayments"
 
 #: pages/home/integrations/integration.html
 msgid "Подключение"
@@ -2199,13 +2239,17 @@ msgstr "The contract had an error when loaded from the workbook — check:"
 msgid "При загрузке из книги в договоре была ошибка:"
 msgstr "The contract had an error when loaded from the workbook:"
 
-#: pages/home/reports/dashboard.html pages/home/reports/matrix.html users/reports.py users/views.py
+#: pages/home/partials/finance_overview.html pages/home/reports/dashboard.html pages/home/reports/matrix.html users/reports.py users/views.py
 msgid "Прибыль"
 msgstr "Profit"
 
 #: pages/home/reports/dashboard.html users/views.py
 msgid "Прибыль и убытки"
 msgstr "Profit and loss"
+
+#: pages/home/partials/finance_overview.html
+msgid "Прибыль по месяцам"
+msgstr "Profit by month"
 
 #: pages/home/director.html pages/home/employee.html pages/home/home.html pages/home/investor.html
 #, python-format
@@ -2345,7 +2389,7 @@ msgstr "Other receipts"
 msgid "Прочие приходы и расходы"
 msgstr "Other income and expenses"
 
-#: users/reports.py
+#: pages/home/partials/finance_overview.html users/reports.py
 msgid "Прочие расходы"
 msgstr "Other expenses"
 
@@ -2426,6 +2470,10 @@ msgstr "Expenses by item"
 #: users/forms.py
 msgid "Расходы по этой статье считаются зарплатой вместе с выплатами сотрудникам."
 msgstr "Expenses under this item count as salary together with employee payouts."
+
+#: pages/home/partials/finance_overview.html
+msgid "Расходы школы по видам"
+msgstr "School expenses by type"
 
 #: users/models.py
 msgid "Расчётный счёт"
@@ -3065,6 +3113,10 @@ msgstr "Third child in the family"
 msgid "Убрано правок стоимости месяца"
 msgstr "Month cost corrections removed"
 
+#: pages/home/partials/finance_overview.html
+msgid "Убыток"
+msgstr "Loss"
+
 #: users/models.py
 msgid "Удаление"
 msgstr "Delete"
@@ -3176,6 +3228,10 @@ msgstr "Founders and counterparties"
 #: pages/home/finance/counterparty_list.html
 msgid "Учредители, банк, поставщики. Вложения и выплаты учредителям отмечаются в транзакциях — по ним строятся расчёты с учредителями."
 msgstr "Founders, the bank, suppliers. Founder contributions and payouts are marked in transactions — founder settlements are built from them."
+
+#: pages/home/partials/finance_overview.html
+msgid "Учредители, кредиты, основные средства"
+msgstr "Founders, loans, fixed assets"
 
 #: pages/home/reports/dashboard.html pages/home/reports/founders.html users/views.py
 msgid "Учредитель"

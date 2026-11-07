@@ -146,7 +146,10 @@ class HomeView(LoginRequiredMixin, TemplateView):
             overview = None
         if overview:
             context['overview'] = overview
-            context['chart_data'] = chart_payload(overview['series'], include_spending=role != 'EMPLOYEE')
+            months = [row['month'] for row in overview['series']]
+            school = None if role in ['OWNER', 'INVESTOR'] else self.request.user.school
+            breakdown = reports.monthly_breakdown(months, school) if role != 'EMPLOYEE' else None
+            context['chart_data'] = chart_payload(overview['series'], include_spending=role != 'EMPLOYEE', breakdown=breakdown)
         if self.request.user.role == 'OWNER':
             context['total_users'] = User.objects.count()
             context['total_schools'] = School.objects.count()

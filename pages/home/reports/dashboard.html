@@ -23,7 +23,7 @@
 </div>
 {% endwith %}
 
-<div class="rep-grid">
+<div class="rep-pair">
     <section class="rep-block">
         <h2>{% translate "Прибыль и убытки" %}</h2>
         <div class="report-wrap">
@@ -37,8 +37,22 @@
             </table>
         </div>
     </section>
+    <section class="rep-block">
+        <h2>{% translate "Банк и касса" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Счёт" %}</th><th>{% translate "На начало" %}</th><th>{% translate "Приход" %}</th><th>{% translate "Расход" %}</th><th>{% translate "На конец" %}</th></tr></thead>
+                <tbody>
+                    {% for r in data.bank_cash.rows %}<tr><td>{{ r.label }}</td><td>{{ r.opening|money }}</td><td>{{ r.in|money }}</td><td>{{ r.out|money }}</td><td class="sum {% if r.closing < 0 %}neg{% endif %}">{{ r.closing|money }}</td></tr>{% endfor %}
+                    {% with t=data.bank_cash.total %}<tr class="total"><td>{% translate "Итого" %}</td><td>{{ t.opening|money }}</td><td>{{ t.in|money }}</td><td>{{ t.out|money }}</td><td>{{ t.closing|money }}</td></tr>{% endwith %}
+                </tbody>
+            </table>
+        </div>
+        <p class="rep-note" style="margin-top: 0.5rem;">{% translate "Приход и расход здесь — со всеми переводами между своими счетами." %}</p>
+    </section>
+</div>
 
-    <section class="rep-block wide">
+    <section class="rep-block">
         <h2>{% translate "Доходы и расходы по месяцам" %}</h2>
         <div class="report-wrap">
             <table class="rep compact no-cards">
@@ -56,6 +70,8 @@
         </div>
     </section>
 
+<div class="rep-columns">
+<div class="rep-col">
     <section class="rep-block">
         <h2>{% translate "Доходы по источникам" %}</h2>
         <div class="report-wrap">
@@ -68,48 +84,6 @@
             </table>
         </div>
     </section>
-
-    <section class="rep-block">
-        <h2>{% translate "Расходы по статьям" %}</h2>
-        <div class="report-wrap">
-            <table class="rep compact no-cards">
-                <thead><tr><th>{% translate "Статья" %}</th><th>{% translate "Сумма" %}</th></tr></thead>
-                <tbody>
-                    {% for r in data.articles %}<tr><td>{{ r.label }}</td><td>{{ r.amount|money }}</td></tr>{% empty %}<tr><td colspan="2" class="zero">—</td></tr>{% endfor %}
-                    <tr class="total"><td>{% translate "Всего выплачено" %}</td><td>{{ data.articles_total|money }}</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="rep-block">
-        <h2>{% translate "Движение денег по разделам" %}</h2>
-        <div class="report-wrap">
-            <table class="rep compact no-cards">
-                <tbody>
-                    {% for r in data.cash_flow %}
-                    {% if r.style == 'section' %}<tr class="section"><td colspan="2">{{ r.label }}</td></tr>
-                    {% else %}<tr class="{{ r.style }}"><td>{% if r.negative %}− {% endif %}{{ r.label }}</td><td class="{% if r.style == 'total' or r.style == 'subtotal' %}{% if r.amount < 0 %}neg{% endif %}{% endif %}">{{ r.amount|money }}</td></tr>{% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="rep-block">
-        <h2>{% translate "Банк и касса" %}</h2>
-        <div class="report-wrap">
-            <table class="rep compact no-cards">
-                <thead><tr><th>{% translate "Счёт" %}</th><th>{% translate "На начало" %}</th><th>{% translate "Приход" %}</th><th>{% translate "Расход" %}</th><th>{% translate "На конец" %}</th></tr></thead>
-                <tbody>
-                    {% for r in data.bank_cash.rows %}<tr><td>{{ r.label }}</td><td>{{ r.opening|money }}</td><td>{{ r.in|money }}</td><td>{{ r.out|money }}</td><td class="sum {% if r.closing < 0 %}neg{% endif %}">{{ r.closing|money }}</td></tr>{% endfor %}
-                    {% with t=data.bank_cash.total %}<tr class="total"><td>{% translate "Итого" %}</td><td>{{ t.opening|money }}</td><td>{{ t.in|money }}</td><td>{{ t.out|money }}</td><td>{{ t.closing|money }}</td></tr>{% endwith %}
-                </tbody>
-            </table>
-        </div>
-        <p class="rep-note" style="margin-top: 0.5rem;">{% translate "Приход и расход здесь — со всеми переводами между своими счетами." %}</p>
-    </section>
-
     {% if user.role == 'OWNER' or user.role == 'INVESTOR' %}
     <section class="rep-block">
         <h2>{% translate "Расчёты с учредителями" %}</h2>
@@ -124,5 +98,33 @@
         </div>
     </section>
     {% endif %}
+    <section class="rep-block">
+        <h2>{% translate "Расходы по статьям" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <thead><tr><th>{% translate "Статья" %}</th><th>{% translate "Сумма" %}</th></tr></thead>
+                <tbody>
+                    {% for r in data.articles %}<tr><td>{{ r.label }}</td><td>{{ r.amount|money }}</td></tr>{% empty %}<tr><td colspan="2" class="zero">—</td></tr>{% endfor %}
+                    <tr class="total"><td>{% translate "Всего выплачено" %}</td><td>{{ data.articles_total|money }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+<div class="rep-col">
+    <section class="rep-block">
+        <h2>{% translate "Движение денег по разделам" %}</h2>
+        <div class="report-wrap">
+            <table class="rep compact no-cards">
+                <tbody>
+                    {% for r in data.cash_flow %}
+                    {% if r.style == 'section' %}<tr class="section"><td colspan="2">{{ r.label }}</td></tr>
+                    {% else %}<tr class="{{ r.style }}"><td>{% if r.negative %}− {% endif %}{{ r.label }}</td><td class="{% if r.style == 'total' or r.style == 'subtotal' %}{% if r.amount < 0 %}neg{% endif %}{% endif %}">{{ r.amount|money }}</td></tr>{% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
 </div>
 {% endblock %}

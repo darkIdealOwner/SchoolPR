@@ -136,6 +136,7 @@ def _empty_metrics():
         'payouts': ZERO,       # выплаты сотрудникам
         'expenses': ZERO,      # прочие расходы
         'other_income': ZERO,  # прочие поступления и инвестиции
+        'capital_out': ZERO,   # выплаты учредителям, погашение кредитов, основные средства
     }
 
 
@@ -144,7 +145,7 @@ def _finish(metrics):
     # Операционный результат: оплаты родителей минус зарплаты и расходы (инвестиции не доход)
     metrics['result'] = metrics['collected'] - metrics['spent']
     # Денежный поток: всё, что пришло, минус всё, что ушло
-    metrics['cash_flow'] = metrics['result'] + metrics['other_income']
+    metrics['cash_flow'] = metrics['result'] + metrics['other_income'] - metrics['capital_out']
     return metrics
 
 
@@ -199,8 +200,13 @@ def build_overview(school=None, months=12, today=None):
         cells[(p.contract.school_id, p.payment_date.replace(day=1))]['collected'] += p.signed_amount
     for p in payouts:
         cells[(p.school_id, p.payout_date.replace(day=1))]['payouts'] += p.amount
-    for t in transactions:
-        key = 'other_income' if t.type == 'INCOME' else 'expenses'
+    for t in transactions.select_related('category'):
+        if t.type == 'INCOME':
+            key = 'other_income'
+        elif t.category is None or t.category.in_pl:
+            key = 'expenses'
+        else:
+            key = 'capital_out'     # выплаты учредителям, кредиты, основные средства — не расход школы
         cells[(t.school_id, t.date.replace(day=1))][key] += t.amount
 
     series = []
@@ -264,11 +270,11 @@ def _rate(part, whole):
     return int(round(part * 100 / whole))
 
 
-def chart_payload(series, include_spending=True):
-    """Данные для графика на странице (числа как float, JSON-совместимо).
+def chart_payload(series, include_spending=True, breakdown=None):
+    """Данные для графиков на странице (числа как float, JSON-совместимо).
 
     Без include_spending суммы зарплат и расходов в страницу не попадают совсем,
-    а не просто скрываются на экране.
+    а не просто скрываются на экране. breakdown — разбивка по месяцам из reports.monthly_breakdown.
     """
     payload = {
         'labels': [row['label'] for row in series],
@@ -277,6 +283,8 @@ def chart_payload(series, include_spending=True):
     }
     if include_spending:
         payload['spent'] = [float(row['spent']) for row in series]
+        if breakdown:
+            payload.update(breakdown)
     return payload
 
 

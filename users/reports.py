@@ -590,3 +590,52 @@ def money_pivots(year, school=None):
         rows.append(_sum_rows(_('Итого'), kind_rows, months, 'total'))
         result[direction] = rows
     return {'months': months, 'labels': [format_short_month(m) for m in months], 'income': result['in'], 'expense': result['out']}
+
+
+# --- Разбивка по месяцам для графиков главной страницы
+
+# Группы расходов по базовым названиям статей (как в справочнике); остальное в P&L — «прочие»
+EXPENSE_GROUPS = {
+    'Налоги': 'tax', 'Питание': 'food',
+    'Аренда': 'upkeep', 'Коммунальные услуги': 'upkeep', 'Хозяйственные расходы': 'upkeep',
+    'Товарно-материальные запасы': 'upkeep', 'Питьевая вода': 'upkeep', 'Связь': 'upkeep', 'Охрана': 'upkeep',
+    'Вывоз мусора': 'upkeep',
+}
+LOAN_REPAYMENT_CATEGORY = 'Погашение кредита'
+
+
+def monthly_breakdown(months, school=None):
+    """По месяцам: расходы по видам (зарплата, налоги, питание, содержание, прочие), прибыль, деньги учредителей,
+    кредиты и основные средства. Списки float в порядке months — сразу для графиков."""
+    start, end = _period(months)
+    index = {m: i for i, m in enumerate(months)}
+    keys = ('salary', 'tax', 'food', 'upkeep', 'other', 'profit', 'founders_in', 'founders_out', 'loans_out', 'assets')
+    data = {k: [ZERO] * len(months) for k in keys}
+
+    def add(key, day, amount):
+        i = index.get(_month(day))
+        if i is not None:
+            data[key][i] += amount
+
+    for p in _scoped(EmployeePayout.active.filter(payout_date__gte=start, payout_date__lt=end), school).only('payout_date', 'amount'):
+        add('salary', p.payout_date, p.amount)
+    for t in _scoped(Transaction.active.filter(date__gte=start, date__lt=end), school).select_related('category'):
+        c = t.category
+        if t.type == 'INCOME':
+            if c is not None and not c.in_pl and c.section in ('FINANCING', 'INVESTING'):
+                add('founders_in', t.date, t.amount)       # вложения учредителей, полученные кредиты
+            continue
+        if c is None or c.in_pl:
+            key = 'salary' if c is not None and c.is_salary else EXPENSE_GROUPS.get(c.name if c else '', 'other')
+        elif t.counterparty_id or c.section == 'FINANCING' and c.name != LOAN_REPAYMENT_CATEGORY:
+            key = 'founders_out'
+        elif c.name == LOAN_REPAYMENT_CATEGORY:
+            key = 'loans_out'
+        elif c.section == 'INVESTING':
+            key = 'assets'
+        else:
+            continue        # возврат ошибочного платежа и т. п. — не расход школы
+        add(key, t.date, t.amount)
+    profit = profit_and_loss(months, school)['profit_row']
+    data['profit'] = [profit.by_month[m] for m in months]
+    return {f'mb_{k}': [float(v) for v in values] for k, values in data.items()}
