@@ -32,7 +32,11 @@ def contract(number, **kw):
     return row
 
 
-def book(contracts, income, expense, title_rows=(2, 3, 3)):
+CONTROL_MONTHS = ['сент.26', 'окт.26', 'нояб.26', 'дек.26', 'янв.27', 'фев.27', 'мар.27', 'апр.27', 'мая27', 'июн.27']
+
+
+def book(contracts, income, expense, title_rows=(2, 3, 3), control=None):
+    """control — строки листа «Контроль оплаты»: {номер договора: {месяц: число или формула}}; пропущенный месяц — формула."""
     wb = openpyxl.Workbook()
     wb.active.title = 'DASHBOARD'
     for name, headers, rows, skip in (('Договоры', CONTRACT_HEADERS, contracts, title_rows[0]),
@@ -44,6 +48,24 @@ def book(contracts, income, expense, title_rows=(2, 3, 3)):
         ws.append([None] + headers)
         for row in rows:
             ws.append([None] + [row.get(h) for h in headers])
+    if control is not None:
+        ws = wb.create_sheet('Контроль оплаты')
+        ws.append([None, 'Договоры AsiaSchool'])
+        ws.append([])
+        header = [None, '№ договора', 'ФИО ученика', 'ФИО родителей', '№ телефона', 'Направление', 'Отметка об отмены договора',
+                  'ИТОГО учебный год 2026-2027', None, None]
+        sub = [None] * 7 + ['Стоимость учебы', 'Оплачено', 'Остаток']
+        for label in CONTROL_MONTHS:
+            header += [label, None, None]
+            sub += ['Стоимость учебы', 'Оплачено', 'Остаток']
+        ws.append(header)
+        ws.append(sub)
+        for number, months in control.items():
+            row = [None, number, 'Тест', 'Тест', '', '', 'Актуальный', None, None, None]
+            for label in CONTROL_MONTHS:
+                value = months.get(label, "=IF($B5=\"\",\"\",VLOOKUP($B5,'Договоры'!$B:$S,18,0))")
+                row += [value, None, None]
+            ws.append(row)
     buffer = io.BytesIO()
     wb.save(buffer)
     return SimpleUploadedFile('AsiaSchool_Test_2026-2027.xlsx', buffer.getvalue())

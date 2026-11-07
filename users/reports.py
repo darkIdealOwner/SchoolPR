@@ -94,8 +94,7 @@ def tuition_accrued(months, school=None):
     accrued = defaultdict(Decimal)
     for contract in contracts_with_active_payments(_scoped(Contract.objects.all(), school)):
         for month in months:
-            if contract.is_billable_in(month):
-                accrued[month] += contract.total_amount
+            accrued[month] += contract.accrual_for(month)
     return accrued
 
 
@@ -231,7 +230,7 @@ def payment_control(year, school=None, status='all', today=None):
         running = ZERO
         cells = []
         for i, month in enumerate(months):
-            accrued = contract.total_amount if contract.is_billable_in(month) else ZERO
+            accrued = contract.accrual_for(month)
             paid = paid_map.get(month, ZERO)
             running += paid - accrued
             cells.append({'month': month, 'accrued': accrued, 'paid': paid, 'balance': running,

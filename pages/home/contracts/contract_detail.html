@@ -5,6 +5,7 @@
 {% block title %}{{ contract.student_full_name }} {% translate "— договор" %} {{ contract.number }} - SchoolPR{% endblock %}
 
 {% block extra_css %}
+.month-price { font-size: 0.7rem; color: #fbbf24; white-space: normal; max-width: 12rem; margin-left: auto; }
 .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
 .card-head h1 { margin: 0.5rem 0 0.25rem 0; font-size: 1.875rem; }
 .meta { color: var(--text-muted); font-size: 0.875rem; }
@@ -37,6 +38,7 @@
 .st.upcoming { color: var(--text-muted); font-weight: 400; }
 .pay-link { color: #60a5fa; text-decoration: none; font-size: 0.8125rem; font-weight: 600; }
 .small-link { color: #f87171; text-decoration: none; font-size: 0.75rem; }
+.edit-link { color: var(--text-muted); text-decoration: underline; font-size: 0.7rem; }
 {% endblock %}
 
 {% block content %}
@@ -110,7 +112,7 @@
 </div>
 
 <div class="section">
-    <h2>{% translate "График оплат" %}</h2>
+    <h2>{% translate "График оплат" %}{% if can_reverse %} <a class="edit-link" style="font-size: 0.8125rem; font-weight: 500; margin-left: 0.5rem;" href="{% url 'contract_month_price' contract.pk %}">{% translate "Стоимость месяца вручную" %}</a>{% endif %}</h2>
     <div class="table-wrap">
         <table class="tbl">
             <thead>
@@ -128,7 +130,7 @@
                 {% for row in schedule %}
                 <tr>
                     <td>{{ row.label }}</td>
-                    <td class="num">{{ row.accrued|money }}</td>
+                    <td class="num">{{ row.accrued|money }}{% if row.price %}<div class="month-price" title="{{ row.price.reason }}">{% translate "вручную" %}{% if row.price.reason %}: {{ row.price.reason }}{% endif %}</div>{% endif %}{% if can_reverse %}<div><a class="edit-link" href="{% url 'contract_month_price' contract.pk %}?month={{ row.month_str }}">{% translate "изменить" %}</a></div>{% endif %}</td>
                     <td class="num">{{ row.paid|money }}</td>
                     <td class="num">{{ row.balance|money }}</td>
                     <td class="num">{% if row.status != 'upcoming' %}{{ row.running_debt|money }}{% else %}—{% endif %}</td>

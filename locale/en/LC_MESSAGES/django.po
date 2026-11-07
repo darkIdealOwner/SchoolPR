@@ -6,6 +6,11 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid " Правки, сделанные на платформе вручную (%(count)s), не меняются."
+msgstr " Changes made by hand on the platform (%(count)s) are kept."
+
 #: pages/home/reports/dashboard.html
 msgid "%% от дохода"
 msgstr "%% of income"
@@ -283,6 +288,10 @@ msgstr "Refunds to parents"
 msgid "Войти"
 msgstr "Sign in"
 
+#: users/models.py
+msgid "Вручную"
+msgstr "Manual"
+
 #: users/views.py
 msgid "Все"
 msgstr "All"
@@ -415,6 +424,11 @@ msgstr "Running"
 #: pages/authorization/profile.html
 msgid "Выход из системы"
 msgstr "Sign out"
+
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Где в «Стоимости учебы» месяц вписан руками, а не формулой, — это правка (неполный месяц, только питание, бесплатный месяц). Новых: %(new)s, изменённых: %(changed)s, уже на платформе: %(same)s. Совпадающие с обычной суммой договора не сохраняются."
+msgstr "Where a month cost is typed by hand instead of a formula, it is a correction (partial month, meals only, free month). New: %(new)s, changed: %(changed)s, already on the platform: %(same)s. Values equal to the usual contract amount are not saved."
 
 #: pages/base.html
 msgid "Главная"
@@ -652,6 +666,11 @@ msgstr "The contract is already on the platform — it will get a red mark."
 msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
 msgstr "The contract is already loaded with a red mark and the workbook still has the error — skipped."
 
+#: pages/home/contracts/month_price_form.html
+#, python-format
+msgid "Договор № %(number)s"
+msgstr "Contract No. %(number)s"
+
 #: pages/home/contracts/contract_detail.html
 #, python-format
 msgid "Договор № %(number)s от %(date)s"
@@ -778,6 +797,10 @@ msgstr "Other children of this parent"
 #: users/models.py
 msgid "Другое"
 msgstr "Other"
+
+#: pages/home/contracts/month_price_form.html
+msgid "Если за какой-то месяц нужно взять не обычную сумму договора: неполный месяц при отмене, только питание, бесплатный месяц. Долги, контроль оплаты и отчёты считаются по этой сумме."
+msgstr "When a month should cost something other than the usual contract amount: a partial month on cancellation, meals only, a free month. Debts, payment control and reports use this amount."
 
 #: users/forms.py
 msgid "Если этот учредитель заходит на платформу как инвестор."
@@ -1005,6 +1028,10 @@ msgstr "PINFL must contain digits only."
 #: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "Из Excel"
 msgstr "From Excel"
+
+#: users/models.py
+msgid "Из книги школы"
+msgstr "From the school workbook"
 
 #: users/workbook_import.py
 msgid "Из них отменённых"
@@ -1344,9 +1371,13 @@ msgstr "March"
 msgid "Меню"
 msgstr "Menu"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/month_price_form.html pages/home/payouts/payout_list.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/forms.py users/models.py users/views.py
 msgid "Месяц"
 msgstr "Month"
+
+#: users/models.py
+msgid "Месяц (1-е число)"
+msgstr "Month (1st day)"
 
 #: pages/home/payments/payment_form.html
 msgid "Месяц:"
@@ -1466,6 +1497,10 @@ msgid "Например: 2026–2027. Пусто — определится по
 msgstr "For example: 2026–2027. Empty — taken from the contract date."
 
 #: users/forms.py
+msgid "Например: неполный месяц при отмене, только питание, каникулы."
+msgstr "For example: partial month on cancellation, meals only, holidays."
+
+#: users/forms.py
 msgid "Например: ошибка в сумме, оплата внесена дважды"
 msgstr "For example: wrong amount, payment entered twice"
 
@@ -1480,6 +1515,11 @@ msgstr "Charged until"
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/reports/debts_month.html users/views.py
 msgid "Начислено"
 msgstr "Billed"
+
+#: users/workbook_import.py
+#, python-format
+msgid "Начислено за %(month)s"
+msgstr "Accrued for %(month)s"
 
 #: users/views.py
 msgid "Начислено за год"
@@ -1660,6 +1700,11 @@ msgstr "Total student debt"
 #: users/models.py
 msgid "Объект"
 msgstr "Object"
+
+#: users/forms.py
+#, python-format
+msgid "Обычная сумма договора — %(amount)s сум в месяц."
+msgstr "The usual contract amount is %(amount)s UZS per month."
 
 #: users/excel_import.py
 msgid "Обязательная"
@@ -2215,6 +2260,10 @@ msgstr "Income or expense"
 msgid "Приходов и расходов"
 msgstr "Income and expense entries"
 
+#: pages/home/contracts/month_price_form.html users/forms.py users/models.py
+msgid "Причина"
+msgstr "Reason"
+
 #: users/forms.py
 msgid "Причина возврата"
 msgstr "Refund reason"
@@ -2680,7 +2729,7 @@ msgstr "Staff in school"
 msgid "Сотрудников пока нет."
 msgstr "No employees yet."
 
-#: pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
+#: pages/home/contracts/month_price_form.html pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
 msgid "Сохранить"
 msgstr "Save"
 
@@ -2765,6 +2814,34 @@ msgstr "The item decides where an operation goes in reports: profit and loss and
 msgid "Стоимость"
 msgstr "Price"
 
+#: pages/home/contracts/month_price_form.html users/models.py
+msgid "Стоимость месяца"
+msgstr "Month cost"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Стоимость месяца вручную"
+msgstr "Set a month cost"
+
+#: users/views.py
+msgid "Стоимость месяца снова как по договору."
+msgstr "The month costs the usual contract amount again."
+
+#: users/views.py
+msgid "Стоимость месяца сохранена."
+msgstr "Month cost saved."
+
+#: users/forms.py
+msgid "Стоимость месяца, сум"
+msgstr "Month cost, UZS"
+
+#: users/models.py
+msgid "Стоимость месяцев"
+msgstr "Month costs"
+
+#: pages/home/import/workbook_import.html
+msgid "Стоимость месяцев из «Контроля оплаты»"
+msgstr "Month costs from the payment control sheet"
+
 #: pages/home/contracts/contract_detail.html
 msgid "Стоимость обучения"
 msgstr "Tuition fee"
@@ -2831,7 +2908,7 @@ msgstr "Rows with errors (%(count)s) — will not be loaded"
 msgid "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся."
 msgstr "Rows with errors will not be saved. You can fix them in the file and upload it again — rows already imported will not be added twice."
 
-#: pages/home/contracts/contract_detail.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/reports/dashboard.html pages/home/reports/tariffs.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/month_price_form.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/reports/dashboard.html pages/home/reports/tariffs.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сумма"
 msgstr "Amount"
 
@@ -2984,6 +3061,10 @@ msgstr "Transaction"
 msgid "Третий ребёнок в семье"
 msgstr "Third child in the family"
 
+#: pages/home/import/workbook_import.html
+msgid "Убрано правок стоимости месяца"
+msgstr "Month cost corrections removed"
+
 #: users/models.py
 msgid "Удаление"
 msgstr "Delete"
@@ -3015,6 +3096,10 @@ msgstr "Already exists"
 #: users/workbook_import.py
 msgid "Уже есть на платформе — пропущено."
 msgstr "Already on the platform — skipped."
+
+#: pages/home/contracts/month_price_form.html
+msgid "Уже заданы"
+msgstr "Already set"
 
 #: users/models.py
 msgid "Узбекский язык"
@@ -3283,6 +3368,10 @@ msgstr "enabled"
 msgid "возврат"
 msgstr "refund"
 
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "вручную"
+msgstr "manual"
+
 #: pages/home/contracts/contract_detail.html
 msgid "всё верно — снять пометку"
 msgstr "all correct — remove the mark"
@@ -3341,6 +3430,10 @@ msgstr "of"
 #: pages/home/import/workbook_import.html
 msgid "из них с красной пометкой"
 msgstr "of them with a red mark"
+
+#: pages/home/contracts/contract_detail.html
+msgid "изменить"
+msgstr "change"
 
 #: pages/home/import/workbook_import.html
 msgid "исправлены в книге — пометка снимется"
@@ -3521,6 +3614,10 @@ msgstr "checked — remove the mark"
 msgid "пропущены"
 msgstr "skipped"
 
+#: users/workbook_import.py
+msgid "ручная правка в «Контроле оплаты» книги"
+msgstr "manual correction in the payment control sheet"
+
 #: pages/home/import/excel_import.html pages/home/import/workbook_import.html
 msgid "с ошибками"
 msgstr "with errors"
@@ -3595,6 +3692,10 @@ msgstr "the school has no account “%(name)s”"
 #: users/excel_import.py
 msgid "у сотрудника не указана школа — заполните колонку"
 msgstr "the employee has no school — fill in the column"
+
+#: pages/home/contracts/month_price_form.html
+msgid "убрать"
+msgstr "remove"
 
 #: pages/home/import/excel_import.html pages/home/import/workbook_import.html
 msgid "уже есть на платформе"

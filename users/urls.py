@@ -17,7 +17,7 @@ from .views import (
     StaffListView, StaffCreateView, StaffUpdateView,
     ReportIndexView, OldReportRedirectView, DashboardReportView, ContractSummaryReportView, CashByMethodReportView,
     PaymentControlReportView, DebtsMonthReportView, TariffReportView, MoneyPivotReportView, FounderReportView,
-    WorkbookImportView, DataProblemClearView,
+    WorkbookImportView, DataProblemClearView, MonthPriceView,
 )
 
 urlpatterns = [
@@ -96,6 +96,7 @@ urlpatterns = [
 
     path('import/workbook/', WorkbookImportView.as_view(), name='workbook_import'),
     path('data-problem/<str:kind>/<int:pk>/clear/', DataProblemClearView.as_view(), name='data_problem_clear'),
+    path('contracts/<int:pk>/month-price/', MonthPriceView.as_view(), name='contract_month_price'),
     path('import/<slug:kind>/', ExcelImportView.as_view(), name='excel_import'),
     path('import/<slug:kind>/template/', ExcelTemplateView.as_view(), name='excel_template'),
 ]

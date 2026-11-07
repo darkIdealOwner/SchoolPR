@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% load i18n money %}
+{% block title %}{% translate "Стоимость месяца" %} - SchoolPR{% endblock %}
+
+{% block extra_css %}
+.form-card { max-width: 620px; margin: 2rem auto; }
+.form-group { margin-bottom: 1.25rem; }
+.form-group > label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; }
+.help { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+.err { color: #f87171; font-size: 0.8125rem; margin-top: 0.3rem; }
+.btn-save { width: 100%; padding: 0.75rem; background-color: var(--primary); color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
+.prices { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-top: 0.5rem; }
+.prices td, .prices th { padding: 0.5rem 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+.prices th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
+.prices button { background: none; border: none; color: #f87171; cursor: pointer; font-size: 0.8125rem; padding: 0; }
+{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <a href="{% url 'contract_detail' contract.pk %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem;">← {% blocktranslate with number=contract.number %}Договор № {{ number }}{% endblocktranslate %}</a>
+    <h1 style="margin: 0.75rem 0 0.5rem 0;">{% translate "Стоимость месяца" %}</h1>
+    <p class="help" style="margin-bottom: 1.25rem;">{% translate "Если за какой-то месяц нужно взять не обычную сумму договора: неполный месяц при отмене, только питание, бесплатный месяц. Долги, контроль оплаты и отчёты считаются по этой сумме." %}</p>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}
+            {% if field.errors %}<div class="err">{{ field.errors|join:" " }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-save">{% translate "Сохранить" %}</button>
+    </form>
+
+    {% if prices %}
+    <h2 style="font-size: 1rem; margin: 2rem 0 0 0;">{% translate "Уже заданы" %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <table class="prices no-cards">
+            <thead><tr><th>{% translate "Месяц" %}</th><th>{% translate "Сумма" %}</th><th>{% translate "Причина" %}</th><th></th></tr></thead>
+            <tbody>
+                {% for p in prices %}
+                <tr>
+                    <td><a href="?month={{ p.month|date:'Y-m' }}" style="color: var(--text);">{{ p.month|date:"m.Y" }}</a></td>
+                    <td>{{ p.amount|money }}</td>
+                    <td>{{ p.reason|default:"—" }}<div class="help" style="margin: 0;">{{ p.get_source_display }}{% if p.created_by %} · {{ p.created_by.first_name }}{% endif %}</div></td>
+                    <td><button type="submit" name="delete" value="{{ p.pk }}">{% translate "убрать" %}</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

@@ -21,11 +21,11 @@ from .forms import (
     PhoneAuthenticationForm, UserManagementForm, SchoolForm, ContractForm, PaymentForm,
     EmployeePayoutForm, TransactionForm, ReversalForm, ExcelUploadForm, AcademicYearForm,
     TransferForm, AccountForm, CategoryForm, CounterpartyForm, RefundForm, ReceiptForm, ResolveReceiptForm, StaffForm,
-    WorkbookUploadForm,
+    WorkbookUploadForm, MonthPriceForm,
 )
 from . import excel_import, reports, workbook_import
 from .templatetags.money import money as format_money
-from .models import Account, Category, Counterparty, Transfer, UnidentifiedReceipt, Staff
+from .models import Account, Category, Counterparty, MonthPrice, Transfer, UnidentifiedReceipt, Staff
 from .models import User, School, AcademicYear, Contract, Payment, EmployeePayout, Transaction, AuditLog, shift_month
 from .finance import (
     parse_month, contracts_with_active_payments, format_russian_month, get_debt_details,
@@ -630,6 +630,69 @@ class ContractDetailView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestor
         })
         return context
 
+class MonthPriceView(LoginRequiredMixin, OwnerOrDirectorMixin, FormView):
+    """Стоимость отдельного месяца договора вручную; без неё месяц стоит как обычно по договору."""
+    form_class = MonthPriceForm
+    template_name = 'home/contracts/month_price_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            qs = Contract.objects.all()
+            if request.user.role == 'DIRECTOR':
+                qs = qs.filter(school=request.user.school)
+            self.contract = get_object_or_404(qs, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), 'contract': self.contract}
+
+    def get_initial(self):
+        initial = super().get_initial()
+        month = self.request.GET.get('month')
+        if month:
+            first = parse_month(month)
+            initial['month'] = first
+            existing = self.contract.month_price_map.get(first)
+            initial['amount'] = existing.amount if existing else self.contract.accrual_for(first)
+            if existing:
+                initial['reason'] = existing.reason
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['contract'] = self.contract
+        context['prices'] = self.contract.month_prices.select_related('created_by')
+        return context
+
+    def success(self):
+        return redirect(safe_next_url(self.request) or reverse('contract_detail', args=[self.contract.pk]))
+
+    def post(self, request, *args, **kwargs):
+        delete_id = request.POST.get('delete')
+        if delete_id:
+            price = get_object_or_404(self.contract.month_prices, pk=delete_id)
+            AuditLog.record(request.user, 'DELETE', price, {'month': str(price.month), 'amount': str(price.amount)})
+            price.delete()
+            messages.success(request, _("Стоимость месяца снова как по договору."))
+            return self.success()
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        month, amount, reason = form.cleaned_data['month'], form.cleaned_data['amount'], form.cleaned_data['reason']
+        price, created = MonthPrice.objects.get_or_create(
+            contract=self.contract, month=month,
+            defaults={'amount': amount, 'reason': reason, 'source': MonthPrice.SOURCE_MANUAL, 'created_by': self.request.user})
+        if created:
+            AuditLog.record(self.request.user, 'CREATE', price, {'month': str(month), 'amount': str(amount), 'reason': reason})
+        else:
+            AuditLog.record(self.request.user, 'UPDATE', price, {'amount': [str(price.amount), str(amount)],
+                                                                 'reason': [price.reason, reason]})
+            price.amount, price.reason, price.source = amount, reason, MonthPrice.SOURCE_MANUAL
+            price.save()
+        messages.success(self.request, _("Стоимость месяца сохранена."))
+        return self.success()
+
+
 class ContractCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, AuditMixin, CreateView):
     model = Contract
     template_name = 'home/contracts/contract_form.html'
@@ -709,7 +772,7 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         headers = [_('Месяц'), _('№ договора'), _('Школа'), _('Ученик'), _('Начислено'), _('Оплачено'), _('Остаток')]
         month = format_russian_month(self.selected_month)
         rows = [[month, c.number, c.school.name if c.school else '', c.student_full_name,
-                 c.total_amount, c.this_month_paid, c.this_month_balance] for c in self.object_list]
+                 c.this_month_accrued, c.this_month_paid, c.this_month_balance] for c in self.object_list]
         return headers, rows
 
     def get_queryset(self):
@@ -720,12 +783,13 @@ class PaymentListView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeOrInvestorMix
         qs = contract_search(qs.filter(date__lt=shift_month(self.selected_month, 1)), self.request.GET.get('q'), self.request.user)
         qs = contracts_with_active_payments(qs.select_related('school').order_by('-date', '-pk'))
         # Только договоры, по которым в этом месяце есть начисление (учитываем срок и отмену)
-        contracts = [c for c in qs if c.is_billable_in(self.selected_month)]
+        contracts = [c for c in qs if c.has_accrual_in(self.selected_month)]
         for contract in contracts:
             month_payments = [p for p in contract.payments.all() if p.for_month.replace(day=1) == self.selected_month]
             contract.month_payments = month_payments
             contract.this_month_paid = sum((p.signed_amount for p in month_payments), Decimal(0))
-            contract.this_month_balance = contract.total_amount - contract.this_month_paid
+            contract.this_month_accrued = contract.accrual_for(self.selected_month)
+            contract.this_month_balance = contract.this_month_accrued - contract.this_month_paid
         contracts, self.sort = sort_list(contracts, self.SORTS, self.request.GET.get('sort', ''))
         return contracts
 
@@ -846,7 +910,7 @@ class PaymentCreateView(LoginRequiredMixin, OwnerOrDirectorOrEmployeeMixin, Audi
         if contract and month_str:
             month_first = parse_month(month_str)
             paid = sum((p.signed_amount for p in Payment.active.filter(contract=contract, for_month=month_first)), Decimal(0))
-            initial['amount'] = max(contract.total_amount - paid, Decimal(0))
+            initial['amount'] = max(contract.accrual_for(month_first) - paid, Decimal(0))
         return initial
 
     def get_context_data(self, **kwargs):

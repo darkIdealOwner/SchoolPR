@@ -636,3 +636,21 @@ class WorkbookUploadForm(forms.Form):
 
     def clean_prefix(self):
         return re.sub(r'\s+', '', self.cleaned_data.get('prefix') or '')
+
+
+class MonthPriceForm(forms.Form):
+    """Стоимость одного месяца договора вручную (неполный месяц, только питание, бесплатный месяц)."""
+    month = MonthField(label=_("Месяц"))
+    amount = forms.DecimalField(label=_("Стоимость месяца, сум"), min_value=0, max_digits=12, decimal_places=2,
+                                widget=forms.NumberInput(attrs={'class': 'input-field', 'step': '1000'}))
+    reason = forms.CharField(label=_("Причина"), max_length=255, required=False,
+                             help_text=_("Например: неполный месяц при отмене, только питание, каникулы."),
+                             widget=forms.TextInput(attrs={'class': 'input-field'}))
+
+    def __init__(self, *args, contract=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.contract = contract
+        self.fields['month'].widget.attrs.update({'class': 'input-field'})
+        if contract is not None:
+            self.fields['amount'].help_text = _("Обычная сумма договора — %(amount)s сум в месяц.") % {
+                'amount': format_money(contract.total_amount)}

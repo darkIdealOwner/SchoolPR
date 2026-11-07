@@ -15,6 +15,9 @@
 дата не того года), загружается с красной пометкой: в поле data_problem записано, что было в книге и что поставлено.
 Без номера, ФИО, стоимости, даты или суммы строку загрузить нельзя — она остаётся в списке ошибок.
 
+Лист «Контроль оплаты» (если есть): стоимость месяца, вписанная в ячейку руками (не формулой), — это правка владельца
+(неполный месяц при отмене, только питание, бесплатный месяц). Она становится стоимостью месяца договора (MonthPrice).
+
 Повторная загрузка той же книги ничего не задваивает: уже внесённые строки пропускаются. Если в исправленной книге
 строка стала правильной, договор с пометкой обновляется по ней, а пометка снимается.
 """
@@ -25,14 +28,15 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from django.db import transaction as db_transaction
+from django.db.models import Prefetch
 from django.utils.translation import gettext as _
 
 from . import excel_import
 from .excel_import import ImportFileError, RowResult, normalize_header, parse_month
 from .phone import is_valid_uz_phone, normalize_phone
 from .models import (
-    Account, AuditLog, Category, Contract, Counterparty, EmployeePayout, Payment, Transaction, Transfer, UnidentifiedReceipt,
-    shift_month,
+    Account, AuditLog, Category, Contract, Counterparty, EmployeePayout, MonthPrice, Payment, Transaction, Transfer,
+    UnidentifiedReceipt, shift_month,
 )
 from .reports import financial_months
 
@@ -179,9 +183,71 @@ def read_workbook(uploaded):
                 values['_row'] = index + 1
                 items.append(values)
             result[kind] = items
-        return result
     finally:
         workbook.close()
+    result['control'] = read_month_prices(uploaded)
+    return result
+
+
+CONTROL_SHEET = 'Контроль оплаты'
+
+
+def read_month_prices(uploaded):
+    """Лист «Контроль оплаты»: стоимость месяца, вписанная руками, и итог начислений по месяцам (для сверки).
+
+    Возвращает {'prices': [{'number', 'month': 'YYYY-MM', 'amount', '_row'}], 'totals': {'YYYY-MM': сумма}} или пусто,
+    если листа нет. Ручная правка — число в ячейке «Стоимость учебы» месяца там, где у остальных формула.
+    """
+    import openpyxl
+    result = {'prices': [], 'totals': {}, 'numbers': []}
+    books = []
+    try:
+        for data_only in (True, False):
+            uploaded.seek(0)
+            books.append(openpyxl.load_workbook(uploaded, read_only=True, data_only=data_only))
+        by_name = [{normalize_header(ws.title): ws for ws in book.worksheets} for book in books]
+        key = normalize_header(CONTROL_SHEET)
+        if key not in by_name[0]:
+            return result
+        values = list(by_name[0][key].iter_rows(values_only=True))
+        formulas = list(by_name[1][key].iter_rows(values_only=True))
+    finally:
+        for book in books:
+            book.close()
+        uploaded.seek(0)
+    # Строка с месяцами: «сент.26» над тройкой «Стоимость учебы / Оплачено / Остаток»
+    header_index, month_cols = None, {}
+    for index, row in enumerate(values[:10]):
+        found = {}
+        for col, value in enumerate(row):
+            if isinstance(value, str) and value.strip():
+                try:
+                    found[col] = parse_month(value)
+                except excel_import.RowError:
+                    continue
+        if len(found) > len(month_cols):
+            header_index, month_cols = index, found
+    if header_index is None or len(month_cols) < 3:
+        return result
+    number_col = next((col for col, value in enumerate(values[header_index])
+                       if normalize_header(value or '') == normalize_header('№ договора')), 1)
+    totals = defaultdict(Decimal)
+    for index in range(header_index + 2, len(values)):
+        row, raw = values[index], formulas[index] if index < len(formulas) else ()
+        number = _text(row[number_col]) if number_col < len(row) else ''
+        if not number:
+            continue
+        result['numbers'].append(number)
+        for col, month in month_cols.items():
+            value = row[col] if col < len(row) else None
+            if isinstance(value, (int, float)):
+                totals[month.strftime('%Y-%m')] += Decimal(str(value))
+            cell = raw[col] if col < len(raw) else None
+            if isinstance(cell, (int, float)) and not isinstance(cell, bool):
+                result['prices'].append({'number': number, 'month': month.strftime('%Y-%m'),
+                                         'amount': str(Decimal(str(cell)).quantize(Decimal('0.01'))), '_row': index + 1})
+    result['totals'] = {k: str(v) for k, v in totals.items()}
+    return result
 
 
 # --- разбор значений
@@ -337,6 +403,7 @@ class WorkbookPlan:
         self.check_money('income', self.sheets['income'])
         self.check_money('expense', self.sheets['expense'])
         self.apply_existing()
+        self.check_month_prices()
         return self
 
     # договоры
@@ -616,6 +683,87 @@ class WorkbookPlan:
                         item.clear_problem = record
                         item.notes.append(_("В книге строка исправлена — красная пометка будет снята."))
 
+    # стоимость месяцев из «Контроля оплаты»
+    def contract_for_prices(self, number):
+        """Договор для строки «Контроля оплаты»: уже на платформе или новый из этой книги (ещё не сохранён)."""
+        state = self.contract_numbers.get(number)
+        if isinstance(state, Contract):
+            return state
+        if state == 'new':
+            item = next((i for i in self.items['contracts'] if i.status == RowResult.OK and i.summary
+                         and i.summary[0] == number), None)
+            if item is not None:
+                if item.instance is not None:
+                    return item.instance
+                item.prepare(item.form.instance)     # отмена и школа ставятся при сохранении — нужны уже сейчас
+                return item.form.instance
+        if state is None and number not in self.contract_numbers:
+            return Contract.objects.filter(number=number, school=self.school).first()
+        return None
+
+    @staticmethod
+    def price_action(contract, month, amount):
+        """Что сделать со стоимостью месяца: create | update | same | manual | standard (совпадает с обычной суммой)."""
+        if contract.pk is None:
+            contract.compute_totals()       # новый договор из этой книги: сумма в месяц считается при сохранении
+        existing = contract.month_price_map.get(month) if contract.pk else None
+        if existing is not None:
+            if existing.source == MonthPrice.SOURCE_MANUAL:
+                return 'manual', existing
+            return ('same' if existing.amount == amount else 'update'), existing
+        standard = contract.total_amount if contract.is_billable_in(month) else Decimal(0)
+        return ('standard' if amount == standard else 'create'), None
+
+    def check_month_prices(self):
+        self.price_counts = Counter()
+        self.price_numbers = set()
+        for entry in self.sheets.get('control', {}).get('prices', []):
+            number = contract_number(self.prefix, entry['number'])
+            month = date.fromisoformat(entry['month'] + '-01')
+            contract = self.contract_for_prices(number)
+            if contract is None:
+                self.price_counts['no_contract'] += 1
+                continue
+            self.price_numbers.add(number)
+            action, _existing = self.price_action(contract, month, Decimal(entry['amount']))
+            self.price_counts[action] += 1
+
+    def save_month_prices(self, contracts, filename):
+        saved = Counter()
+        entries = defaultdict(dict)
+        for number in self.sheets.get('control', {}).get('numbers', []):
+            entries[contract_number(self.prefix, number)]       # договор есть в листе, даже если правок у него нет
+        for entry in self.sheets.get('control', {}).get('prices', []):
+            entries[contract_number(self.prefix, entry['number'])][date.fromisoformat(entry['month'] + '-01')] = entry
+        reason = _("ручная правка в «Контроле оплаты» книги")
+        for number, months in entries.items():
+            contract = contracts.get(number) or Contract.objects.filter(number=number, school=self.school).first()
+            if contract is None:
+                continue
+            contract = Contract.objects.prefetch_related('payments', 'month_prices').get(pk=contract.pk)
+            for month, entry in months.items():
+                amount = Decimal(entry['amount'])
+                action, existing = self.price_action(contract, month, amount)
+                if action == 'create':
+                    price = MonthPrice.objects.create(contract=contract, month=month, amount=amount, reason=reason,
+                                                      source=MonthPrice.SOURCE_WORKBOOK, created_by=self.user)
+                    AuditLog.record(self.user, 'CREATE', price, {'source': 'workbook', 'file': filename[:100], 'row': entry['_row'],
+                                                                 'amount': entry['amount']})
+                elif action == 'update':
+                    AuditLog.record(self.user, 'UPDATE', existing, {'source': 'workbook', 'file': filename[:100],
+                                                                    'amount': [str(existing.amount), entry['amount']]})
+                    existing.amount = amount
+                    existing.save(update_fields=['amount', 'updated_at'])
+                if action in ('create', 'update'):
+                    saved['month_prices'] += 1
+            # Правки, которых в исправленной книге больше нет, убираем (ручные с платформы не трогаем)
+            stale = contract.month_prices.filter(source=MonthPrice.SOURCE_WORKBOOK).exclude(month__in=list(months))
+            for price in stale:
+                AuditLog.record(self.user, 'DELETE', price, {'source': 'workbook', 'file': filename[:100]})
+                saved['month_prices_removed'] += 1
+            stale.delete()
+        return saved
+
     # итоги для предпросмотра
     def counts(self):
         result = {}
@@ -694,6 +842,7 @@ class WorkbookPlan:
                     AuditLog.record(self.user, 'CREATE', obj, {'source': 'workbook', 'file': filename[:100],
                                                                'sheet': kind, 'row': item.number})
                     created[item.action] += 1
+            created.update(self.save_month_prices(contracts, filename))
         return created
 
     def account(self, kind):
@@ -787,6 +936,18 @@ def reconcile(plan):
                        'book': book_in[month], 'platform': platform_in[month], 'money': True})
         checks.append({'label': _('Расходы за %(month)s') % {'month': month.strftime('%m.%Y')},
                        'book': book_out[month], 'platform': platform_out[month], 'money': True})
+
+    # Начислено по месяцам учебного года — как итоги «Стоимость учебы» в «Контроле оплаты»
+    book_accrued = {date.fromisoformat(k + '-01'): Decimal(v) for k, v in book.get('control', {}).get('totals', {}).items()}
+    if book_accrued:
+        accrued = defaultdict(Decimal)
+        for contract in Contract.objects.filter(pk__in=[c.pk for c in platform_contracts]).prefetch_related(
+                Prefetch('payments', queryset=Payment.active.all()), 'month_prices'):
+            for month in book_accrued:
+                accrued[month] += contract.accrual_for(month)
+        for month in sorted(book_accrued):
+            checks.append({'label': _('Начислено за %(month)s') % {'month': month.strftime('%m.%Y')},
+                           'book': book_accrued[month], 'platform': accrued[month], 'money': True})
 
     for check in checks:
         check['diff'] = check['platform'] - check['book']

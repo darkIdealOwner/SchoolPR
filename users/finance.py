@@ -42,24 +42,23 @@ def parse_month(month_str):
 
 def contracts_with_active_payments(queryset):
     return queryset.select_related('school').prefetch_related(
-        Prefetch('payments', queryset=Payment.active.order_by('payment_date'))
+        Prefetch('payments', queryset=Payment.active.order_by('payment_date')), 'month_prices',
     )
 
 
 def billing_months(contract, until=None):
-    """Месяцы начислений по договору (1-е числа), не позже until."""
+    """Месяцы начислений по договору (1-е числа), не позже until: по сроку договора и месяцы со стоимостью, заданной вручную."""
+    months = set(m for m in contract.month_price_map if until is None or m <= until)
     start = contract.first_billing_month
     last = contract.last_billing_month
-    if last is None:
-        return []
-    if until is not None:
-        last = min(last, until)
-    months = []
-    curr = start
-    while curr <= last:
-        months.append(curr)
-        curr = shift_month(curr, 1)
-    return months
+    if last is not None:
+        if until is not None:
+            last = min(last, until)
+        curr = start
+        while curr <= last:
+            months.add(curr)
+            curr = shift_month(curr, 1)
+    return sorted(months)
 
 
 def paid_by_month(contract):
@@ -83,7 +82,7 @@ def get_debt_details(contract, target_date):
     unpaid_months = []
     running_balance = ZERO
     for month in billing_months(contract, until=target_first):
-        running_balance += contract.total_amount - payment_map[month]
+        running_balance += contract.accrual_for(month) - payment_map[month]
         if running_balance > Decimal('0.01'):
             unpaid_months.append(month)
 
@@ -102,10 +101,11 @@ def contract_schedule(contract, until=None):
     running = ZERO
     for month in billing_months(contract):
         paid = payment_map[month]
+        accrued = contract.accrual_for(month)
         is_due = month <= until
         if is_due:
-            running += contract.total_amount - paid
-        balance = contract.total_amount - paid
+            running += accrued - paid
+        balance = accrued - paid
         if balance <= 0:
             status = 'paid'
         elif paid > 0:
@@ -118,7 +118,8 @@ def contract_schedule(contract, until=None):
             'month': month,
             'label': format_russian_month(month),
             'month_str': month.strftime('%Y-%m'),
-            'accrued': contract.total_amount,
+            'accrued': accrued,
+            'price': contract.month_price_map.get(month),
             'paid': paid,
             'balance': max(balance, ZERO),
             'status': status,
@@ -178,12 +179,14 @@ def build_overview(school=None, months=12, today=None):
         payment_map = paid_by_month(contract)
         for month in billing_months(contract, until=current):
             if month >= period_start:
-                cells[(sid, month)]['accrued'] += contract.total_amount
+                cells[(sid, month)]['accrued'] += contract.accrual_for(month)
         info = per_school[sid]
         if contract.is_billable_in(current):
             info['active_contracts'] += 1
-            info['accrued_current'] += contract.total_amount
-            info['paid_for_current'] += min(payment_map[current], contract.total_amount)
+        if contract.has_accrual_in(current):
+            accrued = contract.accrual_for(current)
+            info['accrued_current'] += accrued
+            info['paid_for_current'] += min(payment_map[current], accrued)
         debt, unpaid = get_debt_details(contract, current)
         if debt > Decimal('0.01'):
             info['debt'] += debt

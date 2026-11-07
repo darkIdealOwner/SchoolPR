@@ -6,6 +6,11 @@ msgstr ""
 "Language: uz\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid " Правки, сделанные на платформе вручную (%(count)s), не меняются."
+msgstr " Platformada qo'lda kiritilgan tuzatishlar (%(count)s) o'zgarmaydi."
+
 #: pages/home/reports/dashboard.html
 msgid "%% от дохода"
 msgstr "daromaddan %%"
@@ -283,6 +288,10 @@ msgstr "Ota-onalarga qaytarishlar"
 msgid "Войти"
 msgstr "Kirish"
 
+#: users/models.py
+msgid "Вручную"
+msgstr "Qo'lda"
+
 #: users/views.py
 msgid "Все"
 msgstr "Hammasi"
@@ -415,6 +424,11 @@ msgstr "Bajarilmoqda"
 #: pages/authorization/profile.html
 msgid "Выход из системы"
 msgstr "Tizimdan chiqish"
+
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Где в «Стоимости учебы» месяц вписан руками, а не формулой, — это правка (неполный месяц, только питание, бесплатный месяц). Новых: %(new)s, изменённых: %(changed)s, уже на платформе: %(same)s. Совпадающие с обычной суммой договора не сохраняются."
+msgstr "O'qish narxida oy formula emas, qo'lda yozilgan bo'lsa — bu tuzatish (to'liq bo'lmagan oy, faqat ovqat, bepul oy). Yangi: %(new)s, o'zgargan: %(changed)s, platformada bor: %(same)s. Shartnomaning odatiy summasiga teng bo'lganlari saqlanmaydi."
 
 #: pages/base.html
 msgid "Главная"
@@ -652,6 +666,11 @@ msgstr "Shartnoma platformada allaqachon bor — unga qizil belgi qo'yiladi."
 msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
 msgstr "Shartnoma allaqachon qizil belgi bilan yuklangan, kitobdagi xato qolgan — o'tkazib yuborildi."
 
+#: pages/home/contracts/month_price_form.html
+#, python-format
+msgid "Договор № %(number)s"
+msgstr "Shartnoma № %(number)s"
+
 #: pages/home/contracts/contract_detail.html
 #, python-format
 msgid "Договор № %(number)s от %(date)s"
@@ -778,6 +797,10 @@ msgstr "Shu ota-onaning boshqa farzandlari"
 #: users/models.py
 msgid "Другое"
 msgstr "Boshqa"
+
+#: pages/home/contracts/month_price_form.html
+msgid "Если за какой-то месяц нужно взять не обычную сумму договора: неполный месяц при отмене, только питание, бесплатный месяц. Долги, контроль оплаты и отчёты считаются по этой сумме."
+msgstr "Agar biror oy uchun shartnomaning odatiy summasi emas, boshqa summa olinishi kerak bo'lsa: bekor qilishda to'liq bo'lmagan oy, faqat ovqat, bepul oy. Qarzlar, to'lov nazorati va hisobotlar shu summa bo'yicha hisoblanadi."
 
 #: users/forms.py
 msgid "Если этот учредитель заходит на платформу как инвестор."
@@ -1005,6 +1028,10 @@ msgstr "JShShIR — faqat raqamlar."
 #: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "Из Excel"
 msgstr "Exceldan"
+
+#: users/models.py
+msgid "Из книги школы"
+msgstr "Maktab kitobidan"
 
 #: users/workbook_import.py
 msgid "Из них отменённых"
@@ -1344,9 +1371,13 @@ msgstr "Mart"
 msgid "Меню"
 msgstr "Menyu"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/month_price_form.html pages/home/payouts/payout_list.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/forms.py users/models.py users/views.py
 msgid "Месяц"
 msgstr "Oy"
+
+#: users/models.py
+msgid "Месяц (1-е число)"
+msgstr "Oy (1-sana)"
 
 #: pages/home/payments/payment_form.html
 msgid "Месяц:"
@@ -1466,6 +1497,10 @@ msgid "Например: 2026–2027. Пусто — определится по
 msgstr "Masalan: 2026–2027. Boʻsh boʻlsa — shartnoma sanasidan aniqlanadi."
 
 #: users/forms.py
+msgid "Например: неполный месяц при отмене, только питание, каникулы."
+msgstr "Masalan: bekor qilishda to'liq bo'lmagan oy, faqat ovqat, ta'til."
+
+#: users/forms.py
 msgid "Например: ошибка в сумме, оплата внесена дважды"
 msgstr "Masalan: summada xato, toʻlov ikki marta kiritilgan"
 
@@ -1480,6 +1515,11 @@ msgstr "Hisoblash oyi (gacha)"
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/reports/debts_month.html users/views.py
 msgid "Начислено"
 msgstr "Hisoblangan"
+
+#: users/workbook_import.py
+#, python-format
+msgid "Начислено за %(month)s"
+msgstr "%(month)s uchun hisoblangan"
 
 #: users/views.py
 msgid "Начислено за год"
@@ -1660,6 +1700,11 @@ msgstr "Oʻquvchilarning umumiy qarzi"
 #: users/models.py
 msgid "Объект"
 msgstr "Obyekt"
+
+#: users/forms.py
+#, python-format
+msgid "Обычная сумма договора — %(amount)s сум в месяц."
+msgstr "Shartnomaning odatiy summasi — oyiga %(amount)s so'm."
 
 #: users/excel_import.py
 msgid "Обязательная"
@@ -2215,6 +2260,10 @@ msgstr "Kirim yoki chiqim"
 msgid "Приходов и расходов"
 msgstr "Kirim va chiqimlar"
 
+#: pages/home/contracts/month_price_form.html users/forms.py users/models.py
+msgid "Причина"
+msgstr "Sabab"
+
 #: users/forms.py
 msgid "Причина возврата"
 msgstr "Qaytarish sababi"
@@ -2680,7 +2729,7 @@ msgstr "Maktabdagi xodimlar"
 msgid "Сотрудников пока нет."
 msgstr "Hozircha xodimlar yoʻq."
 
-#: pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
+#: pages/home/contracts/month_price_form.html pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
 msgid "Сохранить"
 msgstr "Saqlash"
 
@@ -2765,6 +2814,34 @@ msgstr "Modda operatsiya hisobotlarda qayerga tushishini belgilaydi: foyda va za
 msgid "Стоимость"
 msgstr "Narx"
 
+#: pages/home/contracts/month_price_form.html users/models.py
+msgid "Стоимость месяца"
+msgstr "Oy narxi"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Стоимость месяца вручную"
+msgstr "Oy narxini qo'lda"
+
+#: users/views.py
+msgid "Стоимость месяца снова как по договору."
+msgstr "Oy narxi yana shartnoma bo'yicha."
+
+#: users/views.py
+msgid "Стоимость месяца сохранена."
+msgstr "Oy narxi saqlandi."
+
+#: users/forms.py
+msgid "Стоимость месяца, сум"
+msgstr "Oy narxi, so'm"
+
+#: users/models.py
+msgid "Стоимость месяцев"
+msgstr "Oylar narxi"
+
+#: pages/home/import/workbook_import.html
+msgid "Стоимость месяцев из «Контроля оплаты»"
+msgstr "To'lov nazoratidan oylar narxi"
+
 #: pages/home/contracts/contract_detail.html
 msgid "Стоимость обучения"
 msgstr "Oʻqish narxi"
@@ -2831,7 +2908,7 @@ msgstr "Xatoli qatorlar (%(count)s) — yuklanmaydi"
 msgid "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся."
 msgstr "Xatoli qatorlar saqlanmaydi. Ularni faylda tuzatib, qayta yuklash mumkin — yuklangan qatorlar ikkinchi marta qoʻshilmaydi."
 
-#: pages/home/contracts/contract_detail.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/reports/dashboard.html pages/home/reports/tariffs.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/month_price_form.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/reports/dashboard.html pages/home/reports/tariffs.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сумма"
 msgstr "Summa"
 
@@ -2984,6 +3061,10 @@ msgstr "Tranzaksiya"
 msgid "Третий ребёнок в семье"
 msgstr "Oiladagi 3-farzand"
 
+#: pages/home/import/workbook_import.html
+msgid "Убрано правок стоимости месяца"
+msgstr "Olib tashlangan oy narxi tuzatishlari"
+
 #: users/models.py
 msgid "Удаление"
 msgstr "Oʻchirish"
@@ -3015,6 +3096,10 @@ msgstr "Allaqachon bor"
 #: users/workbook_import.py
 msgid "Уже есть на платформе — пропущено."
 msgstr "Platformada allaqachon bor — oʻtkazildi."
+
+#: pages/home/contracts/month_price_form.html
+msgid "Уже заданы"
+msgstr "Allaqachon belgilangan"
 
 #: users/models.py
 msgid "Узбекский язык"
@@ -3283,6 +3368,10 @@ msgstr "yoqilgan"
 msgid "возврат"
 msgstr "qaytarish"
 
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "вручную"
+msgstr "qo'lda"
+
 #: pages/home/contracts/contract_detail.html
 msgid "всё верно — снять пометку"
 msgstr "hammasi to'g'ri — belgini olib tashlash"
@@ -3341,6 +3430,10 @@ msgstr "dan"
 #: pages/home/import/workbook_import.html
 msgid "из них с красной пометкой"
 msgstr "shundan qizil belgili"
+
+#: pages/home/contracts/contract_detail.html
+msgid "изменить"
+msgstr "o'zgartirish"
 
 #: pages/home/import/workbook_import.html
 msgid "исправлены в книге — пометка снимется"
@@ -3521,6 +3614,10 @@ msgstr "tekshirildi — belgini olib tashlash"
 msgid "пропущены"
 msgstr "oʻtkazildi"
 
+#: users/workbook_import.py
+msgid "ручная правка в «Контроле оплаты» книги"
+msgstr "kitobning to'lov nazoratidagi qo'lda tuzatish"
+
 #: pages/home/import/excel_import.html pages/home/import/workbook_import.html
 msgid "с ошибками"
 msgstr "xatoli"
@@ -3595,6 +3692,10 @@ msgstr "maktabda «%(name)s» hisobi topilmadi"
 #: users/excel_import.py
 msgid "у сотрудника не указана школа — заполните колонку"
 msgstr "xodimning maktabi koʻrsatilmagan — ustunni toʻldiring"
+
+#: pages/home/contracts/month_price_form.html
+msgid "убрать"
+msgstr "olib tashlash"
 
 #: pages/home/import/excel_import.html pages/home/import/workbook_import.html
 msgid "уже есть на платформе"

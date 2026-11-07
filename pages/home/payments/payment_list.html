@@ -102,7 +102,7 @@
                 </td>
                 {% if user.can_view_personal_data %}<td>{{ contract.parents_full_name }}</td>{% endif %}
                 <td>{{ contract.get_specialization_display }}</td>
-                <td>{{ contract.total_amount|money }}</td>
+                <td>{{ contract.this_month_accrued|money }}{% if contract.this_month_accrued != contract.total_amount %}<div style="font-size: 0.7rem; color: #fbbf24;">{% translate "вручную" %}</div>{% endif %}</td>
                 <td>{{ contract.this_month_paid|money }}</td>
                 <td class="{% if contract.this_month_balance > 0 %}status-debt{% else %}status-paid{% endif %}">
                     {{ contract.this_month_balance|money }}

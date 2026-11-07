@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from decimal import Decimal
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -345,14 +347,14 @@ class Contract(ExternalSyncMixin, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        from decimal import Decimal
-        # Calculate discount amount and total amount automatically
-        # Ensure we use Decimal for calculations with DecimalFields
-        # Скидка бывает процентом, суммой или и тем и другим; больше стоимости учёбы не бывает
+    def compute_totals(self):
+        """Скидка в сумах и сумма в месяц. Скидка бывает процентом, суммой или и тем и другим; больше стоимости учёбы не бывает."""
         discount_rate = Decimal(self.discount_percentage) / Decimal(100)
         self.discount_amount = min(self.tuition_fee, self.tuition_fee * discount_rate + Decimal(self.discount_fixed or 0))
         self.total_amount = (self.tuition_fee - self.discount_amount) + self.food_cost
+
+    def save(self, *args, **kwargs):
+        self.compute_totals()
         # Дата отмены может быть неизвестна — тогда начисления идут до последнего оплаченного месяца
         if not self.is_cancelled:
             self.cancelled_at = None
@@ -463,8 +465,57 @@ class Contract(ExternalSyncMixin, models.Model):
         last = self.last_billing_month
         return last is not None and self.first_billing_month <= month_first <= last
 
+    @property
+    def month_price_map(self):
+        """Стоимость отдельных месяцев, заданная вручную: {1-е число месяца: MonthPrice}. Учитывает prefetch month_prices."""
+        if not hasattr(self, '_month_price_map'):
+            self._month_price_map = {mp.month: mp for mp in self.month_prices.all()} if self.pk else {}
+        return self._month_price_map
+
+    def accrual_for(self, month_first):
+        """Сколько начислено за месяц: ручная стоимость месяца, если задана, иначе сумма договора в месяцах начисления."""
+        price = self.month_price_map.get(month_first)
+        if price is not None:
+            return price.amount
+        return self.total_amount if self.is_billable_in(month_first) else Decimal(0)
+
+    def has_accrual_in(self, month_first):
+        """Месяц есть в графике: по сроку договора или потому что для него задана стоимость вручную."""
+        return month_first in self.month_price_map or self.is_billable_in(month_first)
+
     def __str__(self):
         return f"{self.number} - {self.student_full_name}"
+
+
+class MonthPrice(models.Model):
+    """Стоимость одного месяца договора, отличная от обычной: неполный месяц при отмене, только питание, бесплатный месяц.
+
+    Как ручная правка ячейки «Стоимость учебы» в листе «Контроль оплаты» книги школы.
+    """
+    SOURCE_MANUAL, SOURCE_WORKBOOK = 'MANUAL', 'WORKBOOK'
+    SOURCE_CHOICES = [(SOURCE_MANUAL, _('Вручную')), (SOURCE_WORKBOOK, _('Из книги школы'))]
+
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='month_prices', verbose_name=_("Договор"))
+    month = models.DateField(verbose_name=_("Месяц (1-е число)"))
+    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Стоимость месяца"))
+    reason = models.CharField(max_length=255, blank=True, verbose_name=_("Причина"))
+    source = models.CharField(max_length=10, choices=SOURCE_CHOICES, default=SOURCE_MANUAL, verbose_name=_("Откуда"))
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='+', verbose_name=_("Кто внёс"))
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("Стоимость месяца")
+        verbose_name_plural = _("Стоимость месяцев")
+        ordering = ['month']
+        constraints = [models.UniqueConstraint(fields=['contract', 'month'], name='unique_month_price')]
+
+    def save(self, *args, **kwargs):
+        self.month = self.month.replace(day=1)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.contract.number} {self.month:%m.%Y}: {self.amount}"
 
 
 class ActiveManager(models.Manager):

@@ -6,6 +6,11 @@ msgstr ""
 "Language: ko\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid " Правки, сделанные на платформе вручную (%(count)s), не меняются."
+msgstr " 플랫폼에서 직접 입력한 수정(%(count)s)은 바뀌지 않습니다."
+
 #: pages/home/reports/dashboard.html
 msgid "%% от дохода"
 msgstr "수입 대비 %%"
@@ -283,6 +288,10 @@ msgstr "보호자 환불"
 msgid "Войти"
 msgstr "로그인"
 
+#: users/models.py
+msgid "Вручную"
+msgstr "수동"
+
 #: users/views.py
 msgid "Все"
 msgstr "전체"
@@ -415,6 +424,11 @@ msgstr "진행 중"
 #: pages/authorization/profile.html
 msgid "Выход из системы"
 msgstr "로그아웃"
+
+#: pages/home/import/workbook_import.html
+#, python-format
+msgid "Где в «Стоимости учебы» месяц вписан руками, а не формулой, — это правка (неполный месяц, только питание, бесплатный месяц). Новых: %(new)s, изменённых: %(changed)s, уже на платформе: %(same)s. Совпадающие с обычной суммой договора не сохраняются."
+msgstr "월 수업료가 수식이 아닌 직접 입력된 곳은 수정입니다(부분 월, 급식만, 무료 월). 새로: %(new)s, 변경: %(changed)s, 이미 플랫폼에 있음: %(same)s. 계약의 일반 금액과 같은 값은 저장하지 않습니다."
 
 #: pages/base.html
 msgid "Главная"
@@ -652,6 +666,11 @@ msgstr "계약이 이미 플랫폼에 있습니다 — 빨간 표시가 추가�
 msgid "Договор уже загружен с красной пометкой, в книге ошибка осталась — пропущено."
 msgstr "계약이 이미 빨간 표시와 함께 불러와졌고 통합 문서의 오류가 남아 있습니다 — 건너뜀."
 
+#: pages/home/contracts/month_price_form.html
+#, python-format
+msgid "Договор № %(number)s"
+msgstr "계약 № %(number)s"
+
 #: pages/home/contracts/contract_detail.html
 #, python-format
 msgid "Договор № %(number)s от %(date)s"
@@ -778,6 +797,10 @@ msgstr "이 보호자의 다른 자녀"
 #: users/models.py
 msgid "Другое"
 msgstr "기타"
+
+#: pages/home/contracts/month_price_form.html
+msgid "Если за какой-то месяц нужно взять не обычную сумму договора: неполный месяц при отмене, только питание, бесплатный месяц. Долги, контроль оплаты и отчёты считаются по этой сумме."
+msgstr "어떤 달에 계약의 일반 금액이 아닌 금액을 적용해야 할 때: 취소 시 부분 월, 급식만, 무료 월. 미납, 납부 관리, 보고서는 이 금액으로 계산합니다."
 
 #: users/forms.py
 msgid "Если этот учредитель заходит на платформу как инвестор."
@@ -1005,6 +1028,10 @@ msgstr "개인식별번호는 숫자만 입력하세요."
 #: pages/home/contracts/contract_list.html pages/home/payments/payment_list.html pages/home/payouts/payout_list.html pages/home/transactions/transaction_list.html
 msgid "Из Excel"
 msgstr "Excel에서"
+
+#: users/models.py
+msgid "Из книги школы"
+msgstr "학교 통합 문서에서"
 
 #: users/workbook_import.py
 msgid "Из них отменённых"
@@ -1344,9 +1371,13 @@ msgstr "3월"
 msgid "Меню"
 msgstr "메뉴"
 
-#: pages/home/contracts/contract_detail.html pages/home/payouts/payout_list.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/month_price_form.html pages/home/payouts/payout_list.html pages/home/reports/_header.html pages/home/reports/dashboard.html users/forms.py users/models.py users/views.py
 msgid "Месяц"
 msgstr "월"
+
+#: users/models.py
+msgid "Месяц (1-е число)"
+msgstr "월(1일)"
 
 #: pages/home/payments/payment_form.html
 msgid "Месяц:"
@@ -1466,6 +1497,10 @@ msgid "Например: 2026–2027. Пусто — определится по
 msgstr "예: 2026–2027. 비워 두면 계약일로 정해집니다."
 
 #: users/forms.py
+msgid "Например: неполный месяц при отмене, только питание, каникулы."
+msgstr "예: 취소 시 부분 월, 급식만, 방학."
+
+#: users/forms.py
 msgid "Например: ошибка в сумме, оплата внесена дважды"
 msgstr "예: 금액 오류, 중복 입력"
 
@@ -1480,6 +1515,11 @@ msgstr "부과 종료 월"
 #: pages/home/contracts/contract_detail.html pages/home/partials/finance_overview.html pages/home/reports/debts_month.html users/views.py
 msgid "Начислено"
 msgstr "청구액"
+
+#: users/workbook_import.py
+#, python-format
+msgid "Начислено за %(month)s"
+msgstr "%(month)s 청구액"
 
 #: users/views.py
 msgid "Начислено за год"
@@ -1660,6 +1700,11 @@ msgstr "학생 총 미납액"
 #: users/models.py
 msgid "Объект"
 msgstr "객체"
+
+#: users/forms.py
+#, python-format
+msgid "Обычная сумма договора — %(amount)s сум в месяц."
+msgstr "계약의 일반 금액은 월 %(amount)s 숨입니다."
 
 #: users/excel_import.py
 msgid "Обязательная"
@@ -2215,6 +2260,10 @@ msgstr "수입 또는 지출"
 msgid "Приходов и расходов"
 msgstr "수입·지출"
 
+#: pages/home/contracts/month_price_form.html users/forms.py users/models.py
+msgid "Причина"
+msgstr "사유"
+
 #: users/forms.py
 msgid "Причина возврата"
 msgstr "환불 사유"
@@ -2680,7 +2729,7 @@ msgstr "학교 직원 수"
 msgid "Сотрудников пока нет."
 msgstr "아직 직원이 없습니다."
 
-#: pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
+#: pages/home/contracts/month_price_form.html pages/home/finance/simple_form.html pages/home/schools/academic_year_form.html
 msgid "Сохранить"
 msgstr "저장"
 
@@ -2765,6 +2814,34 @@ msgstr "항목은 거래가 보고서에서 손익과 어떤 현금 흐름 구�
 msgid "Стоимость"
 msgstr "금액"
 
+#: pages/home/contracts/month_price_form.html users/models.py
+msgid "Стоимость месяца"
+msgstr "월 금액"
+
+#: pages/home/contracts/contract_detail.html
+msgid "Стоимость месяца вручную"
+msgstr "월 금액 직접 설정"
+
+#: users/views.py
+msgid "Стоимость месяца снова как по договору."
+msgstr "월 금액이 다시 계약 금액으로 돌아왔습니다."
+
+#: users/views.py
+msgid "Стоимость месяца сохранена."
+msgstr "월 금액을 저장했습니다."
+
+#: users/forms.py
+msgid "Стоимость месяца, сум"
+msgstr "월 금액, 숨"
+
+#: users/models.py
+msgid "Стоимость месяцев"
+msgstr "월 금액"
+
+#: pages/home/import/workbook_import.html
+msgid "Стоимость месяцев из «Контроля оплаты»"
+msgstr "납부 관리 시트의 월 금액"
+
 #: pages/home/contracts/contract_detail.html
 msgid "Стоимость обучения"
 msgstr "수업료"
@@ -2831,7 +2908,7 @@ msgstr "오류 행(%(count)s) — 가져오지 않음"
 msgid "Строки с ошибками не сохранятся. Можно исправить их в файле и загрузить его ещё раз — уже загруженные строки повторно не добавятся."
 msgstr "오류가 있는 행은 저장되지 않습니다. 파일에서 고친 뒤 다시 올리면 됩니다. 이미 가져온 행은 중복으로 추가되지 않습니다."
 
-#: pages/home/contracts/contract_detail.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/reports/dashboard.html pages/home/reports/tariffs.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
+#: pages/home/contracts/contract_detail.html pages/home/contracts/month_price_form.html pages/home/finance/receipt_list.html pages/home/finance/transfer_list.html pages/home/import/workbook_import.html pages/home/payouts/payout_list.html pages/home/reports/dashboard.html pages/home/reports/tariffs.html pages/home/transactions/transaction_list.html users/excel_import.py users/models.py users/views.py
 msgid "Сумма"
 msgstr "금액"
 
@@ -2984,6 +3061,10 @@ msgstr "거래"
 msgid "Третий ребёнок в семье"
 msgstr "가정의 셋째 자녀"
 
+#: pages/home/import/workbook_import.html
+msgid "Убрано правок стоимости месяца"
+msgstr "삭제된 월 금액 수정"
+
 #: users/models.py
 msgid "Удаление"
 msgstr "삭제"
@@ -3015,6 +3096,10 @@ msgstr "이미 있음"
 #: users/workbook_import.py
 msgid "Уже есть на платформе — пропущено."
 msgstr "이미 플랫폼에 있어 건너뜀."
+
+#: pages/home/contracts/month_price_form.html
+msgid "Уже заданы"
+msgstr "이미 설정됨"
 
 #: users/models.py
 msgid "Узбекский язык"
@@ -3283,6 +3368,10 @@ msgstr "사용"
 msgid "возврат"
 msgstr "환불"
 
+#: pages/home/contracts/contract_detail.html pages/home/payments/payment_list.html
+msgid "вручную"
+msgstr "수동"
+
 #: pages/home/contracts/contract_detail.html
 msgid "всё верно — снять пометку"
 msgstr "모두 맞음 — 표시 해제"
@@ -3341,6 +3430,10 @@ msgstr "/"
 #: pages/home/import/workbook_import.html
 msgid "из них с красной пометкой"
 msgstr "그중 빨간 표시"
+
+#: pages/home/contracts/contract_detail.html
+msgid "изменить"
+msgstr "변경"
 
 #: pages/home/import/workbook_import.html
 msgid "исправлены в книге — пометка снимется"
@@ -3521,6 +3614,10 @@ msgstr "확인함 — 표시 해제"
 msgid "пропущены"
 msgstr "건너뜀"
 
+#: users/workbook_import.py
+msgid "ручная правка в «Контроле оплаты» книги"
+msgstr "납부 관리 시트의 수동 수정"
+
 #: pages/home/import/excel_import.html pages/home/import/workbook_import.html
 msgid "с ошибками"
 msgstr "오류 있음"
@@ -3595,6 +3692,10 @@ msgstr "학교에 “%(name)s” 계좌가 없습니다"
 #: users/excel_import.py
 msgid "у сотрудника не указана школа — заполните колонку"
 msgstr "직원의 소속 학교가 없습니다. 열을 작성하세요"
+
+#: pages/home/contracts/month_price_form.html
+msgid "убрать"
+msgstr "삭제"
 
 #: pages/home/import/excel_import.html pages/home/import/workbook_import.html
 msgid "уже есть на платформе"

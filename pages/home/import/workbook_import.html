@@ -51,6 +51,8 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
         <div><span>{% translate "Приходов и расходов" %}</span><span class="c-ok">{{ created.transaction|default:0 }}</span></div>
         <div><span>{% translate "Переводов между счетами" %}</span><span class="c-ok">{{ created.transfer|default:0 }}</span></div>
         <div><span>{% translate "Нераспознанных поступлений" %}</span><span class="c-ok">{{ created.receipt|default:0 }}</span></div>
+        {% if created.month_prices %}<div><span>{% translate "Стоимость месяцев из «Контроля оплаты»" %}</span><span class="c-ok">{{ created.month_prices }}</span></div>{% endif %}
+        {% if created.month_prices_removed %}<div><span>{% translate "Убрано правок стоимости месяца" %}</span><span class="c-ex">{{ created.month_prices_removed }}</span></div>{% endif %}
         {% if created.fixed %}<div><span>{% translate "Исправлено по книге, пометка снята" %}</span><span class="c-ok">{{ created.fixed }}</span></div>{% endif %}
         {% if created.flagged %}<div><span>{% translate "Из них с красной пометкой" %}</span><span class="c-err">{{ created.flagged }}</span></div>{% endif %}
     </div>
@@ -108,6 +110,13 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.75rem 0; }
     {% endfor %}
 </div>
 
+{% if plan.price_counts %}
+<div class="panel" style="margin-bottom: 1rem;">
+    <h3 style="margin: 0 0 0.5rem 0; font-size: 0.95rem;">{% translate "Стоимость месяцев из «Контроля оплаты»" %}</h3>
+    <p class="muted" style="margin: 0;">{% blocktranslate with new=plan.price_counts.create|default:0 changed=plan.price_counts.update|default:0 same=plan.price_counts.same|default:0 %}Где в «Стоимости учебы» месяц вписан руками, а не формулой, — это правка (неполный месяц, только питание, бесплатный месяц). Новых: {{ new }}, изменённых: {{ changed }}, уже на платформе: {{ same }}. Совпадающие с обычной суммой договора не сохраняются.{% endblocktranslate %}
+    {% if plan.price_counts.manual %}{% blocktranslate with count=plan.price_counts.manual %} Правки, сделанные на платформе вручную ({{ count }}), не меняются.{% endblocktranslate %}{% endif %}</p>
+</div>
+{% endif %}
 <h2>{% translate "Как разносятся статьи книги" %}</h2>
 <p class="muted">{% translate "Незнакомое название в «Кратком назначении» (имя человека или фирмы) считается учредителем: приход — его вложение, расход — выплата ему." %}</p>
 <div class="table-container">
